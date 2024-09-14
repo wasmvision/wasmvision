@@ -10,8 +10,7 @@ import (
 
 	"github.com/hybridgroup/wasmvision/capture"
 	"github.com/hybridgroup/wasmvision/engine"
-	"github.com/hybridgroup/wasmvision/processor"
-	"github.com/tetratelabs/wazero"
+	"github.com/hybridgroup/wasmvision/runtime"
 )
 
 var (
@@ -28,18 +27,14 @@ func main() {
 
 	module, err := os.ReadFile(*moduleName)
 	if err != nil {
-		log.Panicf("failed to read wasm module: %v\n", err)
+		log.Panicf("failed to read wasm processor module: %v\n", err)
 	}
 
 	ctx := context.Background()
-	r := wazero.NewRuntime(ctx)
-	defer r.Close(ctx)
 
-	println("Defining host functions...")
-	modules := processor.HostModules()
-	if err := modules.DefineWazero(r, nil); err != nil {
-		log.Panicf("error define host functions: %v\n", err)
-	}
+	// load wasm runtime
+	r := runtime.New(ctx)
+	defer r.Close(ctx)
 
 	fmt.Printf("Loading wasmCV guest module %s...\n", *moduleName)
 	mod, err := r.Instantiate(ctx, module)
