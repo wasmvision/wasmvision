@@ -13,22 +13,10 @@ func HostModules() wypes.Modules {
 			"println": wypes.H1(hostPrintln),
 		},
 	}
-	maps.Copy(modules, hostCVModules())
+	maps.Copy(modules, cv.MatModules())
+	maps.Copy(modules, cv.ImgprocModules())
 
 	return modules
-}
-
-func hostCVModules() wypes.Modules {
-	return wypes.Modules{
-		"wasm:cv/mat": wypes.Module{
-			"[method]mat.cols": wypes.H1(cv.MatColsFunc),
-			"[method]mat.rows": wypes.H1(cv.MatRowsFunc),
-			"[method]mat.type": wypes.H1(cv.MatTypeFunc),
-		},
-		"wasm:cv/cv": wypes.Module{
-			"gaussian-blur": wypes.H6(cv.GaussianBlurFunc),
-		},
-	}
 }
 
 func hostPrintln(msg wypes.String) wypes.Void {
