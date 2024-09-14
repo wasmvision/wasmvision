@@ -1,11 +1,18 @@
-# wasmvision
+# wasmVision
 
-wasmVision is a computer vision processing engine designed to be used with processing moduleswritten using WebAssembly.
+wasmVision is a computer vision processing engine designed to be used with guest modules written using WebAssembly.
 
-It is a Go application written using [GoCV Go language wrappers for OpenCV](https://github.com/hybridgroup/gocv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
+These processing modules can be written in Go, Rust, or the C programming language.
 
 ## How it works
 
+wasmVision is written in the Go programming language using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
+
+wasmVision guest processing modules are compiled into WebAssembly, and expected to support the wasmCV interface. See https://github.com/hybridgroup/wasmcv
+
+Processors can be written in Go, Rust, or the C programming language.
+
+Diagrams and further explanations coming soon...
 
 ## How to run it
 
