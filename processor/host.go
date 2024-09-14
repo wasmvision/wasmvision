@@ -3,7 +3,7 @@ package processor
 import (
 	"maps"
 
-	"github.com/hybridgroup/wasmvision/engine/processor/cv"
+	"github.com/hybridgroup/wasmvision/cv"
 	"github.com/orsinium-labs/wypes"
 )
 

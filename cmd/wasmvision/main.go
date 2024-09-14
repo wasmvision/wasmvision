@@ -8,9 +8,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/hybridgroup/wasmvision/capture"
 	"github.com/hybridgroup/wasmvision/engine"
-	"github.com/hybridgroup/wasmvision/engine/capture"
-	"github.com/hybridgroup/wasmvision/engine/processor"
+	"github.com/hybridgroup/wasmvision/processor"
 	"github.com/tetratelabs/wazero"
 )
 
