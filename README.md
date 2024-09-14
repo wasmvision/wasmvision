@@ -20,10 +20,12 @@ See https://github.com/hybridgroup/wasmcv
 
 These processing modules can be written in Go, Rust, or the C programming language.
 
+The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. The the next frame is read from the capture device and passed into the first processor module.
+
 See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
 ## How to run it
 
 ```shell
-go run ./cmd/wasmvision -module=/path/to/your/processor.wasm
+go run ./cmd/wasmvision -processors=/path/to/your/processor1.wasm,/path/to/your/processor2.wasm
 ```

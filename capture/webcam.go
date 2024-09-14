@@ -7,16 +7,16 @@ import (
 	"gocv.io/x/gocv"
 )
 
-type WebCam struct {
+type Webcam struct {
 	device string
 	webcam *gocv.VideoCapture
 }
 
-func NewWebCam(device string) WebCam {
-	return WebCam{device: device}
+func NewWebcam(device string) Webcam {
+	return Webcam{device: device}
 }
 
-func (w *WebCam) Open() error {
+func (w *Webcam) Open() error {
 	webcam, err := gocv.OpenVideoCapture(w.device)
 	if err != nil {
 		return err
@@ -26,11 +26,11 @@ func (w *WebCam) Open() error {
 	return nil
 }
 
-func (w *WebCam) Close() error {
+func (w *Webcam) Close() error {
 	return w.webcam.Close()
 }
 
-func (w *WebCam) Read() (engine.Frame, error) {
+func (w *Webcam) Read() (engine.Frame, error) {
 	img := gocv.NewMat()
 	if ok := w.webcam.Read(&img); !ok {
 		return engine.Frame{}, errors.New("failed to read frame")

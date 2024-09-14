@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/hybridgroup/wasmvision/capture"
 	"github.com/hybridgroup/wasmvision/engine"
@@ -15,19 +16,14 @@ import (
 
 var (
 	device     = flag.String("device", "/dev/video0", "video capture device to use")
-	moduleName = flag.String("module", "", "wasm module to use for processing frames")
+	processors = flag.String("processors", "", "wasm modules to use for processing frames")
 )
 
 func main() {
 	flag.Parse()
 
-	if *moduleName == "" {
+	if *processors == "" {
 		log.Panic("processor module is required")
-	}
-
-	module, err := os.ReadFile(*moduleName)
-	if err != nil {
-		log.Panicf("failed to read wasm processor module: %v\n", err)
 	}
 
 	ctx := context.Background()
@@ -36,15 +32,19 @@ func main() {
 	r := runtime.New(ctx)
 	defer r.Close(ctx)
 
-	fmt.Printf("Loading wasmCV guest module %s...\n", *moduleName)
-	mod, err := r.Instantiate(ctx, module)
-	if err != nil {
-		log.Panicf("failed to instantiate module: %v", err)
+	procs := strings.Split(*processors, ",")
+	for _, p := range procs {
+		module, err := os.ReadFile(p)
+		if err != nil {
+			log.Panicf("failed to read wasm processor module: %v\n", err)
+		}
+
+		fmt.Printf("Loading wasmCV guest module %s...\n", p)
+		runtime.RegisterGuestModule(ctx, r, module)
 	}
-	process := mod.ExportedFunction("process")
 
 	// Open the webcam.
-	webcam := capture.NewWebCam(*device)
+	webcam := capture.NewWebcam(*device)
 	defer webcam.Close()
 	if err := webcam.Open(); err != nil {
 		log.Panicf("Error opening video capture device: %v\n", *device)
@@ -72,11 +72,8 @@ func main() {
 
 		i++
 		fmt.Printf("Read frame %d\n", i+1)
-		fmt.Printf("Running wasmCV module %s\n", *moduleName)
 
-		if _, err := process.Call(ctx, uint64(frame.ID)); err != nil {
-			fmt.Printf("Error calling process: %v\n", err)
-		}
+		frame = runtime.PerformProcessing(ctx, r, frame)
 
 		// cleanup frame
 		frame.Close()
