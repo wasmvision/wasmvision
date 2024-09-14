@@ -17,5 +17,5 @@ See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 ## How to run it
 
 ```shell
-go run . -module=/path/to/your/processor.wasm
+go run ./cmd/wasmvision -module=/path/to/your/processor.wasm
 ```
