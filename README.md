@@ -12,10 +12,10 @@ wasmVision guest processing modules are compiled into WebAssembly, and expected 
 
 Processors can be written in Go, Rust, or the C programming language.
 
-Diagrams and further explanations coming soon...
+See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
 ## How to run it
 
 ```shell
-go run . -processor=/path/to/your/processor.wasm
+go run . -module=/path/to/your/processor.wasm
 ```

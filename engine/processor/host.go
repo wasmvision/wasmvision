@@ -1,8 +1,9 @@
-package engine
+package processor
 
 import (
 	"maps"
 
+	"github.com/hybridgroup/wasmvision/engine/processor/cv"
 	"github.com/orsinium-labs/wypes"
 )
 
@@ -20,12 +21,12 @@ func HostModules() wypes.Modules {
 func hostCVModules() wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
-			"[method]mat.cols": wypes.H1(matColsFunc),
-			"[method]mat.rows": wypes.H1(matRowsFunc),
-			"[method]mat.type": wypes.H1(matTypeFunc),
+			"[method]mat.cols": wypes.H1(cv.MatColsFunc),
+			"[method]mat.rows": wypes.H1(cv.MatRowsFunc),
+			"[method]mat.type": wypes.H1(cv.MatTypeFunc),
 		},
 		"wasm:cv/cv": wypes.Module{
-			"gaussian-blur": wypes.H6(gaussianBlurFunc),
+			"gaussian-blur": wypes.H6(cv.GaussianBlurFunc),
 		},
 	}
 }

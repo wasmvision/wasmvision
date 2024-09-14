@@ -7,10 +7,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-var (
-	frame      gocv.Mat
-	FrameCache = make(map[wypes.UInt32]Frame)
-)
+var FrameCache = make(map[wypes.UInt32]Frame)
 
 type Frame struct {
 	ID    wypes.UInt32
@@ -31,5 +28,3 @@ func (f *Frame) SetImage(img gocv.Mat) {
 func (f *Frame) Close() {
 	f.Image.Close()
 }
-
-type frameMap map[wypes.UInt32]gocv.Mat

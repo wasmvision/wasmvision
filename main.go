@@ -9,23 +9,24 @@ import (
 	"os"
 
 	"github.com/hybridgroup/wasmvision/engine"
+	"github.com/hybridgroup/wasmvision/engine/capture"
+	"github.com/hybridgroup/wasmvision/engine/processor"
 	"github.com/tetratelabs/wazero"
-	"gocv.io/x/gocv"
 )
 
 var (
-	device    = flag.String("device", "/dev/video0", "video capture device to use")
-	processor = flag.String("processor", "", "wasm module to use for processing frames")
+	device     = flag.String("device", "/dev/video0", "video capture device to use")
+	moduleName = flag.String("module", "", "wasm module to use for processing frames")
 )
 
 func main() {
 	flag.Parse()
 
-	if *processor == "" {
-		log.Panic("processor is required")
+	if *moduleName == "" {
+		log.Panic("processor module is required")
 	}
 
-	module, err := os.ReadFile(*processor)
+	module, err := os.ReadFile(*moduleName)
 	if err != nil {
 		log.Panicf("failed to read wasm module: %v\n", err)
 	}
@@ -35,12 +36,12 @@ func main() {
 	defer r.Close(ctx)
 
 	println("Defining host functions...")
-	modules := engine.HostModules()
+	modules := processor.HostModules()
 	if err := modules.DefineWazero(r, nil); err != nil {
 		log.Panicf("error define host functions: %v\n", err)
 	}
 
-	fmt.Printf("Loading wasmCV guest module %s...\n", *processor)
+	fmt.Printf("Loading wasmCV guest module %s...\n", *moduleName)
 	mod, err := r.Instantiate(ctx, module)
 	if err != nil {
 		log.Panicf("failed to instantiate module: %v", err)
@@ -48,28 +49,27 @@ func main() {
 	process := mod.ExportedFunction("process")
 
 	// Open the webcam.
-	webcam, err := gocv.OpenVideoCapture(*device)
-	if err != nil {
+	webcam := capture.NewWebCam(*device)
+	defer webcam.Close()
+	if err := webcam.Open(); err != nil {
 		log.Panicf("Error opening video capture device: %v\n", *device)
 	}
-	defer webcam.Close()
 
 	fmt.Printf("Start reading device: %v\n", *device)
 	i := 0
 	for {
-		img := gocv.NewMat()
-
-		if ok := webcam.Read(&img); !ok {
+		frame, err := webcam.Read()
+		if err != nil {
 			fmt.Printf("frame error %v\n", *device)
+			frame.Close()
 			continue
 		}
 
-		if img.Empty() {
+		if frame.Image.Empty() {
+			frame.Close()
 			continue
 		}
 
-		frame := engine.NewFrame()
-		frame.SetImage(img)
 		engine.FrameCache[frame.ID] = frame
 
 		// clear screen
@@ -77,10 +77,9 @@ func main() {
 
 		i++
 		fmt.Printf("Read frame %d\n", i+1)
-		fmt.Printf("Running wasmCV module %s\n", *processor)
+		fmt.Printf("Running wasmCV module %s\n", *moduleName)
 
-		_, err := process.Call(ctx, uint64(frame.ID))
-		if err != nil {
+		if _, err := process.Call(ctx, uint64(frame.ID)); err != nil {
 			fmt.Printf("Error calling process: %v\n", err)
 		}
 
