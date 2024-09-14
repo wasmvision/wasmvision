@@ -5,12 +5,16 @@
 ```mermaid
 flowchart LR
     subgraph wasmVision
-        Engine<-->Capture
-        Engine<-->Runtime[WASM Runtime]
-        Capture<-->CV
-        CV<-->Devices
-        Runtime<-->Modules[WASM Processor Modules]
-        Runtime<-->CV
+        Capture--frame-->Runtime[WASM Runtime]
+        Capture<-->Devices
+        Devices<-->OpenCV
+        Runtime<-->wasmCV
+        Runtime<-->OpenCV
+    end
+    subgraph wasmCV
+        processor1.wasm--frame-->processor2.wasm
+        processor2.wasm--frame-->processor3.wasm
+        processor3.wasm--frame-->processor4.wasm
     end
 ```
 

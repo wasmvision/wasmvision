@@ -7,8 +7,15 @@ wasmVision is a high-performance computer vision processing engine designed to b
 ```mermaid
 flowchart LR
     subgraph wasmVision
-        Capture-->P[WASM Processor Modules]
-        P-->Output
+        Capture--frame-->Runtime[WASM Runtime]
+        Capture<-->OpenCV
+        Runtime<-->wasmCV
+        Runtime<-->OpenCV
+    end
+    subgraph wasmCV
+        processor1.wasm--frame-->processor2.wasm
+        processor2.wasm--frame-->processor3.wasm
+        processor3.wasm--frame-->processor4.wasm
     end
 ```
 
