@@ -6,11 +6,10 @@
 flowchart LR
     subgraph wasmVision
         Engine<-->Capture
-        Engine<-->Processor
+        Engine<-->Runtime[WASM Runtime]
         Capture<-->CV
         CV<-->Devices
-        Processor<-->Runtime
-        Runtime<-->Modules
+        Runtime<-->Modules[WASM Processor Modules]
         Runtime<-->CV
     end
 ```
@@ -26,10 +25,6 @@ This is how wasmVision can capture or import images or video to be processed,
 ### Devices
 
 Specific hardware or software devices that capture images or video,
-
-### Processor
-
-The wasmVision image processing capabilities.
 
 ### Runtime
 
