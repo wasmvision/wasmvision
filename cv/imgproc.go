@@ -3,8 +3,9 @@ package cv
 import (
 	"image"
 
-	"github.com/orsinium-labs/wypes"
 	"github.com/wasmvision/wasmvision/engine"
+
+	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
 

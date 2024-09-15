@@ -5,11 +5,12 @@ import (
 	"log"
 	"maps"
 
+	"github.com/wasmvision/wasmvision/cv"
+	"github.com/wasmvision/wasmvision/engine"
+
 	"github.com/orsinium-labs/wypes"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
-	"github.com/wasmvision/wasmvision/cv"
-	"github.com/wasmvision/wasmvision/engine"
 )
 
 func New(ctx context.Context) wazero.Runtime {

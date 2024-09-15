@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/wasmvision/wasmvision/engine"
+
 	"gocv.io/x/gocv"
 )
 
