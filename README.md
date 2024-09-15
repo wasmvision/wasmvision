@@ -36,3 +36,13 @@ See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 ```shell
 go run ./cmd/wasmvision -processors=/path/to/your/processor1.wasm,/path/to/your/processor2.wasm
 ```
+
+Want to see what wasmVision is doing in your browser? Use the `-mjpeg=true` flag.
+
+```shell
+go run ./cmd/wasmvision -processors=/path/to/your/processor1.wasm,/path/to/your/processor2.wasm -mjpeg=true
+```
+
+Now point your browser to `http://localhost:8080` and you can see the output.
+
+![mjpeg-stream](./images/mjpeg-stream.png)
