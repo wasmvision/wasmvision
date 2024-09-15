@@ -17,6 +17,8 @@ import (
 var (
 	device     = flag.String("device", "/dev/video0", "video capture device to use")
 	processors = flag.String("processors", "", "wasm modules to use for processing frames")
+	mjpeg      = flag.Bool("mjpeg", false, "output MJPEG stream")
+	mjpegPort  = flag.String("mjpeg-port", ":8080", "MJPEG stream port")
 )
 
 func main() {
@@ -50,6 +52,13 @@ func main() {
 		log.Panicf("Error opening video capture device: %v\n", *device)
 	}
 
+	var mjpegstream engine.MJPEGStream
+	if *mjpeg {
+		mjpegstream = engine.NewMJPEGStream(*mjpegPort)
+
+		go mjpegstream.Start()
+	}
+
 	fmt.Printf("Start reading device: %v\n", *device)
 	i := 0
 	for {
@@ -74,6 +83,10 @@ func main() {
 		fmt.Printf("Read frame %d\n", i+1)
 
 		frame = runtime.PerformProcessing(ctx, r, frame)
+
+		if *mjpeg {
+			mjpegstream.Publish(frame)
+		}
 
 		// cleanup frame
 		frame.Close()
