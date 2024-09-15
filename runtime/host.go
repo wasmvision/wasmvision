@@ -7,6 +7,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/engine"
+	"github.com/wasmvision/wasmvision/frame"
 
 	"github.com/orsinium-labs/wypes"
 	"github.com/tetratelabs/wazero"
@@ -55,7 +56,7 @@ func RegisterGuestModule(ctx context.Context, r wazero.Runtime, module []byte) {
 
 const process = "process"
 
-func PerformProcessing(ctx context.Context, r wazero.Runtime, frm engine.Frame) engine.Frame {
+func PerformProcessing(ctx context.Context, r wazero.Runtime, frm frame.Frame) frame.Frame {
 	var frames []wypes.UInt32
 
 	in := frm.ID

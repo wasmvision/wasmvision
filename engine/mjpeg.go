@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hybridgroup/mjpeg"
+	"github.com/wasmvision/wasmvision/frame"
 	"gocv.io/x/gocv"
 )
 
@@ -36,8 +37,8 @@ func (s *MJPEGStream) Start() {
 }
 
 // Publish publishes a frame to the MJPEG stream.
-func (s *MJPEGStream) Publish(frame Frame) {
-	buf, _ := gocv.IMEncode(".jpg", frame.Image)
+func (s *MJPEGStream) Publish(frm frame.Frame) {
+	buf, _ := gocv.IMEncode(".jpg", frm.Image)
 	defer buf.Close()
 
 	s.stream.UpdateJPEG(buf.GetBytes())

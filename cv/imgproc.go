@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/wasmvision/wasmvision/engine"
+	"github.com/wasmvision/wasmvision/frame"
 
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
@@ -28,7 +29,7 @@ func adaptiveThresholdFunc(matref wypes.UInt32, maxValue wypes.Float32, adaptive
 	}
 	src := f.Image
 
-	dst := engine.NewFrame()
+	dst := frame.NewFrame()
 	dst.SetImage(gocv.NewMat())
 	engine.FrameCache[dst.ID] = dst
 
@@ -44,7 +45,7 @@ func blurFunc(matref wypes.UInt32, size0 wypes.UInt32, size1 wypes.UInt32) wypes
 	}
 	src := f.Image
 
-	dst := engine.NewFrame()
+	dst := frame.NewFrame()
 	dst.SetImage(gocv.NewMat())
 	engine.FrameCache[dst.ID] = dst
 
@@ -60,7 +61,7 @@ func boxFilterFunc(matref wypes.UInt32, depth0 wypes.UInt32, size0 wypes.UInt32,
 	}
 	src := f.Image
 
-	dst := engine.NewFrame()
+	dst := frame.NewFrame()
 	dst.SetImage(gocv.NewMat())
 	engine.FrameCache[dst.ID] = dst
 
@@ -76,7 +77,7 @@ func gaussianBlurFunc(matref wypes.UInt32, size0 wypes.UInt32, size1 wypes.UInt3
 	}
 	src := f.Image
 
-	dst := engine.NewFrame()
+	dst := frame.NewFrame()
 	dst.SetImage(gocv.NewMat())
 	engine.FrameCache[dst.ID] = dst
 
@@ -92,7 +93,7 @@ func thresholdFunc(matref wypes.UInt32, thresh wypes.Float32, maxValue wypes.Flo
 	}
 	src := f.Image
 
-	dst := engine.NewFrame()
+	dst := frame.NewFrame()
 	dst.SetImage(gocv.NewMat())
 	engine.FrameCache[dst.ID] = dst
 

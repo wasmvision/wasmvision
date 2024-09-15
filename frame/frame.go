@@ -1,4 +1,4 @@
-package engine
+package frame
 
 import (
 	"math/rand/v2"
@@ -6,8 +6,6 @@ import (
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
-
-var FrameCache = make(map[wypes.UInt32]Frame)
 
 type Frame struct {
 	ID    wypes.UInt32

@@ -3,7 +3,7 @@ package capture
 import (
 	"errors"
 
-	"github.com/wasmvision/wasmvision/engine"
+	"github.com/wasmvision/wasmvision/frame"
 
 	"gocv.io/x/gocv"
 )
@@ -31,13 +31,13 @@ func (w *Webcam) Close() error {
 	return w.webcam.Close()
 }
 
-func (w *Webcam) Read() (engine.Frame, error) {
+func (w *Webcam) Read() (frame.Frame, error) {
 	img := gocv.NewMat()
 	if ok := w.webcam.Read(&img); !ok {
-		return engine.Frame{}, errors.New("failed to read frame")
+		return frame.Frame{}, errors.New("failed to read frame")
 	}
 
-	frame := engine.NewFrame()
+	frame := frame.NewFrame()
 	frame.SetImage(img)
 
 	return frame, nil
