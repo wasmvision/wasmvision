@@ -37,9 +37,13 @@ func (s *MJPEGStream) Start() {
 }
 
 // Publish publishes a frame to the MJPEG stream.
-func (s *MJPEGStream) Publish(frm frame.Frame) {
-	buf, _ := gocv.IMEncode(".jpg", frm.Image)
+func (s *MJPEGStream) Publish(frm frame.Frame) error {
+	buf, err := gocv.IMEncode(".jpg", frm.Image)
+	if err != nil {
+		return err
+	}
 	defer buf.Close()
 
 	s.stream.UpdateJPEG(buf.GetBytes())
+	return nil
 }

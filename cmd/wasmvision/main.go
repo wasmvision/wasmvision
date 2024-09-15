@@ -41,7 +41,7 @@ func main() {
 		}
 
 		fmt.Printf("Loading wasmCV guest module %s...\n", p)
-		runtime.RegisterGuestModule(ctx, r, module)
+		r.RegisterGuestModule(ctx, module)
 	}
 
 	// Open the webcam.
@@ -81,7 +81,7 @@ func main() {
 		i++
 		fmt.Printf("Read frame %d\n", i+1)
 
-		frame = runtime.PerformProcessing(ctx, r, frame)
+		frame = r.PerformProcessing(ctx, frame)
 
 		if *mjpeg {
 			mjpegstream.Publish(frame)

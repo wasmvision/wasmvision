@@ -14,7 +14,14 @@ import (
 	"github.com/tetratelabs/wazero/api"
 )
 
-func New(ctx context.Context) wazero.Runtime {
+// Interpreter is a WebAssembly interpreter that can load and run guest modules.
+type Interpreter struct {
+	r            wazero.Runtime
+	guestModules []api.Module
+}
+
+// New creates a new Interpreter.
+func New(ctx context.Context) Interpreter {
 	r := wazero.NewRuntime(ctx)
 
 	modules := hostModules()
@@ -22,7 +29,10 @@ func New(ctx context.Context) wazero.Runtime {
 		log.Panicf("error define host functions: %v\n", err)
 	}
 
-	return r
+	return Interpreter{
+		r:            r,
+		guestModules: []api.Module{},
+	}
 }
 
 func hostModules() wypes.Modules {
@@ -43,24 +53,30 @@ func hostPrintln(msg wypes.String) wypes.Void {
 	return wypes.Void{}
 }
 
-var guestModules = []api.Module{}
+// Close closes the interpreter.
+func (intp *Interpreter) Close(ctx context.Context) {
+	intp.r.Close(ctx)
+}
 
-func RegisterGuestModule(ctx context.Context, r wazero.Runtime, module []byte) {
-	mod, err := r.Instantiate(ctx, module)
+// RegisterGuestModule registers a guest module with the interpreter.
+func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte) error {
+	mod, err := intp.r.Instantiate(ctx, module)
 	if err != nil {
-		log.Panicf("failed to instantiate module: %v", err)
+		return err
 	}
 
-	guestModules = append(guestModules, mod)
+	intp.guestModules = append(intp.guestModules, mod)
+	return nil
 }
 
 const process = "process"
 
-func PerformProcessing(ctx context.Context, r wazero.Runtime, frm frame.Frame) frame.Frame {
+// PerformProcessing performs processing on a frame.
+func (intp *Interpreter) PerformProcessing(ctx context.Context, frm frame.Frame) frame.Frame {
 	var frames []wypes.UInt32
 
 	in := frm.ID
-	for _, mod := range guestModules {
+	for _, mod := range intp.guestModules {
 		frames = append(frames, wypes.UInt32(in))
 
 		fn := mod.ExportedFunction(process)

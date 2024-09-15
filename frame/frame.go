@@ -7,11 +7,13 @@ import (
 	"gocv.io/x/gocv"
 )
 
+// Frame is a container for an image frame.
 type Frame struct {
 	ID    wypes.UInt32
 	Image gocv.Mat
 }
 
+// NewFrame creates a new Frame.
 func NewFrame() Frame {
 	id := rand.IntN(102400)
 	return Frame{
@@ -19,10 +21,12 @@ func NewFrame() Frame {
 	}
 }
 
+// SetImage sets the image of the frame.
 func (f *Frame) SetImage(img gocv.Mat) {
 	f.Image = img
 }
 
+// Close closes the frame.
 func (f *Frame) Close() {
 	f.Image.Close()
 }
