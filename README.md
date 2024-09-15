@@ -1,4 +1,4 @@
-# wasmVision
+![wasmvision-logo](./images/wasmvision-logo.png)
 
 wasmVision is a high-performance computer vision processing engine designed to be customized and extended using WebAssembly.
 
