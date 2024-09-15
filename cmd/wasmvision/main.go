@@ -9,9 +9,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hybridgroup/wasmvision/capture"
-	"github.com/hybridgroup/wasmvision/engine"
-	"github.com/hybridgroup/wasmvision/runtime"
+	"github.com/wasmvision/wasmvision/capture"
+	"github.com/wasmvision/wasmvision/engine"
+	"github.com/wasmvision/wasmvision/runtime"
 )
 
 var (

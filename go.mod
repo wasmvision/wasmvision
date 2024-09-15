@@ -1,4 +1,4 @@
-module github.com/hybridgroup/wasmvision
+module github.com/wasmvision/wasmvision
 
 go 1.23.0
 

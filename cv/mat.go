@@ -1,7 +1,7 @@
 package cv
 
 import (
-	"github.com/hybridgroup/wasmvision/engine"
+	"github.com/wasmvision/wasmvision/engine"
 
 	"github.com/orsinium-labs/wypes"
 )
