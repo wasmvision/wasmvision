@@ -32,6 +32,7 @@ func hostModules() wypes.Modules {
 	}
 	maps.Copy(modules, cv.MatModules())
 	maps.Copy(modules, cv.ImgprocModules())
+	maps.Copy(modules, cv.NetModules())
 
 	return modules
 }
