@@ -21,9 +21,9 @@ flowchart LR
 
 The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
 
-wasmVision processing modules are WebAssembly guest modules that support the wasmCV interface.
+wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
 
-See https://github.com/wasmvision/wasmcv
+See [examples/processors](./examples/processors/) for some already compiled processors you can try out.
 
 These processing modules can be written in Go, Rust, or the C programming language.
 
