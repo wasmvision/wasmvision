@@ -4,9 +4,9 @@ package main
 
 import (
 	"github.com/hybridgroup/mechanoid/convert"
-	"github.com/wasmvision/wasmcv/components/tinygo/wasm/cv/cv"
-	"github.com/wasmvision/wasmcv/components/tinygo/wasm/cv/mat"
-	"github.com/wasmvision/wasmcv/components/tinygo/wasm/cv/types"
+	"wasmcv.org/wasm/cv/cv"
+	"wasmcv.org/wasm/cv/mat"
+	"wasmcv.org/wasm/cv/types"
 )
 
 //go:wasmimport hosted println
