@@ -4,12 +4,16 @@ This directory contains some examples of wasmCV guest processor modules. They ha
 
 ## blur.wasm
 
-Performs a blur on the image frame.
+Processor written in Go that performs a blur on the image frame.
+
+## blurrs.wasm
+
+Processor written in Rust that performs a blur on the image frame.
 
 ## gaussianblur.wasm
 
-Performs a gaussian blur on the image frame.
+Processor written in Go that performs a  gaussian blur on the image frame.
 
 ## hello.wasm
 
-Displays some imaformation about the image frame to the console.
+Processor written in Go that displays some information about the image frame.
