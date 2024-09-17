@@ -1,30 +1,45 @@
 package frame
 
-import "github.com/orsinium-labs/wypes"
+import (
+	"errors"
 
+	"github.com/orsinium-labs/wypes"
+)
+
+// Cache is a cache for frames.
 type Cache struct {
 	frameCache map[wypes.UInt32]Frame
 }
 
+// NewCache creates a new Cache.
 func NewCache() *Cache {
 	return &Cache{
 		frameCache: map[wypes.UInt32]Frame{},
 	}
 }
 
+// Get returns a frame from the cache.
 func (c *Cache) Get(id wypes.UInt32) (Frame, bool) {
 	frame, ok := c.frameCache[id]
 	return frame, ok
 }
 
-func (c *Cache) Set(id wypes.UInt32, frame Frame) {
-	c.frameCache[id] = frame
+// Set sets a frame in the cache.
+func (c *Cache) Set(frame Frame) error {
+	if frame.ID == 0 {
+		return errors.New("frame ID is 0")
+	}
+
+	c.frameCache[frame.ID] = frame
+	return nil
 }
 
+// Delete deletes a frame from the cache.
 func (c *Cache) Delete(id wypes.UInt32) {
 	delete(c.frameCache, id)
 }
 
+// Close closes all frames in the cache.
 func (c *Cache) Close() {
 	for _, frame := range c.frameCache {
 		frame.Close()

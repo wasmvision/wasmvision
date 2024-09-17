@@ -30,3 +30,7 @@ func (f *Frame) SetImage(img gocv.Mat) {
 func (f *Frame) Close() {
 	f.Image.Close()
 }
+
+func (f *Frame) Empty() bool {
+	return f.Image.Empty()
+}

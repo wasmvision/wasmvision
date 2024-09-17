@@ -68,12 +68,12 @@ func main() {
 			continue
 		}
 
-		if frame.Image.Empty() {
+		if frame.Empty() {
 			frame.Close()
 			continue
 		}
 
-		r.FrameCache.Set(frame.ID, frame)
+		r.FrameCache.Set(frame)
 
 		// clear screen
 		fmt.Print("\033[H\033[2J")
@@ -81,7 +81,7 @@ func main() {
 		i++
 		fmt.Printf("Read frame %d\n", i+1)
 
-		frame = r.PerformProcessing(ctx, frame)
+		frame = r.Process(ctx, frame)
 
 		if *mjpeg {
 			mjpegstream.Publish(frame)

@@ -31,7 +31,7 @@ func adaptiveThresholdFunc(cache *frame.Cache) func(matref wypes.UInt32, maxValu
 
 		dst := frame.NewFrame()
 		dst.SetImage(gocv.NewMat())
-		cache.Set(dst.ID, dst)
+		cache.Set(dst)
 
 		gocv.AdaptiveThreshold(src, &dst.Image, float32(maxValue), gocv.AdaptiveThresholdType(adaptiveThresholdType0), gocv.ThresholdType(thresholdType0), int(blockSize0), float32(c0))
 
@@ -49,7 +49,7 @@ func blurFunc(cache *frame.Cache) func(matref wypes.UInt32, size0 wypes.UInt32, 
 
 		dst := frame.NewFrame()
 		dst.SetImage(gocv.NewMat())
-		cache.Set(dst.ID, dst)
+		cache.Set(dst)
 
 		gocv.Blur(src, &dst.Image, image.Pt(int(size0), int(size1)))
 
@@ -67,7 +67,7 @@ func boxFilterFunc(cache *frame.Cache) func(matref wypes.UInt32, depth0 wypes.UI
 
 		dst := frame.NewFrame()
 		dst.SetImage(gocv.NewMat())
-		cache.Set(dst.ID, dst)
+		cache.Set(dst)
 
 		gocv.BoxFilter(src, &dst.Image, int(depth0), image.Pt(int(size0), int(size1)))
 
@@ -85,7 +85,7 @@ func gaussianBlurFunc(cache *frame.Cache) func(matref wypes.UInt32, size0 wypes.
 
 		dst := frame.NewFrame()
 		dst.SetImage(gocv.NewMat())
-		cache.Set(dst.ID, dst)
+		cache.Set(dst)
 
 		gocv.GaussianBlur(src, &dst.Image, image.Pt(int(size0), int(size1)), float64(sigmaX0), float64(sigmaY0), gocv.BorderType(border0))
 
@@ -103,7 +103,7 @@ func thresholdFunc(cache *frame.Cache) func(matref wypes.UInt32, thresh wypes.Fl
 
 		dst := frame.NewFrame()
 		dst.SetImage(gocv.NewMat())
-		cache.Set(dst.ID, dst)
+		cache.Set(dst)
 
 		gocv.Threshold(src, &dst.Image, float32(thresh), float32(maxValue), gocv.ThresholdType(thresholdType0))
 

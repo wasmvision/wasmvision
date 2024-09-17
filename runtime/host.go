@@ -72,10 +72,11 @@ func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte)
 	return nil
 }
 
+// Process is the exported name of the function in a wasmCV guest module that processes a frame.
 const process = "process"
 
-// PerformProcessing performs processing on a frame.
-func (intp *Interpreter) PerformProcessing(ctx context.Context, frm frame.Frame) frame.Frame {
+// Process performs processing on a frame.
+func (intp *Interpreter) Process(ctx context.Context, frm frame.Frame) frame.Frame {
 	var frames []wypes.UInt32
 
 	in := frm.ID
