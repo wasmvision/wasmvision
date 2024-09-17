@@ -7,6 +7,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/net"
 
 	"github.com/orsinium-labs/wypes"
 	"github.com/tetratelabs/wazero"
@@ -18,6 +19,7 @@ type Interpreter struct {
 	r            wazero.Runtime
 	guestModules []api.Module
 	FrameCache   *frame.Cache
+	NetCache     *net.Cache
 }
 
 // New creates a new Interpreter.
@@ -25,8 +27,9 @@ func New(ctx context.Context) Interpreter {
 	r := wazero.NewRuntime(ctx)
 
 	cache := frame.NewCache()
+	nc := net.NewCache()
 
-	modules := hostModules(cache)
+	modules := hostModules(cache, nc)
 	if err := modules.DefineWazero(r, nil); err != nil {
 		log.Panicf("error define host functions: %v\n", err)
 	}
@@ -35,10 +38,11 @@ func New(ctx context.Context) Interpreter {
 		r:            r,
 		guestModules: []api.Module{},
 		FrameCache:   cache,
+		NetCache:     nc,
 	}
 }
 
-func hostModules(cache *frame.Cache) wypes.Modules {
+func hostModules(cache *frame.Cache, nc *net.Cache) wypes.Modules {
 	modules := wypes.Modules{
 		"hosted": wypes.Module{
 			"println": wypes.H1(hostPrintln),
@@ -46,7 +50,7 @@ func hostModules(cache *frame.Cache) wypes.Modules {
 	}
 	maps.Copy(modules, cv.MatModules(cache))
 	maps.Copy(modules, cv.ImgprocModules(cache))
-	maps.Copy(modules, cv.NetModules())
+	maps.Copy(modules, cv.NetModules(nc))
 
 	return modules
 }

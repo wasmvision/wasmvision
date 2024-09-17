@@ -1,4 +1,4 @@
-package engine
+package net
 
 import (
 	"math/rand/v2"
@@ -6,8 +6,6 @@ import (
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
-
-var NetCache = make(map[wypes.UInt32]Net)
 
 // Net is a wrapper around gocv.Net for DNN image processing.
 type Net struct {
