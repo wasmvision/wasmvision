@@ -50,7 +50,7 @@ func hostModules(cache *frame.Cache, nc *net.Cache) wypes.Modules {
 	}
 	maps.Copy(modules, cv.MatModules(cache))
 	maps.Copy(modules, cv.ImgprocModules(cache))
-	maps.Copy(modules, cv.NetModules(nc))
+	maps.Copy(modules, cv.NetModules(cache, nc))
 
 	return modules
 }

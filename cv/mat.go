@@ -2,6 +2,7 @@ package cv
 
 import (
 	"github.com/wasmvision/wasmvision/frame"
+	"gocv.io/x/gocv"
 
 	"github.com/orsinium-labs/wypes"
 )
@@ -9,11 +10,25 @@ import (
 func MatModules(cache *frame.Cache) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
+			"[constructor]mat":  wypes.H3(matNewFunc(cache)),
 			"[method]mat.cols":  wypes.H1(matColsFunc(cache)),
 			"[method]mat.rows":  wypes.H1(matRowsFunc(cache)),
 			"[method]mat.type":  wypes.H1(matTypeFunc(cache)),
 			"[method]mat.empty": wypes.H1(matEmptyFunc(cache)),
 		},
+	}
+}
+
+func matNewFunc(cache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.UInt32 {
+	return func(rows, cols, matType wypes.UInt32) wypes.UInt32 {
+		mat := gocv.NewMatWithSize(int(rows), int(cols), gocv.MatType(matType))
+
+		f := frame.NewFrame()
+		f.SetImage(mat)
+
+		cache.Set(f)
+
+		return f.ID
 	}
 }
 
