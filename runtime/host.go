@@ -6,7 +6,6 @@ import (
 	"maps"
 
 	"github.com/wasmvision/wasmvision/cv"
-	"github.com/wasmvision/wasmvision/engine"
 	"github.com/wasmvision/wasmvision/frame"
 
 	"github.com/orsinium-labs/wypes"
@@ -18,13 +17,16 @@ import (
 type Interpreter struct {
 	r            wazero.Runtime
 	guestModules []api.Module
+	FrameCache   *frame.Cache
 }
 
 // New creates a new Interpreter.
 func New(ctx context.Context) Interpreter {
 	r := wazero.NewRuntime(ctx)
 
-	modules := hostModules()
+	cache := frame.NewCache()
+
+	modules := hostModules(cache)
 	if err := modules.DefineWazero(r, nil); err != nil {
 		log.Panicf("error define host functions: %v\n", err)
 	}
@@ -32,17 +34,18 @@ func New(ctx context.Context) Interpreter {
 	return Interpreter{
 		r:            r,
 		guestModules: []api.Module{},
+		FrameCache:   cache,
 	}
 }
 
-func hostModules() wypes.Modules {
+func hostModules(cache *frame.Cache) wypes.Modules {
 	modules := wypes.Modules{
 		"hosted": wypes.Module{
 			"println": wypes.H1(hostPrintln),
 		},
 	}
-	maps.Copy(modules, cv.MatModules())
-	maps.Copy(modules, cv.ImgprocModules())
+	maps.Copy(modules, cv.MatModules(cache))
+	maps.Copy(modules, cv.ImgprocModules(cache))
 	maps.Copy(modules, cv.NetModules())
 
 	return modules
@@ -98,10 +101,12 @@ func (intp *Interpreter) PerformProcessing(ctx context.Context, frm frame.Frame)
 
 	// close up all the frames except the last one
 	for i := 0; i < len(frames)-2; i++ {
-		frm := engine.FrameCache[frames[i]]
+		frm, _ := intp.FrameCache.Get(frames[i])
 		frm.Close()
-		delete(engine.FrameCache, frames[i])
+
+		intp.FrameCache.Delete(frames[i])
 	}
 
-	return engine.FrameCache[out]
+	last, _ := intp.FrameCache.Get(out)
+	return last
 }

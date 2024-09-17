@@ -73,7 +73,7 @@ func main() {
 			continue
 		}
 
-		engine.FrameCache[frame.ID] = frame
+		r.FrameCache.Set(frame.ID, frame)
 
 		// clear screen
 		fmt.Print("\033[H\033[2J")
@@ -89,6 +89,6 @@ func main() {
 
 		// cleanup frame
 		frame.Close()
-		delete(engine.FrameCache, frame.ID)
+		r.FrameCache.Delete(frame.ID)
 	}
 }
