@@ -6,5 +6,7 @@ github.com/orsinium-labs/wypes v0.1.4 h1:+7oih2IDlEpz7laiL3sQFlIU8vjd5j/SwcYlPdI
 github.com/orsinium-labs/wypes v0.1.4/go.mod h1:FSNWGo8I6/D5RYXMkCxyu71TXJAlwJGQUxgs4i6MAwo=
 github.com/tetratelabs/wazero v1.8.0 h1:iEKu0d4c2Pd+QSRieYbnQC9yiFlMS9D+Jr0LsRmcF4g=
 github.com/tetratelabs/wazero v1.8.0/go.mod h1:yAI0XTsMBhREkM/YDAK/zNou3GoiAce1P6+rp/wQhjs=
-gocv.io/x/gocv v0.37.0 h1:sISHvnApErjoJodz1Dxb8UAkFdITOB3vXGslbVu6Knk=
-gocv.io/x/gocv v0.37.0/go.mod h1:lmS802zoQmnNvXETpmGriBqWrENPei2GxYx5KUxJsMA=
+gocv.io/x/gocv v0.38.1-0.20240918080826-68c10c2e360e h1:0uk16QMxuZmflY1tC7MVlGSuXKEn9XTCoCCW3QczB3A=
+gocv.io/x/gocv v0.38.1-0.20240918080826-68c10c2e360e/go.mod h1:zYdWMj29WAEznM3Y8NsU3A0TRq/wR/cy75jeUypThqU=
+gocv.io/x/gocv v0.38.1-0.20240918183700-fa6336ebffd4 h1:UiVqMrWSnv/6zdZgXk0wkt0dJTMf2rEW3m+Ii7H0NcI=
+gocv.io/x/gocv v0.38.1-0.20240918183700-fa6336ebffd4/go.mod h1:zYdWMj29WAEznM3Y8NsU3A0TRq/wR/cy75jeUypThqU=
