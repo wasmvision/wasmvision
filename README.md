@@ -1,6 +1,43 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
-wasmVision is a high-performance computer vision processing engine designed to be customized and extended using WebAssembly.
+wasmVision gets you up and running with computer vision.
+
+It provides a high-performance computer vision processing engine that is designed to be customized and extended using WebAssembly.
+
+## How to run it
+
+### Using Docker
+
+You can build the Docker container for your local machine:
+
+```shell
+docker buildx build -t wasmvision:dev .
+```
+
+And then run it:
+
+```shell
+docker run --privileged --network=host wasmvision:dev -processors=/examples/processors/blur.wasm -mjpeg=true
+```
+
+Now point your browser to `http://localhost:8080` and you can see the output.
+
+![mjpeg-stream](./images/mjpeg-stream.png)
+
+
+### Using a local installation of OpenCV
+
+If you have a local installation of OpenCV you can run wasmVision directly:
+
+```shell
+go run ./cmd/wasmvision -processors=./examples/processors/hello.wasm
+```
+
+Want to see what wasmVision is doing in your browser? Use the `-mjpeg=true` flag.
+
+```shell
+go run ./cmd/wasmvision -processors=./examples/processors/blur.wasm -mjpeg=true
+```
 
 ## How it works
 
@@ -31,18 +68,3 @@ The pipeline of Processor modules are called in order, one after another. The ou
 
 See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
-## How to run it
-
-```shell
-go run ./cmd/wasmvision -processors=./examples/processors/hello.wasm
-```
-
-Want to see what wasmVision is doing in your browser? Use the `-mjpeg=true` flag.
-
-```shell
-go run ./cmd/wasmvision -processors=./examples/processors/blur.wasm -mjpeg=true
-```
-
-Now point your browser to `http://localhost:8080` and you can see the output.
-
-![mjpeg-stream](./images/mjpeg-stream.png)
