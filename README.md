@@ -21,26 +21,30 @@ docker pull ghcr.io/wasmvision/wasmvision:main
 And run it:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main -processors=/examples/processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /examples/processors/blur.wasm -mjpeg=true
 ```
 
 Now point your browser to `http://localhost:8080` and you can see the output.
 
-![mjpeg-stream](./images/mjpeg-stream.png)You can build the Docker container for your local machine:
+![mjpeg-stream](./images/mjpeg-stream.png)
 
 
 ### Using a local installation of OpenCV
 
-If you have a local installation of OpenCV you can run wasmVision directly:
+If you have a local installation of OpenCV you can install wasmVision directly:
 
 ```shell
-go run ./cmd/wasmvision -processors=./examples/processors/hello.wasm
+go install ./cmd/wasmvision/
+```
+
+```shell
+wasmvision run -p ./examples/processors/hello.wasm
 ```
 
 Want to see what wasmVision is doing in your browser? Use the `-mjpeg=true` flag.
 
 ```shell
-go run ./cmd/wasmvision -processors=./examples/processors/blur.wasm -mjpeg=true
+wasmvision -p ./examples/processors/blur.wasm -mjpeg=true
 ```
 
 ## How it works
