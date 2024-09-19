@@ -1,5 +1,7 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
+[![Test](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
+
 wasmVision gets you up and running with computer vision.
 
 It provides a high-performance computer vision processing engine that is designed to be customized and extended using WebAssembly.
