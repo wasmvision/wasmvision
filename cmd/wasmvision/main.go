@@ -1,94 +1,47 @@
 package main
 
 import (
-	"context"
-	"flag"
 	"fmt"
-	"log"
 	"os"
-	"strings"
 
-	"github.com/wasmvision/wasmvision/capture"
-	"github.com/wasmvision/wasmvision/engine"
-	"github.com/wasmvision/wasmvision/runtime"
+	"github.com/urfave/cli/v2"
 )
 
 var (
-	device     = flag.String("device", "/dev/video0", "video capture device to use")
-	processors = flag.String("processors", "", "wasm modules to use for processing frames")
-	mjpeg      = flag.Bool("mjpeg", false, "output MJPEG stream")
-	mjpegPort  = flag.String("mjpeg-port", ":8080", "MJPEG stream port")
+	runFlags = []cli.Flag{
+		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "/dev/video0", Usage: "video capture device to use"},
+		&cli.BoolFlag{Name: "mjpeg", Usage: "output MJPEG stream"},
+		&cli.StringFlag{Name: "mjpegport", Usage: "MJPEG stream port", Value: ":8080"},
+		&cli.StringSliceFlag{
+			Name:    "processor",
+			Aliases: []string{"p"},
+			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
+		},
+	}
 )
 
 func main() {
-	flag.Parse()
-
-	if *processors == "" {
-		log.Panic("processor module is required")
+	app := &cli.App{
+		Name:    "wasmvision",
+		Usage:   "wasmVision CLI",
+		Version: Version(),
+		Commands: []*cli.Command{
+			{
+				Name:   "run",
+				Usage:  "Run wasmVision processors",
+				Action: run,
+				Flags:  runFlags,
+			},
+			{
+				Name:   "about",
+				Usage:  "About wasmVision",
+				Action: about,
+			},
+		},
 	}
 
-	ctx := context.Background()
-
-	// load wasm runtime
-	r := runtime.New(ctx)
-	defer r.Close(ctx)
-
-	procs := strings.Split(*processors, ",")
-	for _, p := range procs {
-		module, err := os.ReadFile(p)
-		if err != nil {
-			log.Panicf("failed to read wasm processor module: %v\n", err)
-		}
-
-		fmt.Printf("Loading wasmCV guest module %s...\n", p)
-		r.RegisterGuestModule(ctx, module)
-	}
-
-	// Open the webcam.
-	webcam := capture.NewWebcam(*device)
-	defer webcam.Close()
-	if err := webcam.Open(); err != nil {
-		log.Panicf("Error opening video capture device: %v\n", *device)
-	}
-
-	var mjpegstream engine.MJPEGStream
-	if *mjpeg {
-		mjpegstream = engine.NewMJPEGStream(*mjpegPort)
-
-		go mjpegstream.Start()
-	}
-
-	fmt.Printf("Start reading device: %v\n", *device)
-	i := 0
-	for {
-		frame, err := webcam.Read()
-		if err != nil {
-			fmt.Printf("frame error %v\n", *device)
-			frame.Close()
-			continue
-		}
-
-		if frame.Empty() {
-			frame.Close()
-			continue
-		}
-
-		r.FrameCache.Set(frame)
-
-		// clear screen
-		fmt.Print("\033[H\033[2J")
-
-		i++
-		fmt.Printf("Read frame %d\n", i+1)
-
-		frame = r.Process(ctx, frame)
-
-		if *mjpeg {
-			mjpegstream.Publish(frame)
-		}
-
-		// cleanup frame
-		frame.Close()
-		r.FrameCache.Delete(frame.ID)
+	if err := app.Run(os.Args); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
