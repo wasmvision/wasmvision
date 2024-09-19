@@ -2,5 +2,5 @@ github.com/bytecodealliance/wasm-tools-go v0.2.0 h1:JdmiZew7ewHjf+ZGGRE4gZM85Ad/
 github.com/bytecodealliance/wasm-tools-go v0.2.0/go.mod h1:2GnJCUlcDrslZ/L6+yYqoUnewDlBvqRS2N/0NW9ro6w=
 github.com/hybridgroup/mechanoid v0.2.0 h1:2Kg3c0cK9JK8ZeJkiN+l2o4B0QJYnNHkNEKraMFOugQ=
 github.com/hybridgroup/mechanoid v0.2.0/go.mod h1:7jQEJ0blXXbIcqmu2/d7vSxWL5Dxbt18zZirJ35OeXc=
-wasmcv.org/wasm/cv v0.0.0-20240916150538-4ca2e2943887 h1:3U+0IcYGFNlt3rM4SYHELPMcR2u74kBpt2CCA+3SY4I=
-wasmcv.org/wasm/cv v0.0.0-20240916150538-4ca2e2943887/go.mod h1:QhS0clfQ3cayju29Gfn1+dqGap33YuPwhlnPBjx6znE=
+wasmcv.org/wasm/cv v0.2.0 h1:vNyRmSovrtyWL+J/RntPWFGN8HpJn34LvjXPyNBQS/Q=
+wasmcv.org/wasm/cv v0.2.0/go.mod h1:QhS0clfQ3cayju29Gfn1+dqGap33YuPwhlnPBjx6znE=
