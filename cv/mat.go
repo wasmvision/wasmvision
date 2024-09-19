@@ -14,7 +14,7 @@ func MatModules(cache *frame.Cache) wypes.Modules {
 			"[method]mat.close":   wypes.H1(matCloseFunc(cache)),
 			"[method]mat.cols":    wypes.H1(matColsFunc(cache)),
 			"[method]mat.rows":    wypes.H1(matRowsFunc(cache)),
-			"[method]mat.type":    wypes.H1(matTypeFunc(cache)),
+			"[method]mat.mattype": wypes.H1(matTypeFunc(cache)),
 			"[method]mat.empty":   wypes.H1(matEmptyFunc(cache)),
 			"[method]mat.reshape": wypes.H3(matReshapeFunc(cache)),
 		},
