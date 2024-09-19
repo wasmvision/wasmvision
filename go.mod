@@ -8,4 +8,13 @@ require (
 	gocv.io/x/gocv v0.38.1-0.20240918183700-fa6336ebffd4
 )
 
-require github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e
+require (
+	github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e
+	github.com/urfave/cli/v2 v2.27.4
+)
+
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
+)
