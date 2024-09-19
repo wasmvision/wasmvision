@@ -39,9 +39,10 @@ func (c *Cache) Delete(id wypes.UInt32) {
 	delete(c.frameCache, id)
 }
 
-// Close closes all frames in the cache.
+// Close closes all frames in the cache and also deletes them.
 func (c *Cache) Close() {
 	for _, frame := range c.frameCache {
 		frame.Close()
+		c.Delete(frame.ID)
 	}
 }
