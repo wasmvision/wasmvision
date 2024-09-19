@@ -8,21 +8,23 @@ It provides a high-performance computer vision processing engine that is designe
 
 ### Using Docker
 
-You can build the Docker container for your local machine:
+You can run wasmVision using Docker.
+
+Pull the current development version:
 
 ```shell
-docker buildx build -t wasmvision:dev .
+docker pull ghcr.io/wasmvision/wasmvision:main
 ```
 
-And then run it:
+And run it:
 
 ```shell
-docker run --privileged --network=host wasmvision:dev -processors=/examples/processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main -processors=/examples/processors/blur.wasm -mjpeg=true
 ```
 
 Now point your browser to `http://localhost:8080` and you can see the output.
 
-![mjpeg-stream](./images/mjpeg-stream.png)
+![mjpeg-stream](./images/mjpeg-stream.png)You can build the Docker container for your local machine:
 
 
 ### Using a local installation of OpenCV
