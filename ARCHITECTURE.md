@@ -5,22 +5,27 @@
 ```mermaid
 flowchart LR
     subgraph wasmVision
-        Capture--frame-->Runtime[WASM Runtime]
-        Capture<-->Devices
-        Devices<-->OpenCV
-        Runtime<-->wasmCV
-        Runtime<-->OpenCV
-    end
-    subgraph wasmCV
-        processor1.wasm--frame-->processor2.wasm
-        processor2.wasm--frame-->processor3.wasm
-        processor3.wasm--frame-->processor4.wasm
+        subgraph engine
+            subgraph Capture
+                Devices
+            end
+            Runtime[WASM Runtime]
+            Capture--frame-->Runtime
+            Capture<-->OpenCV
+            Runtime<-->OpenCV
+        end
+        subgraph processors
+            Runtime--frame-->processor1.wasm
+            Runtime--frame-->processor2.wasm
+            Runtime--frame-->processor3.wasm
+            Runtime--frame-->processor4.wasm
+        end
     end
 ```
 
 ### Engine
 
-The host application.
+The wasmVision engine.
 
 ### Capture
 
@@ -34,11 +39,11 @@ Specific hardware or software devices that capture images or video,
 
 The WebAssembly runtime engine, currently Wazero.
 
-### Modules
+### Processors
 
-The wasmCV image processing modules that developers are writing.
+The wasmCV image processing modules that are used by wasmVision. See [processors](./processors/) directory.
 
-### CV
+### OpenCV
 
 The computer vision processing capabilities implemented using OpenCV/GoCV.
 

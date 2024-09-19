@@ -6,7 +6,7 @@ wasmVision gets you up and running with computer vision.
 
 It provides a high-performance computer vision processing engine that is designed to be customized and extended using WebAssembly.
 
-## How to run it
+## How to run wasmVision
 
 ### Using Docker
 
@@ -52,15 +52,19 @@ wasmvision run -p ./processors/blur.wasm -mjpeg=true
 ```mermaid
 flowchart LR
     subgraph wasmVision
-        Capture--frame-->Runtime[WASM Runtime]
-        Capture<-->OpenCV
-        Runtime<-->wasmCV
-        Runtime<-->OpenCV
-    end
-    subgraph wasmCV
-        processor1.wasm--frame-->processor2.wasm
-        processor2.wasm--frame-->processor3.wasm
-        processor3.wasm--frame-->processor4.wasm
+        subgraph engine
+            Capture
+            Runtime[WASM Runtime]
+            Capture--frame-->Runtime
+            Capture<-->OpenCV
+            Runtime<-->OpenCV
+        end
+        subgraph processors
+            Runtime--frame-->processor1.wasm
+            Runtime--frame-->processor2.wasm
+            Runtime--frame-->processor3.wasm
+            Runtime--frame-->processor4.wasm
+        end
     end
 ```
 
@@ -72,7 +76,7 @@ See the [processors directory](./processors/) for some already compiled processo
 
 These processing modules can be written in Go, Rust, or the C programming language.
 
-The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. The the next frame is read from the capture device and passed into the first processor module.
+The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. Then the next frame is read from the capture device and passed into the first processor module.
 
 See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
