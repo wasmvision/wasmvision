@@ -27,6 +27,6 @@ FROM ubuntu:22.04 AS wasmvision-final
 
 COPY --from=wasmvision-build /build/wasmvision /run/wasmvision
 
-COPY ./examples/processors/*.wasm /examples/processors/
+COPY ./processors/*.wasm /processors/
 
 ENTRYPOINT ["/run/wasmvision"]

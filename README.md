@@ -21,7 +21,7 @@ docker pull ghcr.io/wasmvision/wasmvision:main
 And run it:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /examples/processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /processors/blur.wasm -mjpeg=true
 ```
 
 Now point your browser to `http://localhost:8080` and you can see the output.
@@ -38,13 +38,13 @@ go install ./cmd/wasmvision/
 ```
 
 ```shell
-wasmvision run -p ./examples/processors/hello.wasm
+wasmvision run -p ./processors/hello.wasm
 ```
 
 Want to see what wasmVision is doing in your browser? Use the `-mjpeg=true` flag.
 
 ```shell
-wasmvision -p ./examples/processors/blur.wasm -mjpeg=true
+wasmvision run -p ./processors/blur.wasm -mjpeg=true
 ```
 
 ## How it works
@@ -68,7 +68,7 @@ The wasmVision engine is written in the [Go programming language](https://go.dev
 
 wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
 
-See [examples/processors](./examples/processors/) for some already compiled processors you can try out.
+See the [processors directory](./processors/) for some already compiled processors you can try out.
 
 These processing modules can be written in Go, Rust, or the C programming language.
 
