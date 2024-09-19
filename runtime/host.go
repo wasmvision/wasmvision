@@ -65,6 +65,11 @@ func (intp *Interpreter) Close(ctx context.Context) {
 	intp.r.Close(ctx)
 }
 
+// Processors returns the guest modules registered with the interpreter.
+func (intp *Interpreter) Processors() []api.Module {
+	return intp.guestModules
+}
+
 // RegisterGuestModule registers a guest module with the interpreter.
 func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte) error {
 	mod, err := intp.r.Instantiate(ctx, module)
