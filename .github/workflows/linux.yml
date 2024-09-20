@@ -1,0 +1,47 @@
+name: Linux
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container: ghcr.io/hybridgroup/opencv:4.10.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run tests
+        run: go test -v -coverprofile=/tmp/coverage.out -count=1 ./...
+      - name: Check code coverage
+        run: |
+          go tool cover -html=/tmp/coverage.out -o /tmp/coverage.html
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: /tmp/*.html
+
+  build:
+    strategy:
+      matrix:
+        arch: ["amd64", "arm64"]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hybridgroup/opencv:4.10.0-static
+      options: --platform linux/${{ matrix.arch }}
+    needs: tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build binary
+        run: |
+          mkdir -p build
+          mkdir -p build/${{ matrix.arch }}
+          go build -tags static -o build/${{ matrix.arch }}/wasmvision -buildvcs=false ./cmd/wasmvision
+      - name: Archive binary executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasmvision-linux-${{ matrix.arch }}
+          path: build/${{ matrix.arch }}/wasmvision
