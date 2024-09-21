@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/orsinium-labs/wypes v0.1.4
 	github.com/tetratelabs/wazero v1.8.0
-	gocv.io/x/gocv v0.38.1-0.20240918183700-fa6336ebffd4
+	gocv.io/x/gocv v0.38.1-0.20240921163907-f21ab9a76667
 )
 
 require (
