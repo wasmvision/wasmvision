@@ -1,6 +1,6 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
-[![Test](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
+[![Test](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/test.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml)
 
 wasmVision gets you up and running with computer vision.
 
