@@ -1,6 +1,6 @@
 module github.com/wasmvision/wasmvision
 
-go 1.23.0
+go 1.22.0
 
 require (
 	github.com/orsinium-labs/wypes v0.1.4
