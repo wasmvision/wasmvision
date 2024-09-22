@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
           name: code-coverage-report
           path: /tmp/*.html
 
-  build:
+  build-amd64:
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -45,9 +49,21 @@ jobs:
         with:
           name: wasmvision-linux-amd64
           path: build/amd64/wasmvision
+
+  build-arm64:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Check out the repo
+        uses: actions/checkout@v4
       - name: Build arm64
         run: |
           docker pull --platform linux/arm64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
+          mkdir -p build
           mkdir -p build/arm64
           docker run --rm -v $(pwd):/src -v $(pwd)/build/arm64:/build -a stdout -a stderr --platform linux/arm64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
           sudo chmod +x build/arm64/wasmvision
