@@ -33,6 +33,11 @@ func main() {
 				Flags:  runFlags,
 			},
 			{
+				Name:   "version",
+				Usage:  "Show version",
+				Action: version,
+			},
+			{
 				Name:   "about",
 				Usage:  "About wasmVision",
 				Action: about,
