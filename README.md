@@ -1,6 +1,6 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
-[![Linux](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
+[![Linux](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml) [![Windows](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
 
 wasmVision gets you up and running with computer vision.
 
