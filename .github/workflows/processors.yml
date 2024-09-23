@@ -1,0 +1,27 @@
+# This is the Github action to build and push the wasmVision processors.
+#
+name: Processors
+on:
+    push:
+      branches:
+        - 'main'
+      tags:
+        - 'v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-processors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Archive processors
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasmvision-processors
+          path: |
+            processors/README.md
+            processors/*.wasm
