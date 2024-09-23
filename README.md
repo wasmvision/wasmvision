@@ -134,20 +134,18 @@ For information on how to obtain development builds, or work on development for 
 
 ```mermaid
 flowchart LR
-    subgraph wasmVision
-        subgraph engine
-            Capture
-            Runtime[WASM Runtime]
-            Capture--frame-->Runtime
-            Capture<-->OpenCV
-            Runtime<-->OpenCV
-        end
-        subgraph processors
-            Runtime--frame-->processor1.wasm
-            Runtime--frame-->processor2.wasm
-            Runtime--frame-->processor3.wasm
-            Runtime--frame-->processor4.wasm
-        end
+    subgraph engine
+        Capture
+        Runtime[WASM Runtime]
+        Capture--frame-->Runtime
+        Capture<-->OpenCV
+        Runtime<-->OpenCV
+    end
+    subgraph processors
+        Runtime--frame-->processor1.wasm
+        Runtime--frame-->processor2.wasm
+        Runtime--frame-->processor3.wasm
+        Runtime--frame-->processor4.wasm
     end
 ```
 
