@@ -8,6 +8,11 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## Quick start
 
+- [Linux](#linux)
+- [macOS](#macos)
+- [Windows](#windows)
+- [Docker](#docker)
+
 ### Linux
 
 You can download the latest release for Linux by looking under [Releases](https://github.com/wasmvision/wasmvision/releases) then clicking on the latest release. 
@@ -104,40 +109,26 @@ You can run wasmVision using Docker.
 Pull the current development version:
 
 ```shell
-docker pull ghcr.io/wasmvision/wasmvision:main
+docker pull ghcr.io/wasmvision/wasmvision
 ```
 
 Verify it is installed like this:
 
 ```shell
-docker run ghcr.io/wasmvision/wasmvision:main version
+docker run ghcr.io/wasmvision/wasmvision version
 ```
 
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision run -p /processors/blur.wasm -mjpeg=true
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
-### Development install
+## Development
 
-If you have a local installation of both Go and OpenCV you can install wasmVision directly:
-
-```shell
-git clone https://github.com/wasmvision/wasmvision.git
-cd wasmvision
-go install ./cmd/wasmvision/
-```
-
-And run it:
-
-```shell
-wasmvision run -p ./processors/hello.wasm -mjpeg=true
-```
-
-Now point your browser to `http://localhost:8080` and you can see the output.
+For information on how to obtain development builds, or work on development for wasmVision itself, please see [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 ## How it works
 
