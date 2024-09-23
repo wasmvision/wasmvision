@@ -8,29 +8,38 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## Quick start
 
-### Docker
+### Linux
 
-You can run wasmVision using Docker.
+You can download the latest release for Linux by looking under [Releases](https://github.com/wasmvision/wasmvision/releases) then clicking on the latest release. 
 
-Pull the current development version:
+Under the "Assets" click on the link for either "wasmvision-linux-amd64" or "wasmvision-linux-arm64" depending on your processor.
+
+Extract the executable to your desired directory.
+
+You might need to set the file as "executable", which you can do from the command line by running `chmod +x ./wasmvision` in the same directory to which you extracted the `wasmvision` executable.
+
+Verify wasmVision is installed by running these commands:
 
 ```shell
-docker pull ghcr.io/wasmvision/wasmvision:main
+cd /path/to/wasmvision/install
+wasmvision version
 ```
 
-And run it:
+You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
+
+Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
+
+Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /processors/blur.wasm -mjpeg=true
+wasmvision run -p /path/to/processors/blur.wasm -mjpeg=true
 ```
 
-Now point your browser to `http://localhost:8080` and you can see the output.
+Point your browser to `http://localhost:8080` and you can see the output.
 
 ![mjpeg-stream](./images/mjpeg-stream.png)
 
 ### macOS
-
-NOTE: this is not completed, but will be working once wasmVision 0.1.0 is released.
 
 You can install wasmVision on macOS using Homebrew:
 
@@ -42,16 +51,75 @@ brew install wasmvision
 Verify it is installed like this:
 
 ```shell
-wasmvision
+wasmvision version
 ```
 
-### Linux
+You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
 
-Instructions about how to download binaries will go here.
+Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
+
+Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
+
+```shell
+wasmvision run -p /path/to/processors/blur.wasm -mjpeg=true
+```
+
+Point your browser to `http://localhost:8080` and you can see the output.
 
 ### Windows
 
-Binaries coming soon!
+You can download the latest release for Windows by looking under [Releases](https://github.com/wasmvision/wasmvision/releases) then clicking on the latest release. 
+
+Under the "Assets" click on the link for "wasmvision-windows-amd64".
+
+NOTE: you will likely need to configure your Windows Defender to download the ZIP file with the `wasmvision.exe` executable.
+
+Extract the executable to your desired directory.
+
+Verify it is installed like this:
+
+```shell
+chdir C:\path\to\wasmvision\install
+wasmvision.exe version
+```
+
+You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
+
+Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
+
+Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
+
+```shell
+wasmvision.exe run -p C:\path\to\processors\blur.wasm -mjpeg=true
+```
+
+You will probably need to configure Windows Firewall to allow the `wasmvision.exe` executable to access the network port on your local machine.
+
+Point your browser to `http://localhost:8080` and you can see the output.
+
+### Docker
+
+You can run wasmVision using Docker.
+
+Pull the current development version:
+
+```shell
+docker pull ghcr.io/wasmvision/wasmvision:main
+```
+
+Verify it is installed like this:
+
+```shell
+docker run ghcr.io/wasmvision/wasmvision:main version
+```
+
+Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
+
+```shell
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /processors/blur.wasm -mjpeg=true
+```
+
+Point your browser to `http://localhost:8080` and you can see the output.
 
 ### Development install
 
