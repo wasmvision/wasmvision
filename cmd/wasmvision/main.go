@@ -9,7 +9,7 @@ import (
 
 var (
 	runFlags = []cli.Flag{
-		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "/dev/video0", Usage: "video capture device to use"},
+		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "0", Usage: "video capture device to use"},
 		&cli.BoolFlag{Name: "mjpeg", Usage: "output MJPEG stream"},
 		&cli.StringFlag{Name: "mjpegport", Usage: "MJPEG stream port", Value: ":8080"},
 		&cli.StringSliceFlag{
