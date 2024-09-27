@@ -36,7 +36,9 @@ func run(cCtx *cli.Context) error {
 		}
 
 		fmt.Printf("Loading wasmCV guest module %s...\n", p)
-		r.RegisterGuestModule(ctx, module)
+		if err := r.RegisterGuestModule(ctx, module); err != nil {
+			log.Panicf("failed to load wasm processor module: %v\n", err)
+		}
 	}
 
 	// Open the webcam.
