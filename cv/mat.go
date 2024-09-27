@@ -11,6 +11,7 @@ func MatModules(cache *frame.Cache) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
 			"[constructor]mat":    wypes.H3(matNewFunc(cache)),
+			"[resource-drop]mat":  wypes.H1(matCloseFunc(cache)),
 			"[method]mat.close":   wypes.H1(matCloseFunc(cache)),
 			"[method]mat.cols":    wypes.H1(matColsFunc(cache)),
 			"[method]mat.rows":    wypes.H1(matRowsFunc(cache)),

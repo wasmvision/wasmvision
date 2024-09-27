@@ -10,7 +10,7 @@ import (
 
 func NetModules(fc *frame.Cache, nc *net.Cache) wypes.Modules {
 	return wypes.Modules{
-		"wasm:cv/net": wypes.Module{
+		"wasm:cv/dnn": wypes.Module{
 			"[static]net.read-net-from-onnx": wypes.H1(netReadNetFromONNXFunc(nc)),
 			"[method]net.close":              wypes.H1(netCloseFunc(nc)),
 			"[method]net.empty":              wypes.H1(netEmptyFunc(nc)),

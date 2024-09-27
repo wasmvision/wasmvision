@@ -43,6 +43,7 @@ func blurFunc(cache *frame.Cache) func(matref wypes.UInt32, size0 wypes.UInt32, 
 	return func(matref wypes.UInt32, size0 wypes.UInt32, size1 wypes.UInt32) wypes.UInt32 {
 		f, ok := cache.Get(matref)
 		if !ok {
+			println("blurFunc: frame not found")
 			return wypes.UInt32(0)
 		}
 		src := f.Image
