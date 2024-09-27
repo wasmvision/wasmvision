@@ -109,19 +109,19 @@ You can run wasmVision using Docker.
 Pull the current development version:
 
 ```shell
-docker pull ghcr.io/wasmvision/wasmvision
+docker pull ghcr.io/wasmvision/wasmvision:v0.1.0-pre2
 ```
 
 Verify it is installed like this:
 
 ```shell
-docker run ghcr.io/wasmvision/wasmvision version
+docker run ghcr.io/wasmvision/wasmvision:v0.1.0-pre2 version
 ```
 
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision run -p /processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision::v0.1.0-pre2 run -p /processors/blur.wasm -mjpeg=true
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
