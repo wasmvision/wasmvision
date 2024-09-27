@@ -9,14 +9,15 @@ import (
 
 var (
 	runFlags = []cli.Flag{
-		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "0", Usage: "video capture device to use"},
-		&cli.BoolFlag{Name: "mjpeg", Usage: "output MJPEG stream"},
-		&cli.StringFlag{Name: "mjpegport", Usage: "MJPEG stream port", Value: ":8080"},
+		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "0", Usage: "video capture device to use (default: 0)"},
+		&cli.BoolFlag{Name: "mjpeg", Usage: "output MJPEG stream (default: false)"},
+		&cli.StringFlag{Name: "mjpegport", Usage: "MJPEG stream port (default :8080)", Value: ":8080"},
 		&cli.StringSliceFlag{
 			Name:    "processor",
 			Aliases: []string{"p"},
 			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
 		},
+		&cli.BoolFlag{Name: "clear-screen", Aliases: []string{"clear"}, Value: true, Usage: "clear screen between frames (default: true)"},
 	}
 )
 

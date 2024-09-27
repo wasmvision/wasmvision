@@ -22,6 +22,7 @@ func run(cCtx *cli.Context) error {
 	device := cCtx.String("device")
 	mjpeg := cCtx.Bool("mjpeg")
 	mjpegPort := cCtx.String("mjpegport")
+	clear := cCtx.Bool("clear")
 
 	ctx := context.Background()
 
@@ -57,6 +58,7 @@ func run(cCtx *cli.Context) error {
 
 	fmt.Printf("Start reading device: %v\n", device)
 	i := 0
+
 	for {
 		frame, err := webcam.Read()
 		if err != nil {
@@ -72,8 +74,9 @@ func run(cCtx *cli.Context) error {
 
 		r.FrameCache.Set(frame)
 
-		// clear screen
-		fmt.Print("\033[H\033[2J")
+		if clear {
+			fmt.Print("\033[2J\033[3J\033[H")
+		}
 
 		i++
 		fmt.Printf("Read frame %d\n", i+1)
