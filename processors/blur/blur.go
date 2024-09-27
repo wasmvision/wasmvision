@@ -14,7 +14,7 @@ func println(ptr, size uint32)
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	imageOut := cv.Blur(image, types.Size{5, 5})
+	imageOut := cv.Blur(image, types.Size{X: 25, Y: 25})
 	println(convert.StringToWasmPtr("Performed Blur on image"))
 
 	return imageOut

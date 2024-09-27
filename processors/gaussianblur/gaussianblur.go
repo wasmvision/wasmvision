@@ -14,7 +14,7 @@ func println(ptr, size uint32)
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	imageOut := cv.GaussianBlur(image, types.Size{5, 5}, 1.5, 1.5, types.BorderTypeBorderReflect101)
+	imageOut := cv.GaussianBlur(image, types.Size{X: 25, Y: 25}, 4.5, 4.5, types.BorderTypeBorderReflect101)
 	println(convert.StringToWasmPtr("Performed GaussianBlur on image"))
 
 	return imageOut

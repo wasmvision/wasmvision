@@ -270,9 +270,9 @@ dependencies = [
 
 [[package]]
 name = "wasmcv"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "754dc3706970a9294949d82329245110a82676ec3d3a9ede4f9830c64375e87f"
+checksum = "d73eb9b95559467a9dc8c1d3ec9d3eee88c9137abe62d9decc6526d34cbcb7cd"
 dependencies = [
  "wit-bindgen",
 ]
