@@ -17,7 +17,7 @@ import (
 // Interpreter is a WebAssembly interpreter that can load and run guest modules.
 type Interpreter struct {
 	r            wazero.Runtime
-	guestModules []api.Module
+	guestModules []GuestModule
 	FrameCache   *frame.Cache
 	NetCache     *net.Cache
 }
@@ -36,7 +36,7 @@ func New(ctx context.Context) Interpreter {
 
 	return Interpreter{
 		r:            r,
-		guestModules: []api.Module{},
+		guestModules: []GuestModule{},
 		FrameCache:   cache,
 		NetCache:     nc,
 	}
@@ -66,7 +66,7 @@ func (intp *Interpreter) Close(ctx context.Context) {
 }
 
 // Processors returns the guest modules registered with the interpreter.
-func (intp *Interpreter) Processors() []api.Module {
+func (intp *Interpreter) Processors() []GuestModule {
 	return intp.guestModules
 }
 
@@ -77,7 +77,7 @@ func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte)
 		return err
 	}
 
-	intp.guestModules = append(intp.guestModules, mod)
+	intp.guestModules = append(intp.guestModules, NewGuestModule(ctx, mod))
 	return nil
 }
 
@@ -97,6 +97,7 @@ func (intp *Interpreter) Process(ctx context.Context, frm frame.Frame) frame.Fra
 			log.Panicf("failed to find function %s", process)
 		}
 
+		intp.FrameCache.ReturnDataPtr = mod.ReturnDataPtr
 		out, err := fn.Call(ctx, api.EncodeU32(in.Unwrap()))
 		if err != nil {
 			log.Panicf("failed to call function %s: %v", process, err)

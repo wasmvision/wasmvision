@@ -6,9 +6,12 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-// Cache is a cache for frames.
+// Cache is a cache for frames and other data that needs to be shared between modules, or the guest and host.
 type Cache struct {
 	frameCache map[wypes.UInt32]Frame
+
+	// ReturnDataPtr is a pointer to a linear memory buffer for return values.
+	ReturnDataPtr uint32
 }
 
 // NewCache creates a new Cache.
