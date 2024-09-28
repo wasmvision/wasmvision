@@ -17,6 +17,7 @@ func ImgprocModules(cache *frame.Cache) wypes.Modules {
 			"box-filter":         wypes.H4(boxFilterFunc(cache)),
 			"gaussian-blur":      wypes.H6(gaussianBlurFunc(cache)),
 			"threshold":          wypes.H4(thresholdFunc(cache)),
+			"resize":             wypes.H6(resizeFunc(cache)),
 		},
 	}
 }
@@ -107,6 +108,24 @@ func thresholdFunc(cache *frame.Cache) func(matref wypes.UInt32, thresh wypes.Fl
 		cache.Set(dst)
 
 		gocv.Threshold(src, &dst.Image, float32(thresh), float32(maxValue), gocv.ThresholdType(thresholdType0))
+
+		return wypes.UInt32(dst.ID)
+	}
+}
+
+func resizeFunc(cache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.UInt32) wypes.UInt32 {
+	return func(matref wypes.UInt32, size0 wypes.UInt32, size1 wypes.UInt32, fx0 wypes.Float32, fy0 wypes.Float32, interp0 wypes.UInt32) wypes.UInt32 {
+		f, ok := cache.Get(matref)
+		if !ok {
+			return wypes.UInt32(0)
+		}
+		src := f.Image
+
+		dst := frame.NewFrame()
+		dst.SetImage(gocv.NewMat())
+		cache.Set(dst)
+
+		gocv.Resize(src, &dst.Image, image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), float64(fx0.Unwrap()), float64(fy0.Unwrap()), gocv.InterpolationFlags(interp0))
 
 		return wypes.UInt32(dst.ID)
 	}
