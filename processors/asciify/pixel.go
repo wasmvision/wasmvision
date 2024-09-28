@@ -2,7 +2,9 @@
 
 package main
 
-import "wasmcv.org/wasm/cv/mat"
+import (
+	"wasmcv.org/wasm/cv/mat"
+)
 
 var (
 	pixelLookup = []byte(" .,:;i1tfLCG08@")
