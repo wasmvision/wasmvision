@@ -2,6 +2,7 @@ package cv
 
 import (
 	"image"
+	"image/color"
 
 	"github.com/wasmvision/wasmvision/frame"
 
@@ -18,6 +19,7 @@ func ImgprocModules(cache *frame.Cache) wypes.Modules {
 			"gaussian-blur":      wypes.H6(gaussianBlurFunc(cache)),
 			"threshold":          wypes.H4(thresholdFunc(cache)),
 			"resize":             wypes.H6(resizeFunc(cache)),
+			"put-text":           wypes.H11(putTextFunc(cache)),
 		},
 	}
 }
@@ -128,5 +130,20 @@ func resizeFunc(cache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.UInt3
 		gocv.Resize(src, &dst.Image, image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), float64(fx0.Unwrap()), float64(fy0.Unwrap()), gocv.InterpolationFlags(interp0))
 
 		return wypes.UInt32(dst.ID)
+	}
+}
+
+func putTextFunc(cache *frame.Cache) func(wypes.UInt32, wypes.String, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float64, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.Void {
+	return func(matref wypes.UInt32, text wypes.String, org0 wypes.UInt32, org1 wypes.UInt32, fontFace0 wypes.UInt32, fontScale0 wypes.Float64, c0 wypes.UInt32, c1 wypes.UInt32, c2 wypes.UInt32, c3 wypes.UInt32, thickness0 wypes.UInt32) wypes.Void {
+		f, ok := cache.Get(matref)
+		if !ok {
+			return wypes.Void{}
+		}
+		src := f.Image
+
+		clr := color.RGBA{R: uint8(c0.Unwrap()), G: uint8(c1.Unwrap()), B: uint8(c2.Unwrap()), A: uint8(c3.Unwrap())}
+		gocv.PutText(&src, text.Unwrap(), image.Pt(int(org0.Unwrap()), int(org1.Unwrap())), gocv.HersheyFont(fontFace0), float64(fontScale0.Unwrap()), clr, int(thickness0.Unwrap()))
+
+		return wypes.Void{}
 	}
 }
