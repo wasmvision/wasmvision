@@ -2,6 +2,10 @@
 
 This directory contains some examples of wasmCV guest processor modules. They have already been compiled so you can use the WASM files in this directory, or compile them individually from the source code.
 
+## asciify.wasm
+
+Processor written in Go that converts an image frame to ascii art.
+
 ## blur.wasm
 
 Processor written in Go that performs a blur on the image frame.
