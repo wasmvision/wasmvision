@@ -17,4 +17,14 @@ var KnownModels = map[string]ModelFile{
 		Filename: "mosaic-8.onnx",
 		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-8.onnx",
 	},
+	"candy-9": {
+		Alias:    "candy-9",
+		Filename: "candy-9.onnx",
+		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx",
+	},
+	"candy-8": {
+		Alias:    "candy-8",
+		Filename: "candy-8.onnx",
+		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/candy-8.onnx",
+	},
 }
