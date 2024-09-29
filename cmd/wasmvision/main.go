@@ -18,6 +18,7 @@ var (
 			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
 		},
 		&cli.BoolFlag{Name: "clear-screen", Aliases: []string{"clear"}, Value: true, Usage: "clear screen between frames (default: true)"},
+		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, Usage: "Directory for model loading (default to $home/models)"},
 	}
 )
 
