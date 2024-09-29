@@ -35,6 +35,12 @@ func main() {
 				Flags:  runFlags,
 			},
 			{
+				Name:   "download",
+				Usage:  "Download computer vision models",
+				Action: download,
+				Flags:  runFlags,
+			},
+			{
 				Name:   "version",
 				Usage:  "Show version",
 				Action: version,
