@@ -23,13 +23,18 @@ type Interpreter struct {
 	NetCache     *net.Cache
 }
 
+type InterpreterConfig struct {
+	ModelsDir string
+}
+
 // New creates a new Interpreter.
-func New(ctx context.Context) Interpreter {
+func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	r := wazero.NewRuntime(ctx)
 	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
 	cache := frame.NewCache()
 	nc := net.NewCache()
+	nc.ModelsDir = config.ModelsDir
 
 	modules := hostModules(cache, nc)
 	if err := modules.DefineWazero(r, nil); err != nil {
