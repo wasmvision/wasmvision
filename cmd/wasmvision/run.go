@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 	"github.com/wasmvision/wasmvision/capture"
@@ -23,11 +24,15 @@ func run(cCtx *cli.Context) error {
 	mjpeg := cCtx.Bool("mjpeg")
 	mjpegPort := cCtx.String("mjpegport")
 	clear := cCtx.Bool("clear")
+	modelsDir := cCtx.String("models-dir")
+	if modelsDir == "" {
+		modelsDir = DefaultModelPath()
+	}
 
 	ctx := context.Background()
 
 	// load wasm runtime
-	r := runtime.New(ctx)
+	r := runtime.New(ctx, runtime.InterpreterConfig{ModelsDir: modelsDir})
 	defer r.Close(ctx)
 
 	for _, p := range processors {
@@ -91,4 +96,13 @@ func run(cCtx *cli.Context) error {
 		frame.Close()
 		r.FrameCache.Delete(frame.ID)
 	}
+}
+
+func DefaultModelPath() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(dirname, "models")
 }
