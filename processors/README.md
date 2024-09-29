@@ -1,6 +1,6 @@
 # Processors
 
-This directory contains some examples of wasmCV guest processor modules. They have already been compiled so you can use the WASM files in this directory, or compile them individually from the source code.
+This directory contains some examples of wasmVision guest processor modules. They have already been compiled so you can use the WASM files in this directory, or compile them individually from the source code.
 
 ## asciify.wasm
 
@@ -14,6 +14,12 @@ Processor written in Go that performs a blur on the image frame.
 
 Processor written in Rust that performs a blur on the image frame.
 
+## candy.wasm
+
+![candy](../images/candy-processor.png)
+
+Processor written in Go that performs fast neural style transfer.
+
 ## gaussianblur.wasm
 
 Processor written in Go that performs a  gaussian blur on the image frame.
@@ -21,3 +27,9 @@ Processor written in Go that performs a  gaussian blur on the image frame.
 ## hello.wasm
 
 Processor written in Go that displays some information about the image frame.
+
+## mosaic.wasm
+
+![mosaic](../images/mosaic-processor.png)
+
+Processor written in Go that performs fast neural style transfer.

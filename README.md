@@ -130,6 +130,14 @@ Point your browser to `http://localhost:8080` and you can see the output.
 
 For information on how to obtain development builds, or work on development for wasmVision itself, please see [DEVELOPMENT.md](./DEVELOPMENT.md)
 
+## Processors
+
+wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
+
+See the [processors directory](./processors/) for some pre-compiled processors you can try out right away.
+
+These processing modules can be written in Go, Rust, or the C programming language.
+
 ## How it works
 
 ```mermaid
@@ -150,12 +158,6 @@ flowchart LR
 ```
 
 The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
-
-wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
-
-See the [processors directory](./processors/) for some already compiled processors you can try out.
-
-These processing modules can be written in Go, Rust, or the C programming language.
 
 The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. Then the next frame is read from the capture device and passed into the first processor module.
 
