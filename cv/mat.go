@@ -10,9 +10,10 @@ import (
 func MatModules(cache *frame.Cache) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
-			"[constructor]mat":              wypes.H3(matNewFunc(cache)),
+			"[constructor]mat":              wypes.H3(matNewWithSizeFunc(cache)),
 			"[resource-drop]mat":            wypes.H1(matCloseFunc(cache)),
-			"[static]mat.new-mat-with-size": wypes.H3(matNewFunc(cache)),
+			"[static]mat.new-mat":           wypes.H0(matNewFunc(cache)),
+			"[static]mat.new-mat-with-size": wypes.H3(matNewWithSizeFunc(cache)),
 			"[method]mat.close":             wypes.H1(matCloseFunc(cache)),
 			"[method]mat.cols":              wypes.H1(matColsFunc(cache)),
 			"[method]mat.rows":              wypes.H1(matRowsFunc(cache)),
@@ -29,7 +30,20 @@ func MatModules(cache *frame.Cache) wypes.Modules {
 	}
 }
 
-func matNewFunc(cache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.UInt32 {
+func matNewFunc(cache *frame.Cache) func() wypes.UInt32 {
+	return func() wypes.UInt32 {
+		mat := gocv.NewMat()
+
+		f := frame.NewFrame()
+		f.SetImage(mat)
+
+		cache.Set(f)
+
+		return f.ID
+	}
+}
+
+func matNewWithSizeFunc(cache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.UInt32 {
 	return func(rows, cols, matType wypes.UInt32) wypes.UInt32 {
 		mat := gocv.NewMatWithSize(int(rows), int(cols), gocv.MatType(matType))
 
