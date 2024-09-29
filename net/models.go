@@ -1,5 +1,12 @@
 package net
 
+import (
+	"context"
+	"path/filepath"
+
+	"github.com/hashicorp/go-getter"
+)
+
 type ModelFile struct {
 	Alias    string
 	Filename string
@@ -57,4 +64,21 @@ var KnownModels = map[string]ModelFile{
 		Filename: "udnie-8.onnx",
 		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-8.onnx",
 	},
+}
+
+func DownloadModel(model ModelFile, targetDir string) error {
+	opts := []getter.ClientOption{}
+	client := &getter.Client{
+		Ctx:     context.Background(),
+		Src:     model.URL,
+		Dst:     filepath.Join(targetDir, filepath.Base(model.Filename)),
+		Mode:    getter.ClientModeFile,
+		Options: opts,
+	}
+
+	if err := client.Get(); err != nil {
+		return err
+	}
+
+	return nil
 }
