@@ -12,6 +12,7 @@ import (
 	"github.com/orsinium-labs/wypes"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
+	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
 // Interpreter is a WebAssembly interpreter that can load and run guest modules.
@@ -25,6 +26,7 @@ type Interpreter struct {
 // New creates a new Interpreter.
 func New(ctx context.Context) Interpreter {
 	r := wazero.NewRuntime(ctx)
+	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
 	cache := frame.NewCache()
 	nc := net.NewCache()
@@ -72,7 +74,7 @@ func (intp *Interpreter) Processors() []GuestModule {
 
 // RegisterGuestModule registers a guest module with the interpreter.
 func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte) error {
-	mod, err := intp.r.Instantiate(ctx, module)
+	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithStartFunctions("_initialize"))
 	if err != nil {
 		return err
 	}
