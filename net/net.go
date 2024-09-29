@@ -1,7 +1,10 @@
 package net
 
 import (
+	"log"
 	"math/rand/v2"
+	"os"
+	"path/filepath"
 
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
@@ -9,8 +12,9 @@ import (
 
 // Net is a wrapper around gocv.Net for DNN image processing.
 type Net struct {
-	ID  wypes.UInt32
-	Net gocv.Net
+	ID    wypes.UInt32
+	Net   gocv.Net
+	Model string
 }
 
 // NewNet creates a new Net.
@@ -29,4 +33,18 @@ func (n *Net) SetNet(net gocv.Net) {
 // Close closes the Net.
 func (n *Net) Close() {
 	n.Net.Close()
+}
+
+// ModelFile gets the model file path name for the Net.
+func (n *Net) ModelFile() string {
+	return filepath.Join(DefaultModelPath(), n.Model)
+}
+
+func DefaultModelPath() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(dirname, "models")
 }
