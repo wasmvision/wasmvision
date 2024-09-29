@@ -7,24 +7,54 @@ type ModelFile struct {
 }
 
 var KnownModels = map[string]ModelFile{
-	"mosaic-9": {
-		Alias:    "mosaic-9",
-		Filename: "mosaic-9.onnx",
-		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-9.onnx",
-	},
-	"mosaic-8": {
-		Alias:    "mosaic-8",
-		Filename: "mosaic-8.onnx",
-		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-8.onnx",
-	},
 	"candy-9": {
 		Alias:    "candy-9",
 		Filename: "candy-9.onnx",
-		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx",
 	},
 	"candy-8": {
 		Alias:    "candy-8",
 		Filename: "candy-8.onnx",
-		URL:      "https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/model/candy-8.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-8.onnx",
+	},
+	"mosaic-9": {
+		Alias:    "mosaic-9",
+		Filename: "mosaic-9.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-9.onnx",
+	},
+	"mosaic-8": {
+		Alias:    "mosaic-8",
+		Filename: "mosaic-8.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-8.onnx",
+	},
+	"pointilism-9": {
+		Alias:    "pointilism-9",
+		Filename: "pointilism-9.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-9.onnx",
+	},
+	"pointilism-8": {
+		Alias:    "pointilism-8",
+		Filename: "pointilism-8.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-8.onnx",
+	},
+	"rain-princess-9": {
+		Alias:    "rain-princess-9",
+		Filename: "rain-princess-9.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-9.onnx",
+	},
+	"rain-princess-8": {
+		Alias:    "rain-princess-8",
+		Filename: "rain-princess-8.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-8.onnx",
+	},
+	"udnie-9": {
+		Alias:    "udnie-9",
+		Filename: "udnie-9.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-9.onnx",
+	},
+	"udnie-8": {
+		Alias:    "udnie-8",
+		Filename: "udnie-8.onnx",
+		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-8.onnx",
 	},
 }
