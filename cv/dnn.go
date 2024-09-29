@@ -2,7 +2,6 @@ package cv
 
 import (
 	"image"
-	"path/filepath"
 
 	"github.com/wasmvision/wasmvision/frame"
 	"github.com/wasmvision/wasmvision/net"
@@ -28,14 +27,14 @@ func NetModules(fc *frame.Cache, nc *net.Cache) wypes.Modules {
 
 func netReadNetFunc(cache *net.Cache) func(wypes.String, wypes.String) wypes.UInt32 {
 	return func(model wypes.String, config wypes.String) wypes.UInt32 {
-		modelFile := filepath.Join(net.DefaultModelPath(), model.Unwrap())
+		modelFile := cache.ModelFileName(model.Unwrap())
 
 		n := gocv.ReadNet(modelFile, config.Unwrap())
 		if n.Empty() {
 			return wypes.UInt32(0)
 		}
 
-		net := net.NewNet()
+		net := net.NewNet(model.Unwrap())
 		net.SetNet(n)
 		cache.Set(net)
 
@@ -45,14 +44,14 @@ func netReadNetFunc(cache *net.Cache) func(wypes.String, wypes.String) wypes.UIn
 
 func netReadNetFromONNXFunc(cache *net.Cache) func(wypes.String) wypes.UInt32 {
 	return func(model wypes.String) wypes.UInt32 {
-		modelFile := filepath.Join(net.DefaultModelPath(), model.Unwrap())
+		modelFile := cache.ModelFileName(model.Unwrap())
 
 		n := gocv.ReadNetFromONNX(modelFile)
 		if n.Empty() {
 			return wypes.UInt32(0)
 		}
 
-		net := net.NewNet()
+		net := net.NewNet(model.Unwrap())
 		net.SetNet(n)
 		cache.Set(net)
 
