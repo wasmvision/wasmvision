@@ -25,17 +25,19 @@ flowchart LR
     end
 ```
 
-### Engine
+### wasmVision Engine
 
 The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
 
 See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
-### Processors
+### wasmVision Processors
 
 wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
 
-You can filter and process images, analyze or modify them using deep neural networks and other machine learning algorithms, and more.
+You can filter images, analyze them, and modify them using traditional computer vision algorithms.
+
+You can also use deep neural networks and other machine learning algorithms which can automatically download the models they need.
 
 See the [processors directory](./processors/) for some pre-compiled processors you can try out right away.
 
@@ -50,9 +52,9 @@ Processors can be written in Go, Rust, or the C programming language.
 
 ### Linux
 
-You can download the latest release for Linux by looking under [Releases](https://github.com/wasmvision/wasmvision/releases) then clicking on the latest release. 
+Download the latest release for Linux under [Releases](https://github.com/wasmvision/wasmvision/releases) by clicking on the latest release.
 
-Under the "Assets" click on the link for either "wasmvision-linux-amd64" or "wasmvision-linux-arm64" depending on your processor.
+Under "Assets" click on the link for either "wasmvision-linux-amd64" or "wasmvision-linux-arm64" depending on your processor.
 
 Extract the executable to your desired directory.
 
@@ -81,7 +83,7 @@ Point your browser to `http://localhost:8080` and you can see the output.
 
 ### macOS
 
-You can install wasmVision on macOS using Homebrew:
+Install wasmVision on macOS using Homebrew:
 
 ```shell
 brew tap wasmvision/tools
@@ -108,7 +110,7 @@ Point your browser to `http://localhost:8080` and you can see the output.
 
 ### Windows
 
-You can download the latest release for Windows by looking under [Releases](https://github.com/wasmvision/wasmvision/releases) then clicking on the latest release. 
+Download the latest release for Windows under [Releases](https://github.com/wasmvision/wasmvision/releases) by clicking on the latest release.
 
 Under the "Assets" click on the link for "wasmvision-windows-amd64".
 
@@ -144,19 +146,19 @@ You can run wasmVision using Docker.
 Pull the current development version:
 
 ```shell
-docker pull ghcr.io/wasmvision/wasmvision:v0.1.0-pre2
+docker pull ghcr.io/wasmvision/wasmvision:v0.1.0-pre3
 ```
 
 Verify it is installed like this:
 
 ```shell
-docker run ghcr.io/wasmvision/wasmvision:v0.1.0-pre2 version
+docker run ghcr.io/wasmvision/wasmvision:v0.1.0-pre3 version
 ```
 
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision::v0.1.0-pre2 run -p /processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision::v0.1.0-pre3 run -p /processors/blur.wasm -mjpeg=true
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
