@@ -8,6 +8,10 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
+- Capture image frames
+- Process them using WebAssembly
+- Stream the results
+
 ```mermaid
 flowchart LR
     subgraph engine
