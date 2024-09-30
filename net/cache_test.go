@@ -51,3 +51,23 @@ func TestCloseCache(t *testing.T) {
 		t.Error("failed to close cache")
 	}
 }
+
+func TestModelFileName(t *testing.T) {
+	cache := NewCache()
+	cache.ModelsDir = "models"
+	model := "testing.onnx"
+	modelFile := cache.ModelFileName(model)
+	if modelFile != "models/testing.onnx" {
+		t.Error("failed to get model file name")
+	}
+}
+
+func TestKnownModelFileName(t *testing.T) {
+	cache := NewCache()
+	cache.ModelsDir = "models"
+	model := "candy-9"
+	modelFile := cache.ModelFileName(model)
+	if modelFile != "models/candy-9.onnx" {
+		t.Error("failed to get known model file name")
+	}
+}

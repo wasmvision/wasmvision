@@ -2,6 +2,8 @@ package net
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/orsinium-labs/wypes"
@@ -52,5 +54,35 @@ func (c *Cache) Close() {
 
 // ModelFile gets the model file path name for the Net.
 func (c *Cache) ModelFileName(model string) string {
+	if km, ok := KnownModels[model]; ok {
+		return filepath.Join(c.ModelsDir, km.Filename)
+	}
+
 	return filepath.Join(c.ModelsDir, model)
+}
+
+func (c *Cache) ModelExists(model string) bool {
+	if _, err := os.Stat(model); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return true
+}
+
+func (c *Cache) ModelWellKnown(model string) bool {
+	if _, ok := KnownModels[model]; ok {
+		return true
+	}
+
+	return false
+}
+
+func (c *Cache) DownloadModel(model string) error {
+	km, ok := KnownModels[model]
+	if !ok {
+		return errors.New("model not found")
+	}
+
+	fmt.Printf("Downloading model %s...\n", km.Alias)
+
+	return DownloadModel(km, c.ModelsDir)
 }

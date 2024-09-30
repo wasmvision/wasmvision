@@ -27,7 +27,19 @@ func NetModules(fc *frame.Cache, nc *net.Cache) wypes.Modules {
 
 func netReadNetFunc(cache *net.Cache) func(wypes.String, wypes.String) wypes.UInt32 {
 	return func(model wypes.String, config wypes.String) wypes.UInt32 {
-		modelFile := cache.ModelFileName(model.Unwrap())
+		name := model.Unwrap()
+		modelFile := cache.ModelFileName(name)
+
+		switch {
+		case !cache.ModelExists(modelFile) && cache.ModelWellKnown(name):
+			if err := cache.DownloadModel(name); err != nil {
+				// TODO: log error
+				return wypes.UInt32(0)
+			}
+
+		case !cache.ModelExists(modelFile):
+			return wypes.UInt32(0)
+		}
 
 		n := gocv.ReadNet(modelFile, config.Unwrap())
 		if n.Empty() {
@@ -44,7 +56,19 @@ func netReadNetFunc(cache *net.Cache) func(wypes.String, wypes.String) wypes.UIn
 
 func netReadNetFromONNXFunc(cache *net.Cache) func(wypes.String) wypes.UInt32 {
 	return func(model wypes.String) wypes.UInt32 {
-		modelFile := cache.ModelFileName(model.Unwrap())
+		name := model.Unwrap()
+		modelFile := cache.ModelFileName(name)
+
+		switch {
+		case !cache.ModelExists(modelFile) && cache.ModelWellKnown(name):
+			if err := cache.DownloadModel(name); err != nil {
+				// TODO: log error
+				return wypes.UInt32(0)
+			}
+
+		case !cache.ModelExists(modelFile):
+			return wypes.UInt32(0)
+		}
 
 		n := gocv.ReadNetFromONNX(modelFile)
 		if n.Empty() {

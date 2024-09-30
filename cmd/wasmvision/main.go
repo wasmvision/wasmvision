@@ -19,6 +19,7 @@ var (
 		},
 		&cli.BoolFlag{Name: "clear-screen", Aliases: []string{"clear"}, Value: true, Usage: "clear screen between frames (default: true)"},
 		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, Usage: "Directory for model loading (default to $home/models)"},
+		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
 	}
 )
 
