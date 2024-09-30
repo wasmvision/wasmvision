@@ -1,7 +1,7 @@
 package wasmvision
 
 var (
-	version = "0.1.0"
+	version = "0.1.0-pre3"
 	sha     string
 )
 
