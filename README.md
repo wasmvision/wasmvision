@@ -6,6 +6,41 @@ wasmVision gets you up and running with computer vision.
 
 It provides a high-performance computer vision processing engine that is designed to be customized and extended using WebAssembly.
 
+## How it works
+
+```mermaid
+flowchart LR
+    subgraph engine
+        Capture
+        Runtime[WASM Runtime]
+        Capture--frame-->Runtime
+        Capture<-->OpenCV
+        Runtime<-->OpenCV
+    end
+    subgraph processors
+        Runtime--frame-->processor1.wasm
+        Runtime--frame-->processor2.wasm
+        Runtime--frame-->processor3.wasm
+        Runtime--frame-->processor4.wasm
+    end
+```
+
+### Engine
+
+The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
+
+See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
+
+### Processors
+
+wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
+
+You can filter and process images, analyze or modify them using deep neural networks and other machine learning algorithms, and more.
+
+See the [processors directory](./processors/) for some pre-compiled processors you can try out right away.
+
+Processors can be written in Go, Rust, or the C programming language.
+
 ## Quick start
 
 - [Linux](#linux)
@@ -129,38 +164,3 @@ Point your browser to `http://localhost:8080` and you can see the output.
 ## Development
 
 For information on how to obtain development builds, or work on development for wasmVision itself, please see [DEVELOPMENT.md](./DEVELOPMENT.md)
-
-## Processors
-
-wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
-
-See the [processors directory](./processors/) for some pre-compiled processors you can try out right away.
-
-These processing modules can be written in Go, Rust, or the C programming language.
-
-## How it works
-
-```mermaid
-flowchart LR
-    subgraph engine
-        Capture
-        Runtime[WASM Runtime]
-        Capture--frame-->Runtime
-        Capture<-->OpenCV
-        Runtime<-->OpenCV
-    end
-    subgraph processors
-        Runtime--frame-->processor1.wasm
-        Runtime--frame-->processor2.wasm
-        Runtime--frame-->processor3.wasm
-        Runtime--frame-->processor4.wasm
-    end
-```
-
-The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
-
-The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. Then the next frame is read from the capture device and passed into the first processor module.
-
-See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
-
-

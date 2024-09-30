@@ -23,6 +23,8 @@ flowchart LR
     end
 ```
 
+The pipeline of Processor modules are called in order, one after another. The output from the first is passed into the second, and so on. Once the last processor module has finished, the frame resources are cleaned up. Then the next frame is read from the capture device and passed into the first processor module.
+
 ### Engine
 
 The wasmVision engine.
