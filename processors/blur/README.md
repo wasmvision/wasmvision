@@ -1,6 +1,8 @@
 # blur
 
-wasmCV guest module that performs a blur.
+![blur](../../images/blur-processor.png)
+
+wasmVision processor that performs a blur.
 
 ## How to build
 

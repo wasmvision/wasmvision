@@ -29,7 +29,7 @@ func init() {
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	if mosaicNet.Empty() {
+	if image.Empty() || mosaicNet.Empty() {
 		return mat.MatNewMat()
 	}
 

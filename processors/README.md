@@ -4,13 +4,19 @@ This directory contains some examples of wasmVision guest processor modules. The
 
 ## asciify.wasm
 
-Processor written in Go that converts an image frame to ascii art.
+![asciify](../images/asciify-processor.png)
+
+Processor written in Go that converts image frames to ascii art.
 
 ## blur.wasm
 
-Processor written in Go that performs a blur on the image frame.
+![blur](../images/blur-processor.png)
+
+Processor written in Go that performs a blur on image frames.
 
 ## blurrs.wasm
+
+![blurrs](../images/blur-processor.png)
 
 Processor written in Rust that performs a blur on the image frame.
 
@@ -21,6 +27,8 @@ Processor written in Rust that performs a blur on the image frame.
 Processor written in Go that performs fast neural style transfer.
 
 ## gaussianblur.wasm
+
+![blur](../images/gaussianblur-processor.png)
 
 Processor written in Go that performs a  gaussian blur on the image frame.
 

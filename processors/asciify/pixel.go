@@ -14,9 +14,9 @@ var (
 func imageToAscii(image mat.Mat) {
 	for y := uint32(0); y < 60; y++ {
 		for x := uint32(0); x < 80; x++ {
-			b := image.GetUcharAt(y, x*3+0)
-			g := image.GetUcharAt(y, x*3+1)
-			r := image.GetUcharAt(y, x*3+2)
+			b := image.GetUcharAt(y, x*3+0) >> 2
+			g := image.GetUcharAt(y, x*3+1) >> 2
+			r := image.GetUcharAt(y, x*3+2) >> 2
 			a := uint8(255)
 
 			ascii[y][x] = pixelToChar(r, g, b, a)

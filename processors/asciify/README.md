@@ -1,6 +1,8 @@
 # asciify
 
-wasmCV guest module that renders images into ascii art text.
+![asciify](../../images/asciify-processor.png)
+
+wasmVision processor that renders images into ascii art text.
 
 ## How to build
 

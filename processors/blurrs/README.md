@@ -1,6 +1,8 @@
 # blurrs
 
-wasmCV guest module written in Rust that performs a blur.
+![blur](../../images/blur-processor.png)
+
+wasmVision processor written in Rust that performs a blur.
 
 ## How to build
 

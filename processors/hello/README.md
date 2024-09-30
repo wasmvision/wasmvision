@@ -1,6 +1,6 @@
 # hello
 
-wasmCV guest module that displays information about the image frame to the console.
+wasmVision proccessor that displays information about the image frame to the console.
 
 ## How to build
 

@@ -29,7 +29,7 @@ func init() {
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	if candyNet.Empty() {
+	if image.Empty() || candyNet.Empty() {
 		return mat.MatNewMat()
 	}
 
