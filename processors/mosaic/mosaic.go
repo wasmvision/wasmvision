@@ -24,7 +24,7 @@ func println(ptr, size uint32)
 var mosaicNet dnn.Net
 
 func init() {
-	mosaicNet = dnn.NetReadNet("mosaic-9.onnx", "")
+	mosaicNet = dnn.NetReadNet("mosaic-9", "")
 }
 
 //export process

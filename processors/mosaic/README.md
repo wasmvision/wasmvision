@@ -12,6 +12,8 @@ tinygo build -o ../mosaic.wasm -target=wasm-unknown .
 
 ## Downloading the model
 
+The first time you run the processor it will automatically download the model, or you can download it by running the command:
+
 ```shell
 wasmvision download mosaic-9
 ```

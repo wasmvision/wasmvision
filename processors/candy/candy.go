@@ -24,7 +24,7 @@ func println(ptr, size uint32)
 var candyNet dnn.Net
 
 func init() {
-	candyNet = dnn.NetReadNet("candy-9.onnx", "")
+	candyNet = dnn.NetReadNet("candy-9", "")
 }
 
 //export process
