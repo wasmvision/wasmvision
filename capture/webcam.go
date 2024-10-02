@@ -1,8 +1,6 @@
 package capture
 
 import (
-	"errors"
-
 	"github.com/wasmvision/wasmvision/frame"
 
 	"gocv.io/x/gocv"
@@ -13,8 +11,8 @@ type Webcam struct {
 	webcam *gocv.VideoCapture
 }
 
-func NewWebcam(device string) Webcam {
-	return Webcam{device: device}
+func NewWebcam(device string) *Webcam {
+	return &Webcam{device: device}
 }
 
 func (w *Webcam) Open() error {
@@ -34,7 +32,7 @@ func (w *Webcam) Close() error {
 func (w *Webcam) Read() (frame.Frame, error) {
 	img := gocv.NewMat()
 	if ok := w.webcam.Read(&img); !ok {
-		return frame.Frame{}, errors.New("failed to read frame")
+		return frame.Frame{}, ErrClosed
 	}
 
 	frame := frame.NewFrame()

@@ -9,16 +9,16 @@ import (
 
 var (
 	runFlags = []cli.Flag{
-		&cli.StringFlag{Name: "device", Aliases: []string{"d"}, Value: "0", Usage: "video capture device to use (default: 0)"},
-		&cli.BoolFlag{Name: "mjpeg", Usage: "output MJPEG stream (default: false)"},
-		&cli.StringFlag{Name: "mjpegport", Usage: "MJPEG stream port (default :8080)", Value: ":8080"},
+		&cli.StringFlag{Name: "source", Aliases: []string{"s"}, Value: "0", Usage: "video capture source to use such as webcam or file (0 is the default webcam on most systems)"},
+		&cli.StringFlag{Name: "output-kind", Aliases: []string{"o"}, Usage: "kind of output (mjpeg, file)"},
+		&cli.StringFlag{Name: "destination", Aliases: []string{"d"}, Usage: "destination for the output (port, file path)"},
 		&cli.StringSliceFlag{
 			Name:    "processor",
 			Aliases: []string{"p"},
 			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
 		},
 		&cli.BoolFlag{Name: "clear-screen", Aliases: []string{"clear"}, Value: true, Usage: "clear screen between frames (default: true)"},
-		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, Usage: "Directory for model loading (default to $home/models)"},
+		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "Directory for model loading (default to $home/models)"},
 		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
 	}
 )
