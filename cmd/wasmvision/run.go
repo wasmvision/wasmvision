@@ -11,6 +11,12 @@ import (
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/engine"
 	"github.com/wasmvision/wasmvision/runtime"
+	"gocv.io/x/gocv"
+)
+
+var (
+	mjpegstream engine.MJPEGStream
+	videoWriter *gocv.VideoWriter
 )
 
 func run(cCtx *cli.Context) error {
@@ -20,9 +26,9 @@ func run(cCtx *cli.Context) error {
 		os.Exit(1)
 	}
 
-	device := cCtx.String("device")
-	mjpeg := cCtx.Bool("mjpeg")
-	mjpegPort := cCtx.String("mjpegport")
+	source := cCtx.String("source")
+	output := cCtx.String("output-kind")
+	dest := cCtx.String("destination")
 	clear := cCtx.Bool("clear")
 	modelsDir := cCtx.String("models-dir")
 	if modelsDir == "" {
@@ -48,28 +54,51 @@ func run(cCtx *cli.Context) error {
 	}
 
 	// Open the webcam.
-	webcam := capture.NewWebcam(device)
-	defer webcam.Close()
+	webcam := capture.NewWebcam(source)
 	if err := webcam.Open(); err != nil {
-		log.Panicf("Error opening video capture device: %v\n", device)
+		log.Panicf("Error opening video capture %v\n", source)
 	}
+	defer webcam.Close()
 
-	var mjpegstream engine.MJPEGStream
-	if mjpeg {
-		mjpegstream = engine.NewMJPEGStream(mjpegPort)
+	switch output {
+	case "mjpeg":
+		if dest == "" {
+			dest = ":8080"
+		}
+		mjpegstream = engine.NewMJPEGStream(dest)
 
 		go mjpegstream.Start()
+	case "file":
+		if dest == "" {
+			log.Panicf("you must profile a file destination for output-kind=file\n")
+		}
+		var err error
+		videoWriter, err = openVideoWriter(webcam, dest)
+		if err != nil {
+			log.Panicf("Error opening video file writer device: %v\n", err)
+			return err
+		}
+		defer videoWriter.Close()
+	default:
+		fmt.Printf("Unknown output kind %v\n", output)
 	}
 
-	fmt.Printf("Start reading device: %v\n", device)
+	fmt.Printf("Reading video from %v\n", source)
 	i := 0
 
 	for {
 		frame, err := webcam.Read()
 		if err != nil {
-			fmt.Printf("frame error %v\n", device)
-			frame.Close()
-			continue
+			switch err {
+			case capture.ErrClosed:
+				frame.Close()
+				return nil
+
+			default:
+				fmt.Printf("frame error %v\n", err)
+				frame.Close()
+				return err
+			}
 		}
 
 		if frame.Empty() {
@@ -88,14 +117,37 @@ func run(cCtx *cli.Context) error {
 
 		frame = r.Process(ctx, frame)
 
-		if mjpeg {
+		switch output {
+		case "mjpeg":
 			mjpegstream.Publish(frame)
+		case "file":
+			if err := videoWriter.Write(frame.Image); err != nil {
+				fmt.Printf("error writing frame: %v\n", err)
+			}
 		}
 
 		// cleanup frame
 		frame.Close()
 		r.FrameCache.Delete(frame.ID)
 	}
+}
+
+func openVideoWriter(source capture.Capture, dest string) (*gocv.VideoWriter, error) {
+	sample, err := source.Read()
+	if err != nil {
+		fmt.Printf("frame error %v\n", err)
+		return nil, err
+	}
+
+	defer sample.Close()
+
+	videoWriter, err := gocv.VideoWriterFile(dest, "MJPG", 25, sample.Image.Cols(), sample.Image.Rows(), true)
+	if err != nil {
+		fmt.Printf("error opening video file writer device: %v\n", err)
+		return nil, err
+	}
+
+	return videoWriter, nil
 }
 
 func DefaultModelPath() string {
