@@ -49,8 +49,13 @@ func main() {
 				Flags:     downloadFlags,
 			},
 			{
+				Name:   "info",
+				Usage:  "Show installation info",
+				Action: info,
+			},
+			{
 				Name:   "version",
-				Usage:  "Show wasmVision version",
+				Usage:  "Show version",
 				Action: version,
 			},
 			{
