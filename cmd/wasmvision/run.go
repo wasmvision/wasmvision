@@ -29,16 +29,16 @@ func run(cCtx *cli.Context) error {
 	source := cCtx.String("source")
 	output := cCtx.String("output-kind")
 	dest := cCtx.String("destination")
-	clear := cCtx.Bool("clear")
 	modelsDir := cCtx.String("models-dir")
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
 	}
+	logging := cCtx.Bool("logging")
 
 	ctx := context.Background()
 
 	// load wasm runtime
-	r := runtime.New(ctx, runtime.InterpreterConfig{ModelsDir: modelsDir})
+	r := runtime.New(ctx, runtime.InterpreterConfig{ModelsDir: modelsDir, Logging: logging})
 	defer r.Close(ctx)
 
 	for _, p := range processors {
@@ -47,7 +47,10 @@ func run(cCtx *cli.Context) error {
 			log.Panicf("failed to read wasm processor module: %v\n", err)
 		}
 
-		fmt.Printf("Loading wasmCV guest module %s...\n", p)
+		if logging {
+			log.Printf("Loading wasmCV guest module %s...\n", p)
+		}
+
 		if err := r.RegisterGuestModule(ctx, module); err != nil {
 			log.Panicf("failed to load wasm processor module: %v\n", err)
 		}
@@ -80,10 +83,12 @@ func run(cCtx *cli.Context) error {
 		}
 		defer videoWriter.Close()
 	default:
-		fmt.Printf("Unknown output kind %v\n", output)
+		log.Panicf("Unknown output kind %v\n", output)
 	}
 
-	fmt.Printf("Reading video from %v\n", source)
+	if logging {
+		fmt.Printf("Reading video from source '%v'\n", source)
+	}
 	i := 0
 
 	for {
@@ -108,12 +113,10 @@ func run(cCtx *cli.Context) error {
 
 		r.FrameCache.Set(frame)
 
-		if clear {
-			fmt.Print("\033[2J\033[3J\033[H")
-		}
-
 		i++
-		fmt.Printf("Read frame %d\n", i+1)
+		if logging {
+			log.Printf("Read frame %d\n", i+1)
+		}
 
 		frame = r.Process(ctx, frame)
 
