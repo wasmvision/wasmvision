@@ -5,18 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/engine"
 	"github.com/wasmvision/wasmvision/runtime"
-	"gocv.io/x/gocv"
 )
 
 var (
 	mjpegstream engine.MJPEGStream
-	videoWriter *gocv.VideoWriter
+	videoWriter engine.VideoWriter
 )
 
 func run(cCtx *cli.Context) error {
@@ -27,7 +25,7 @@ func run(cCtx *cli.Context) error {
 	}
 
 	source := cCtx.String("source")
-	output := cCtx.String("output-kind")
+	output := cCtx.String("output")
 	dest := cCtx.String("destination")
 	modelsDir := cCtx.String("models-dir")
 	if modelsDir == "" {
@@ -75,19 +73,20 @@ func run(cCtx *cli.Context) error {
 		if dest == "" {
 			log.Panicf("you must profile a file destination for output-kind=file\n")
 		}
-		var err error
-		videoWriter, err = openVideoWriter(webcam, dest)
-		if err != nil {
-			log.Panicf("Error opening video file writer device: %v\n", err)
+		videoWriter = engine.NewVideoWriter(dest)
+
+		if err := videoWriter.Start(webcam); err != nil {
+			log.Panicf("Error starting video writer device: %v\n", err)
 			return err
 		}
+
 		defer videoWriter.Close()
 	default:
 		log.Panicf("Unknown output kind %v\n", output)
 	}
 
 	if logging {
-		fmt.Printf("Reading video from source '%v'\n", source)
+		log.Printf("Reading video from source '%v'\n", source)
 	}
 	i := 0
 
@@ -124,8 +123,8 @@ func run(cCtx *cli.Context) error {
 		case "mjpeg":
 			mjpegstream.Publish(frame)
 		case "file":
-			if err := videoWriter.Write(frame.Image); err != nil {
-				fmt.Printf("error writing frame: %v\n", err)
+			if err := videoWriter.Write(frame); err != nil {
+				log.Printf("error writing frame: %v\n", err)
 			}
 		}
 
@@ -133,31 +132,4 @@ func run(cCtx *cli.Context) error {
 		frame.Close()
 		r.FrameCache.Delete(frame.ID)
 	}
-}
-
-func openVideoWriter(source capture.Capture, dest string) (*gocv.VideoWriter, error) {
-	sample, err := source.Read()
-	if err != nil {
-		fmt.Printf("frame error %v\n", err)
-		return nil, err
-	}
-
-	defer sample.Close()
-
-	videoWriter, err := gocv.VideoWriterFile(dest, "MJPG", 25, sample.Image.Cols(), sample.Image.Rows(), true)
-	if err != nil {
-		fmt.Printf("error opening video file writer device: %v\n", err)
-		return nil, err
-	}
-
-	return videoWriter, nil
-}
-
-func DefaultModelPath() string {
-	dirname, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return filepath.Join(dirname, "models")
 }

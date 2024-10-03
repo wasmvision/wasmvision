@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 )
@@ -10,8 +12,8 @@ import (
 var (
 	runFlags = []cli.Flag{
 		&cli.StringFlag{Name: "source", Aliases: []string{"s"}, Value: "0", Usage: "video capture source to use such as webcam or file (0 is the default webcam on most systems)"},
-		&cli.StringFlag{Name: "output-kind", Aliases: []string{"o"}, Value: "mjpeg", Usage: "kind of output (mjpeg, file)"},
-		&cli.StringFlag{Name: "destination", Aliases: []string{"d"}, Usage: "destination for the output (port, file path)"},
+		&cli.StringFlag{Name: "output", Aliases: []string{"o"}, Value: "mjpeg", Usage: "output type (mjpeg, file)"},
+		&cli.StringFlag{Name: "destination", Aliases: []string{"d"}, Usage: "output destination (port, file path)"},
 		&cli.StringSliceFlag{
 			Name:    "processor",
 			Aliases: []string{"p"},
@@ -20,6 +22,10 @@ var (
 		&cli.BoolFlag{Name: "logging", Value: true, Usage: "log detailed info to console (default: true)"},
 		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "directory for model loading (default to $home/models)"},
 		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
+	}
+
+	downloadFlags = []cli.Flag{
+		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "directory for model loading (default to $home/models)"},
 	}
 )
 
@@ -39,11 +45,11 @@ func main() {
 				Name:   "download",
 				Usage:  "Download computer vision models",
 				Action: download,
-				Flags:  runFlags,
+				Flags:  downloadFlags,
 			},
 			{
 				Name:   "version",
-				Usage:  "Show version",
+				Usage:  "Show wasmVision version",
 				Action: version,
 			},
 			{
@@ -58,4 +64,13 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func DefaultModelPath() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(dirname, "models")
 }
