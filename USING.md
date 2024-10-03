@@ -13,6 +13,7 @@ VERSION:
 COMMANDS:
    run       Run wasmVision processors
    download  Download computer vision models
+   info      Show installation info
    version   Show version
    about     About wasmVision
    help, h   Shows a list of commands or help for one command
