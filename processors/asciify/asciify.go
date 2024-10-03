@@ -14,6 +14,9 @@ func println(ptr, size uint32)
 
 //export process
 func process(image mat.Mat) mat.Mat {
+	// start with a blank screen
+	println(convert.StringToWasmPtr("\033[2J\033[3J\033[H"))
+
 	resized := cv.Resize(image, types.Size{X: 80, Y: 60}, 0, 0, types.InterpolationTypeInterpolationNearest)
 	defer resized.Close()
 

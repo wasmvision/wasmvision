@@ -1,6 +1,6 @@
 # hello
 
-wasmVision proccessor that displays information about the image frame to the console.
+wasmVision processor that displays information about the image frame to the console.
 
 ## How to build
 

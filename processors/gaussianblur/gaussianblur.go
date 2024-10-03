@@ -9,13 +9,13 @@ import (
 	"wasmcv.org/wasm/cv/types"
 )
 
-//go:wasmimport hosted println
-func println(ptr, size uint32)
+//go:wasmimport hosted log
+func log(ptr, size uint32)
 
 //export process
 func process(image mat.Mat) mat.Mat {
 	imageOut := cv.GaussianBlur(image, types.Size{X: 25, Y: 25}, 4.5, 4.5, types.BorderTypeBorderReflect101)
-	println(convert.StringToWasmPtr("Performed GaussianBlur on image"))
+	log(convert.StringToWasmPtr("Performed GaussianBlur on image"))
 
 	return imageOut
 }
