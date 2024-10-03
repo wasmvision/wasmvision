@@ -42,10 +42,11 @@ func main() {
 				Flags:  runFlags,
 			},
 			{
-				Name:   "download",
-				Usage:  "Download computer vision models",
-				Action: download,
-				Flags:  downloadFlags,
+				Name:      "download",
+				Usage:     "Download computer vision models",
+				ArgsUsage: "[known-model-name]",
+				Action:    download,
+				Flags:     downloadFlags,
 			},
 			{
 				Name:   "version",
