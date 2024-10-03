@@ -78,7 +78,7 @@ Extract the files to either the same directory you used for the `wasmvision` exe
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision run -p /path/to/processors/blur.wasm -mjpeg=true
+wasmvision run -p /path/to/processors/blur.wasm
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
@@ -107,7 +107,7 @@ Extract the files to either the same directory you used for the `wasmvision` exe
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision run -p /path/to/processors/blur.wasm -mjpeg=true
+wasmvision run -p /path/to/processors/blur.wasm
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
@@ -136,7 +136,7 @@ Extract the files to either the same directory you used for the `wasmvision` exe
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision.exe run -p C:\path\to\processors\blur.wasm -mjpeg=true
+wasmvision.exe run -p C:\path\to\processors\blur.wasm
 ```
 
 You will probably need to configure Windows Firewall to allow the `wasmvision.exe` executable to access the network port on your local machine.
@@ -150,19 +150,19 @@ You can run wasmVision using Docker.
 Pull the current development version:
 
 ```shell
-docker pull ghcr.io/wasmvision/wasmvision:v0.1.0-pre3
+docker pull ghcr.io/wasmvision/wasmvision:main
 ```
 
 Verify it is installed like this:
 
 ```shell
-docker run ghcr.io/wasmvision/wasmvision:v0.1.0-pre3 version
+docker run ghcr.io/wasmvision/wasmvision:main version
 ```
 
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-docker run --privileged --network=host ghcr.io/wasmvision/wasmvision::v0.1.0-pre3 run -p /processors/blur.wasm -mjpeg=true
+docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p /processors/blur.wasm
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
