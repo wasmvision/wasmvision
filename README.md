@@ -8,9 +8,9 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
-- Capture image frames
+- Capture image frames from a camera or video file
 - Process them using WebAssembly
-- Stream the results
+- Output the results to a stream or video file
 
 ```mermaid
 flowchart LR
@@ -85,7 +85,11 @@ Point your browser to `http://localhost:8080` and you can see the output.
 
 ![mjpeg-stream](./images/mjpeg-stream.png)
 
+Want to know more? Please see [USING.md](./USING.md)
+
 ### macOS
+
+**NOTE: wasmVision currently runs on M-series processors only.**
 
 Install wasmVision on macOS using Homebrew:
 
@@ -111,6 +115,8 @@ wasmvision run -p /path/to/processors/blur.wasm
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
+
+Want to know more? Please see [USING.md](./USING.md)
 
 ### Windows
 
@@ -143,7 +149,11 @@ You will probably need to configure Windows Firewall to allow the `wasmvision.ex
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
+Want to know more? Please see [USING.md](./USING.md)
+
 ### Docker
+
+**NOTE for macOS users: camera input does not work with Docker on macOS. File sources only.**
 
 You can run wasmVision using Docker.
 
@@ -166,6 +176,8 @@ docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p
 ```
 
 Point your browser to `http://localhost:8080` and you can see the output.
+
+Want to know more? Please see [USING.md](./USING.md)
 
 ## Development
 
