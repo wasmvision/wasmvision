@@ -25,6 +25,7 @@ type Interpreter struct {
 
 type InterpreterConfig struct {
 	ModelsDir string
+	Logging   bool
 }
 
 // New creates a new Interpreter.
@@ -36,7 +37,7 @@ func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	nc := net.NewCache()
 	nc.ModelsDir = config.ModelsDir
 
-	modules := hostModules(cache, nc)
+	modules := hostModules(cache, nc, config.Logging)
 	if err := modules.DefineWazero(r, nil); err != nil {
 		log.Panicf("error define host functions: %v\n", err)
 	}
@@ -49,22 +50,13 @@ func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	}
 }
 
-func hostModules(cache *frame.Cache, nc *net.Cache) wypes.Modules {
-	modules := wypes.Modules{
-		"hosted": wypes.Module{
-			"println": wypes.H1(hostPrintln),
-		},
-	}
+func hostModules(cache *frame.Cache, nc *net.Cache, logging bool) wypes.Modules {
+	modules := hostedModules(logging)
 	maps.Copy(modules, cv.MatModules(cache))
 	maps.Copy(modules, cv.ImgprocModules(cache))
 	maps.Copy(modules, cv.NetModules(cache, nc))
 
 	return modules
-}
-
-func hostPrintln(msg wypes.String) wypes.Void {
-	println(msg.Unwrap())
-	return wypes.Void{}
 }
 
 // Close closes the interpreter.
@@ -127,4 +119,27 @@ func (intp *Interpreter) Process(ctx context.Context, frm frame.Frame) frame.Fra
 
 	last, _ := intp.FrameCache.Get(out)
 	return last
+}
+
+func hostedModules(logging bool) wypes.Modules {
+	return wypes.Modules{
+		"hosted": wypes.Module{
+			"println": wypes.H1(hostPrintln),
+			"log":     wypes.H1(hostLogFunc(logging)),
+		},
+	}
+}
+
+func hostPrintln(msg wypes.String) wypes.Void {
+	println(msg.Unwrap())
+	return wypes.Void{}
+}
+
+func hostLogFunc(logging bool) func(wypes.String) wypes.Void {
+	return func(msg wypes.String) wypes.Void {
+		if logging {
+			log.Println(msg.Unwrap())
+		}
+		return wypes.Void{}
+	}
 }
