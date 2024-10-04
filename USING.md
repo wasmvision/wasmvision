@@ -79,18 +79,28 @@ wasmvision run -p /path/to/processors/mosaic.wasm -o file -d /path/to/video/file
 
 ```shell
 NAME:
-   wasmvision download - Download computer vision models
+   wasmvision download - Download computer vision models and processors
 
 USAGE:
-   wasmvision download [command options] [known-model-name]
+   wasmvision download command [command options]
+
+COMMANDS:
+   model      download a known computer vision model
+   processor  download a known processor
+   help, h    Shows a list of commands or help for one command
 
 OPTIONS:
-   --models-dir value, --models value  directory for model loading (default to $home/models) [$WASMVISION_MODELS_DIR]
-   --help, -h                          show help
+   --help, -h  show help
+```
+
+### Download the `candy.wasm` processor used for fast neural style transfer from the wasmVision repository to the default processors directory on the local machine.
+
+```shell
+wasmvision download processor candy
 ```
 
 ### Download the `candy-9.onnx` model used for fast neural style transfer from the official ONNX repository to the default models directory on the local machine.
 
 ```shell
-wasmvision download candy-9
+wasmvision download model candy-9
 ```

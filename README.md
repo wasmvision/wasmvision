@@ -71,15 +71,13 @@ cd /path/to/wasmvision/install
 wasmvision version
 ```
 
-You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
-
-Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
-
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision run -p /path/to/processors/blur.wasm
+wasmvision run -p blur
 ```
+
+wasmVision will automatically download the `blur.wasm` processor from our repo to your local `$HOME/processors` directory.
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
@@ -104,15 +102,13 @@ Verify it is installed like this:
 wasmvision version
 ```
 
-You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
-
-Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
-
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision run -p /path/to/processors/blur.wasm
+wasmvision run -p blur
 ```
+
+wasmVision will automatically download the `blur.wasm` processor from our repo to your local `$HOME/processors` directory.
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
@@ -135,15 +131,13 @@ chdir C:\path\to\wasmvision\install
 wasmvision.exe version
 ```
 
-You can obtain the latest released processors by downloading the "wasmvision-processors" file under "Assets" for the same release.
-
-Extract the files to either the same directory you used for the `wasmvision` executable or a subdirectory in that directory.
-
 Now you can run a test to capture video using your webcam, blur it using a WebAssembly processor, and then stream the output to port 8080 on your local machine:
 
 ```shell
-wasmvision.exe run -p C:\path\to\processors\blur.wasm
+wasmvision.exe run -p blur
 ```
+
+wasmVision will automatically download the `blur.wasm` processor from our repo to your local `$HOME/processors` directory.
 
 You will probably need to configure Windows Firewall to allow the `wasmvision.exe` executable to access the network port on your local machine.
 
