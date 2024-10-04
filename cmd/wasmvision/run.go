@@ -93,12 +93,14 @@ func run(cCtx *cli.Context) error {
 			switch err {
 			case capture.ErrClosed:
 				frame.Close()
+				if logging {
+					log.Println("Capture closed.")
+				}
+
 				return nil
 
 			default:
-				fmt.Printf("frame error %v\n", err)
-				frame.Close()
-				return err
+				return fmt.Errorf("frame read error: %w", err)
 			}
 		}
 
