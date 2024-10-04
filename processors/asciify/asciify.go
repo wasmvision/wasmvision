@@ -27,9 +27,11 @@ func process(image mat.Mat) mat.Mat {
 		println(convert.StringToWasmPtr(string(ascii[y][:])))
 	}
 
-	asciified := mat.MatNewMatWithSize(image.Rows(), image.Cols(), 16)
+	asciified := mat.MatNewWithSize(image.Rows(), image.Cols(), 16)
 	for y := 0; y < 60; y++ {
-		cv.PutText(asciified, string(ascii[y][:]), types.Size{X: 10, Y: 8 * int32(y)}, types.HersheyFontTypeHersheyFontComplexSmall, 0.8, types.Rgba{R: 255, G: 255, B: 255, A: 255}, 1)
+		cv.PutText(asciified, string(ascii[y][:]),
+			types.Size{X: 10, Y: 8 * int32(y)}, types.HersheyFontTypeHersheyFontComplexSmall, 0.8,
+			types.RGBA{R: 255, G: 255, B: 255, A: 255}, 1)
 	}
 
 	return asciified

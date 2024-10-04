@@ -24,13 +24,13 @@ func log(ptr, size uint32)
 var mosaicNet dnn.Net
 
 func init() {
-	mosaicNet = dnn.NetReadNet("mosaic-9", "")
+	mosaicNet = dnn.NetRead("mosaic-9", "")
 }
 
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() || mosaicNet.Empty() {
-		return mat.MatNewMat()
+		return image
 	}
 
 	// convert image Mat to 320x240 blob that the style transfer can analyze
@@ -47,7 +47,7 @@ func process(image mat.Mat) mat.Mat {
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 
-	mosaiced := mat.MatNewMatWithSize(240, 320, 16)
+	mosaiced := mat.MatNewWithSize(240, 320, 16)
 	defer mosaiced.Close()
 
 	// take blob and obtain displayable Mat image from it

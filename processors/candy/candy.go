@@ -24,13 +24,13 @@ func log(ptr, size uint32)
 var candyNet dnn.Net
 
 func init() {
-	candyNet = dnn.NetReadNet("candy-9", "")
+	candyNet = dnn.NetRead("candy-9", "")
 }
 
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() || candyNet.Empty() {
-		return mat.MatNewMat()
+		return image
 	}
 
 	// convert image Mat to 320x240 blob that the style transfer can analyze
@@ -47,7 +47,7 @@ func process(image mat.Mat) mat.Mat {
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 
-	candied := mat.MatNewMatWithSize(240, 320, 16)
+	candied := mat.MatNewWithSize(240, 320, 16)
 	defer candied.Close()
 
 	// take blob and obtain displayable Mat image from it
