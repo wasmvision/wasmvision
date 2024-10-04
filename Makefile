@@ -21,4 +21,7 @@ hello:
 mosaic:
 	cd processors/mosaic; tinygo build -o ../mosaic.wasm -target=wasm-unknown .
 
+pointilism:
+	cd processors/pointilism; tinygo build -o ../pointilism.wasm -target=wasm-unknown .
+
 processors: asciify blur blurrs candy gaussianblur hello mosaic

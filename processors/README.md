@@ -41,3 +41,9 @@ Processor written in Go that displays some information about the image frame.
 ![mosaic](../images/mosaic-processor.png)
 
 Processor written in Go that performs fast neural style transfer.
+
+## pointilism.wasm
+
+![pointilism](../images/pointilism-processor.png)
+
+Processor written in Go that performs fast neural style transfer.
