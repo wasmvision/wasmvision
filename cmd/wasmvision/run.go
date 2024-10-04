@@ -73,7 +73,7 @@ func run(cCtx *cli.Context) error {
 		if dest == "" {
 			log.Panicf("you must profile a file destination for output-kind=file\n")
 		}
-		videoWriter = engine.NewVideoWriter(dest)
+		videoWriter = engine.NewVideoWriter(r.FrameCache, dest)
 
 		if err := videoWriter.Start(webcam); err != nil {
 			log.Panicf("Error starting video writer device: %v\n", err)
@@ -123,9 +123,10 @@ func run(cCtx *cli.Context) error {
 		case "mjpeg":
 			mjpegstream.Publish(frame)
 		case "file":
-			if err := videoWriter.Write(frame); err != nil {
-				log.Printf("error writing frame: %v\n", err)
-			}
+			videoWriter.Write(frame)
+
+			// leave frame to writer to cleanup
+			continue
 		}
 
 		// cleanup frame
