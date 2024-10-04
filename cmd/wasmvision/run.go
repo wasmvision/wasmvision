@@ -49,13 +49,13 @@ func run(cCtx *cli.Context) error {
 
 	// load wasm processors
 	if err := r.LoadProcessors(ctx, processors); err != nil {
-		log.Panicf("failed to load processors: %v\n", err)
+		return fmt.Errorf("failed to load processors: %w", err)
 	}
 
 	// Open the webcam.
 	webcam := capture.NewWebcam(source)
 	if err := webcam.Open(); err != nil {
-		log.Panicf("Error opening video capture %v\n", source)
+		return fmt.Errorf("failed opening video capture: %w", err)
 	}
 	defer webcam.Close()
 
@@ -69,18 +69,17 @@ func run(cCtx *cli.Context) error {
 		go mjpegstream.Start()
 	case "file":
 		if dest == "" {
-			log.Panicf("you must profile a file destination for output-kind=file\n")
+			return fmt.Errorf("you must profile a file destination for output=file")
 		}
 		videoWriter = engine.NewVideoWriter(r.FrameCache, dest)
 
 		if err := videoWriter.Start(webcam); err != nil {
-			log.Panicf("Error starting video writer device: %v\n", err)
-			return err
+			return fmt.Errorf("failed starting video writer: %w", err)
 		}
 
 		defer videoWriter.Close()
 	default:
-		log.Panicf("Unknown output kind %v\n", output)
+		return fmt.Errorf("unknown output kind %v", output)
 	}
 
 	if logging {
