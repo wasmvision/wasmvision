@@ -47,3 +47,9 @@ Processor written in Go that performs fast neural style transfer.
 ![pointilism](../images/pointilism-processor.png)
 
 Processor written in Go that performs fast neural style transfer.
+
+## rainprincess.wasm
+
+![rainprincess](../images/rainprincess-processor.png)
+
+Processor written in Go that performs fast neural style transfer.
