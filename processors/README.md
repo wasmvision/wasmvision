@@ -53,3 +53,9 @@ Processor written in Go that performs fast neural style transfer.
 ![rainprincess](../images/rainprincess-processor.png)
 
 Processor written in Go that performs fast neural style transfer.
+
+## udnie.wasm
+
+![udnie](../images/udnie-processor.png)
+
+Processor written in Go that performs fast neural style transfer.

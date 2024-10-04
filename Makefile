@@ -27,4 +27,7 @@ pointilism:
 rain-princess:
 	cd processors/rainprincess; tinygo build -o ../rainprincess.wasm -target=wasm-unknown .
 
-processors: asciify blur blurrs candy gaussianblur hello mosaic pointilism rain-princess
+udnie:
+	cd processors/udnie; tinygo build -o ../udnie.wasm -target=wasm-unknown .
+
+processors: asciify blur blurrs candy gaussianblur hello mosaic pointilism rain-princess udnie
