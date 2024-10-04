@@ -2,12 +2,14 @@ package frame
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/orsinium-labs/wypes"
 )
 
 // Cache is a cache for frames and other data that needs to be shared between modules, or the guest and host.
 type Cache struct {
+	mux        sync.Mutex
 	frameCache map[wypes.UInt32]Frame
 
 	// ReturnDataPtr is a pointer to a linear memory buffer for return values.
@@ -23,6 +25,9 @@ func NewCache() *Cache {
 
 // Get returns a frame from the cache.
 func (c *Cache) Get(id wypes.UInt32) (Frame, bool) {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
 	frame, ok := c.frameCache[id]
 	return frame, ok
 }
@@ -33,12 +38,18 @@ func (c *Cache) Set(frame Frame) error {
 		return errors.New("frame ID is 0")
 	}
 
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
 	c.frameCache[frame.ID] = frame
 	return nil
 }
 
 // Delete deletes a frame from the cache.
 func (c *Cache) Delete(id wypes.UInt32) {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
 	delete(c.frameCache, id)
 }
 
