@@ -27,6 +27,10 @@ func run(cCtx *cli.Context) error {
 	source := cCtx.String("source")
 	output := cCtx.String("output")
 	dest := cCtx.String("destination")
+	processorsDir := cCtx.String("processors-dir")
+	if processorsDir == "" {
+		processorsDir = DefaultProcessorsPath()
+	}
 	modelsDir := cCtx.String("models-dir")
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
@@ -36,22 +40,16 @@ func run(cCtx *cli.Context) error {
 	ctx := context.Background()
 
 	// load wasm runtime
-	r := runtime.New(ctx, runtime.InterpreterConfig{ModelsDir: modelsDir, Logging: logging})
+	r := runtime.New(ctx, runtime.InterpreterConfig{
+		ProcessorsDir: processorsDir,
+		ModelsDir:     modelsDir,
+		Logging:       logging,
+	})
 	defer r.Close(ctx)
 
-	for _, p := range processors {
-		module, err := os.ReadFile(p)
-		if err != nil {
-			log.Panicf("failed to read wasm processor module: %v\n", err)
-		}
-
-		if logging {
-			log.Printf("Loading wasmCV guest module %s...\n", p)
-		}
-
-		if err := r.RegisterGuestModule(ctx, module); err != nil {
-			log.Panicf("failed to load wasm processor module: %v\n", err)
-		}
+	// load wasm processors
+	if err := r.LoadProcessors(ctx, processors); err != nil {
+		log.Panicf("failed to load processors: %v\n", err)
 	}
 
 	// Open the webcam.
@@ -66,7 +64,7 @@ func run(cCtx *cli.Context) error {
 		if dest == "" {
 			dest = ":8080"
 		}
-		mjpegstream = engine.NewMJPEGStream(dest)
+		mjpegstream = engine.NewMJPEGStream(r.FrameCache, dest)
 
 		go mjpegstream.Start()
 	case "file":
@@ -124,13 +122,6 @@ func run(cCtx *cli.Context) error {
 			mjpegstream.Publish(frame)
 		case "file":
 			videoWriter.Write(frame)
-
-			// leave frame to writer to cleanup
-			continue
 		}
-
-		// cleanup frame
-		frame.Close()
-		r.FrameCache.Delete(frame.ID)
 	}
 }

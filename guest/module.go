@@ -1,4 +1,4 @@
-package runtime
+package guest
 
 import (
 	"context"
@@ -6,13 +6,13 @@ import (
 	"github.com/tetratelabs/wazero/api"
 )
 
-type GuestModule struct {
+type Module struct {
 	api.Module
 	ReturnDataPtr uint32
 }
 
-// NewGuestModule creates a new GuestModule.
-func NewGuestModule(ctx context.Context, m api.Module) GuestModule {
+// NewModule creates a new GuestModule.
+func NewModule(ctx context.Context, m api.Module) Module {
 	// get a memory buffer for return values, if possible
 	var returnDataPtr uint32
 	malloc := m.ExportedFunction("malloc")
@@ -23,7 +23,7 @@ func NewGuestModule(ctx context.Context, m api.Module) GuestModule {
 		}
 	}
 
-	return GuestModule{
+	return Module{
 		Module:        m,
 		ReturnDataPtr: returnDataPtr,
 	}

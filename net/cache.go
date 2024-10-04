@@ -82,7 +82,7 @@ func (c *Cache) DownloadModel(model string) error {
 		return errors.New("model not found")
 	}
 
-	fmt.Printf("Downloading model %s...\n", km.Alias)
+	fmt.Printf("Downloading model %s to %s...\n", km.Alias, c.ModelsDir)
 
 	return DownloadModel(km, c.ModelsDir)
 }

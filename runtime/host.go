@@ -2,11 +2,16 @@ package runtime
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"maps"
+	"os"
+	"path/filepath"
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/guest"
 	"github.com/wasmvision/wasmvision/net"
 
 	"github.com/orsinium-labs/wypes"
@@ -17,15 +22,18 @@ import (
 
 // Interpreter is a WebAssembly interpreter that can load and run guest modules.
 type Interpreter struct {
-	r            wazero.Runtime
-	guestModules []GuestModule
-	FrameCache   *frame.Cache
-	NetCache     *net.Cache
+	r             wazero.Runtime
+	guestModules  []guest.Module
+	FrameCache    *frame.Cache
+	NetCache      *net.Cache
+	ProcessorsDir string
+	Logging       bool
 }
 
 type InterpreterConfig struct {
-	ModelsDir string
-	Logging   bool
+	ProcessorsDir string
+	ModelsDir     string
+	Logging       bool
 }
 
 // New creates a new Interpreter.
@@ -43,10 +51,12 @@ func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	}
 
 	return Interpreter{
-		r:            r,
-		guestModules: []GuestModule{},
-		FrameCache:   cache,
-		NetCache:     nc,
+		r:             r,
+		guestModules:  []guest.Module{},
+		FrameCache:    cache,
+		NetCache:      nc,
+		ProcessorsDir: config.ProcessorsDir,
+		Logging:       config.Logging,
 	}
 }
 
@@ -64,19 +74,64 @@ func (intp *Interpreter) Close(ctx context.Context) {
 	intp.r.Close(ctx)
 }
 
+func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string) error {
+	for _, p := range processors {
+		if guest.ProcessorWellKnown(p) && !guest.ProcessorExists(intp.ProcessorFileName(p)) {
+			if err := intp.DownloadProcessor(p); err != nil {
+				return err
+			}
+		}
+
+		module, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+
+		if intp.Logging {
+			log.Printf("Loading wasmCV guest module %s...\n", p)
+		}
+
+		if err := intp.RegisterGuestModule(ctx, module); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (intp *Interpreter) DownloadProcessor(processor string) error {
+	p, ok := guest.KnownProcessors[processor]
+	if !ok {
+		return errors.New("processor not found")
+	}
+
+	fmt.Printf("Downloading processor %s to %s...\n", p.Alias, intp.ProcessorsDir)
+
+	return guest.DownloadProcessor(p, intp.ProcessorsDir)
+}
+
+func (intp *Interpreter) ProcessorFileName(processor string) string {
+	if p, ok := guest.KnownProcessors[processor]; ok {
+		return filepath.Join(intp.ProcessorsDir, p.Filename)
+	}
+
+	return filepath.Join(intp.ProcessorsDir, processor)
+}
+
 // Processors returns the guest modules registered with the interpreter.
-func (intp *Interpreter) Processors() []GuestModule {
+func (intp *Interpreter) Processors() []guest.Module {
 	return intp.guestModules
 }
 
 // RegisterGuestModule registers a guest module with the interpreter.
 func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte) error {
-	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithStartFunctions("_initialize"))
+	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithName("").WithStartFunctions("_initialize"))
 	if err != nil {
+		println("error instantiate module")
 		return err
 	}
 
-	intp.guestModules = append(intp.guestModules, NewGuestModule(ctx, mod))
+	intp.guestModules = append(intp.guestModules, guest.NewModule(ctx, mod))
 	return nil
 }
 
@@ -119,27 +174,4 @@ func (intp *Interpreter) Process(ctx context.Context, frm frame.Frame) frame.Fra
 
 	last, _ := intp.FrameCache.Get(out)
 	return last
-}
-
-func hostedModules(logging bool) wypes.Modules {
-	return wypes.Modules{
-		"hosted": wypes.Module{
-			"println": wypes.H1(hostPrintln),
-			"log":     wypes.H1(hostLogFunc(logging)),
-		},
-	}
-}
-
-func hostPrintln(msg wypes.String) wypes.Void {
-	println(msg.Unwrap())
-	return wypes.Void{}
-}
-
-func hostLogFunc(logging bool) func(wypes.String) wypes.Void {
-	return func(msg wypes.String) wypes.Void {
-		if logging {
-			log.Println(msg.Unwrap())
-		}
-		return wypes.Void{}
-	}
 }

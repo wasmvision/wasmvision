@@ -15,11 +15,17 @@ import (
 type MJPEGStream struct {
 	stream *mjpeg.Stream
 	Port   string
+	cache  *frame.Cache
+	frames chan frame.Frame
 }
 
 // NewMJPEGStream creates a new MJPEGStream instance with the given port.
-func NewMJPEGStream(port string) MJPEGStream {
-	return MJPEGStream{Port: port}
+func NewMJPEGStream(cache *frame.Cache, port string) MJPEGStream {
+	return MJPEGStream{
+		Port:   port,
+		cache:  cache,
+		frames: make(chan frame.Frame, framebufferSize),
+	}
 }
 
 // Start starts the MJPEG stream server.
@@ -33,17 +39,28 @@ func (s *MJPEGStream) Start() {
 		WriteTimeout: 60 * time.Second,
 	}
 
+	go s.publishFrames()
+
 	log.Fatal(server.ListenAndServe())
 }
 
 // Publish publishes a frame to the MJPEG stream.
 func (s *MJPEGStream) Publish(frm frame.Frame) error {
-	buf, err := gocv.IMEncode(".jpg", frm.Image)
-	if err != nil {
-		return err
-	}
-	defer buf.Close()
-
-	s.stream.UpdateJPEG(buf.GetBytes())
+	s.frames <- frm
 	return nil
+}
+
+func (s *MJPEGStream) publishFrames() {
+	for frame := range s.frames {
+		buf, err := gocv.IMEncode(".jpg", frame.Image)
+		if err != nil {
+			log.Printf("error writing frame: %v\n", err)
+		}
+		defer buf.Close()
+
+		s.stream.UpdateJPEG(buf.GetBytes())
+
+		frame.Close()
+		s.cache.Delete(frame.ID)
+	}
 }

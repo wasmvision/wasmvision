@@ -22,10 +22,13 @@ var (
 		&cli.BoolFlag{Name: "logging", Value: true, Usage: "log detailed info to console (default: true)"},
 		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "directory for model loading (default to $home/models)"},
 		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
+		&cli.StringFlag{Name: "processors-dir", Aliases: []string{"processors"}, EnvVars: []string{"WASMVISION_PROCESSORS_DIR"}, Usage: "directory for processor loading (default to $home/processors)"},
+		&cli.BoolFlag{Name: "processor-download", Value: true, Usage: "automatically download known processors (default: true)"},
 	}
 
 	downloadFlags = []cli.Flag{
 		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "directory for model loading (default to $home/models)"},
+		&cli.BoolFlag{Name: "processor-download", Value: true, Usage: "automatically download known processors (default: true)"},
 	}
 )
 
@@ -42,11 +45,24 @@ func main() {
 				Flags:  runFlags,
 			},
 			{
-				Name:      "download",
-				Usage:     "Download computer vision models",
-				ArgsUsage: "[known-model-name]",
-				Action:    download,
-				Flags:     downloadFlags,
+				Name:  "download",
+				Usage: "Download computer vision models and processors",
+				Subcommands: []*cli.Command{
+					{
+						Name:      "model",
+						Usage:     "download a known computer vision model",
+						ArgsUsage: "[known-model-name]",
+						Action:    downloadModel,
+						Flags:     downloadFlags,
+					},
+					{
+						Name:      "processor",
+						Usage:     "download a known processor",
+						ArgsUsage: "[known-processor-name]",
+						Action:    downloadProcessor,
+						Flags:     downloadFlags,
+					},
+				},
 			},
 			{
 				Name:   "info",
@@ -70,6 +86,15 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func DefaultProcessorsPath() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return filepath.Join(dirname, "processors")
 }
 
 func DefaultModelPath() string {
