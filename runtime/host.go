@@ -76,10 +76,13 @@ func (intp *Interpreter) Close(ctx context.Context) {
 
 func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string) error {
 	for _, p := range processors {
-		if guest.ProcessorWellKnown(p) && !guest.ProcessorExists(intp.ProcessorFileName(p)) {
-			if err := intp.DownloadProcessor(p); err != nil {
-				return err
+		if guest.ProcessorWellKnown(p) {
+			if !guest.ProcessorExists(intp.ProcessorFileName(p)) {
+				if err := intp.DownloadProcessor(p); err != nil {
+					return err
+				}
 			}
+			p = intp.ProcessorFileName(p)
 		}
 
 		module, err := os.ReadFile(p)
@@ -105,7 +108,7 @@ func (intp *Interpreter) DownloadProcessor(processor string) error {
 		return errors.New("processor not found")
 	}
 
-	fmt.Printf("Downloading processor %s to %s...\n", p.Alias, intp.ProcessorsDir)
+	fmt.Printf("Downloading processor %s to %s...\n", p.Filename, intp.ProcessorsDir)
 
 	return guest.DownloadProcessor(p, intp.ProcessorsDir)
 }
