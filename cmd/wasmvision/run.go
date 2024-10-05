@@ -67,6 +67,8 @@ func run(cCtx *cli.Context) error {
 		mjpegstream = engine.NewMJPEGStream(r.FrameCache, dest)
 
 		go mjpegstream.Start()
+		defer mjpegstream.Close()
+
 	case "file":
 		if dest == "" {
 			return fmt.Errorf("you must profile a file destination for output=file")

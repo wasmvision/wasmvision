@@ -14,6 +14,7 @@ import (
 // are being processed by wasmVision.
 type MJPEGStream struct {
 	stream *mjpeg.Stream
+	server *http.Server
 	Port   string
 	cache  *frame.Cache
 	frames chan frame.Frame
@@ -33,7 +34,7 @@ func (s *MJPEGStream) Start() {
 	s.stream = mjpeg.NewStream()
 
 	http.Handle("/", s.stream)
-	server := &http.Server{
+	s.server = &http.Server{
 		Addr:         s.Port,
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
@@ -41,7 +42,13 @@ func (s *MJPEGStream) Start() {
 
 	go s.publishFrames()
 
-	log.Fatal(server.ListenAndServe())
+	log.Fatal(s.server.ListenAndServe())
+}
+
+// Close closes the MJPEG stream.
+func (s *MJPEGStream) Close() {
+	close(s.frames)
+	s.server.Close()
 }
 
 // Publish publishes a frame to the MJPEG stream.
@@ -56,10 +63,10 @@ func (s *MJPEGStream) publishFrames() {
 		if err != nil {
 			log.Printf("error writing frame: %v\n", err)
 		}
-		defer buf.Close()
 
 		s.stream.UpdateJPEG(buf.GetBytes())
 
+		buf.Close()
 		frame.Close()
 		s.cache.Delete(frame.ID)
 	}
