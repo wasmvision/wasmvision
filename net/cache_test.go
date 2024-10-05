@@ -1,6 +1,7 @@
 package net
 
 import (
+	"path/filepath"
 	"testing"
 )
 
@@ -57,7 +58,7 @@ func TestModelFileName(t *testing.T) {
 	cache.ModelsDir = "models"
 	model := "testing.onnx"
 	modelFile := cache.ModelFileName(model)
-	if modelFile != "models/testing.onnx" {
+	if modelFile != filepath.Join("models", "testing.onnx") {
 		t.Error("failed to get model file name")
 	}
 }
@@ -67,7 +68,7 @@ func TestKnownModelFileName(t *testing.T) {
 	cache.ModelsDir = "models"
 	model := "candy-9"
 	modelFile := cache.ModelFileName(model)
-	if modelFile != "models/candy-9.onnx" {
+	if modelFile != filepath.Join("models", "candy-9.onnx") {
 		t.Error("failed to get known model file name")
 	}
 }

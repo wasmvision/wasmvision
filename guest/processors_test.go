@@ -1,6 +1,7 @@
 package guest
 
 import (
+	"path/filepath"
 	"testing"
 )
 
@@ -20,15 +21,19 @@ func TestWellKnownProcessor(t *testing.T) {
 
 func TestProcessorFilename(t *testing.T) {
 	t.Run("well-known processor", func(t *testing.T) {
-		fn := ProcessorFilename("candy", "/tmp")
-		if fn != "/tmp/candy.wasm" {
+		path := filepath.Join("processors", "candy.wasm")
+
+		fn := ProcessorFilename("candy", "processors")
+		if fn != path {
 			t.Errorf("unexpected filename %s", fn)
 		}
 	})
 
 	t.Run("not in processors directory", func(t *testing.T) {
-		fn := ProcessorFilename("/some/path/to/unknown.wasm", "/tmp")
-		if fn != "/some/path/to/unknown.wasm" {
+		path := filepath.Join("processors", "are", "awesome", "yes.wasm")
+
+		fn := ProcessorFilename(path, "someplace")
+		if fn != path {
 			t.Errorf("unexpected filename %s", fn)
 		}
 	})
