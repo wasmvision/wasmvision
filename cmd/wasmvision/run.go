@@ -12,11 +12,6 @@ import (
 	"github.com/wasmvision/wasmvision/runtime"
 )
 
-var (
-	mjpegstream engine.MJPEGStream
-	videoWriter engine.VideoWriter
-)
-
 func run(cCtx *cli.Context) error {
 	processors := cCtx.StringSlice("processor")
 	if len(processors) == 0 {
@@ -58,6 +53,11 @@ func run(cCtx *cli.Context) error {
 		return fmt.Errorf("failed opening video capture: %w", err)
 	}
 	defer webcam.Close()
+
+	var (
+		mjpegstream engine.MJPEGStream
+		videoWriter engine.VideoWriter
+	)
 
 	switch output {
 	case "mjpeg":
@@ -113,7 +113,7 @@ func run(cCtx *cli.Context) error {
 
 		i++
 		if logging {
-			log.Printf("Read frame %d\n", i+1)
+			log.Printf("Read frame %d\n", i)
 		}
 
 		frame = r.Process(ctx, frame)
