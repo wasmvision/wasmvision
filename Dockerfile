@@ -20,7 +20,7 @@ WORKDIR /src
 RUN --mount=target=. \
     --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    go build -tags static -o /build/wasmvision ./cmd/wasmvision
+    go build -ldflags "-linkmode 'external' -extldflags '-static'" -tags netgo,osusergo,opencvstatic -o /build/wasmvision ./cmd/wasmvision
 
 # second stage: create a minimal image with the wasmvision binary
 FROM ubuntu:22.04 AS wasmvision-final
