@@ -6,4 +6,4 @@ FROM ghcr.io/hybridgroup/opencv:4.10.0-static AS wasmvision-static-builder
 
 WORKDIR /src
 
-CMD go build -tags static -o /build/wasmvision -buildvcs=false ./cmd/wasmvision
+CMD go build -ldflags "-linkmode 'external' -extldflags '-static'" -tags netgo,osusergo,opencvstatic -o /build/wasmvision -buildvcs=false ./cmd/wasmvision
