@@ -2,12 +2,9 @@ package runtime
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
 	"maps"
 	"os"
-	"path/filepath"
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/frame"
@@ -77,15 +74,18 @@ func (intp *Interpreter) Close(ctx context.Context) {
 func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string) error {
 	for _, p := range processors {
 		if guest.ProcessorWellKnown(p) {
-			if !guest.ProcessorExists(intp.ProcessorFileName(p)) {
-				if err := intp.DownloadProcessor(p); err != nil {
+			if !guest.ProcessorExists(guest.ProcessorFilename(p, intp.ProcessorsDir)) {
+				log.Printf("Downloading processor %s to %s...\n", p, intp.ProcessorsDir)
+
+				if err := guest.DownloadProcessor(p, intp.ProcessorsDir); err != nil {
 					return err
 				}
 			}
-			p = intp.ProcessorFileName(p)
 		}
 
-		module, err := os.ReadFile(p)
+		fn := guest.ProcessorFilename(p, intp.ProcessorsDir)
+
+		module, err := os.ReadFile(fn)
 		if err != nil {
 			return err
 		}
@@ -100,25 +100,6 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 	}
 
 	return nil
-}
-
-func (intp *Interpreter) DownloadProcessor(processor string) error {
-	p, ok := guest.KnownProcessors[processor]
-	if !ok {
-		return errors.New("processor not found")
-	}
-
-	fmt.Printf("Downloading processor %s to %s...\n", p.Filename, intp.ProcessorsDir)
-
-	return guest.DownloadProcessor(p, intp.ProcessorsDir)
-}
-
-func (intp *Interpreter) ProcessorFileName(processor string) string {
-	if p, ok := guest.KnownProcessors[processor]; ok {
-		return filepath.Join(intp.ProcessorsDir, p.Filename)
-	}
-
-	return filepath.Join(intp.ProcessorsDir, processor)
 }
 
 // Processors returns the guest modules registered with the interpreter.

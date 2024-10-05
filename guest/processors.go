@@ -68,12 +68,17 @@ var KnownProcessors = map[string]ProcessorFile{
 	},
 }
 
-func DownloadProcessor(processor ProcessorFile, targetDir string) error {
+func DownloadProcessor(processor string, processorDir string) error {
+	p, ok := KnownProcessors[processor]
+	if !ok {
+		return errors.New("not known processor")
+	}
+
 	opts := []getter.ClientOption{}
 	client := &getter.Client{
 		Ctx:     context.Background(),
-		Src:     processor.URL,
-		Dst:     filepath.Join(targetDir, filepath.Base(processor.Filename)),
+		Src:     p.URL,
+		Dst:     filepath.Join(processorDir, filepath.Base(p.Filename)),
 		Mode:    getter.ClientModeFile,
 		Options: opts,
 	}
@@ -98,4 +103,21 @@ func ProcessorWellKnown(processor string) bool {
 	}
 
 	return false
+}
+
+func ProcessorFilename(processor, processorDir string) string {
+	p, known := KnownProcessors[processor]
+	switch {
+	case known:
+		// processor name like `asciify` is a well-known processor
+		return filepath.Join(processorDir, p.Filename)
+
+	case ProcessorExists(filepath.Join(processorDir, processor)):
+		// processor name like `asciify.wasm` is a file in the processors directory
+		return filepath.Join(processorDir, processor)
+
+	default:
+		// processor name like `/path/to/asciify.wasm` is not a well-known processor and not a file in the processors directory
+		return processor
+	}
 }

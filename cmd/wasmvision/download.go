@@ -44,8 +44,7 @@ func downloadProcessor(cCtx *cli.Context) error {
 	}
 	name := cCtx.Args().Get(0)
 
-	dl, ok := guest.KnownProcessors[name]
-	if !ok {
+	if !guest.ProcessorWellKnown(name) {
 		return fmt.Errorf("unknown processor %s", name)
 	}
 
@@ -56,7 +55,7 @@ func downloadProcessor(cCtx *cli.Context) error {
 
 	fmt.Printf("Downloading processor %s...\n", name)
 
-	err := guest.DownloadProcessor(dl, processorsDir)
+	err := guest.DownloadProcessor(name, processorsDir)
 	if err != nil {
 		fmt.Printf("Error downloading processor: %s", err)
 		return err
