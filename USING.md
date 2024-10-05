@@ -8,11 +8,11 @@ USAGE:
    wasmvision [global options] command [command options]
 
 VERSION:
-   0.1.0-pre4
+   0.1.0-pre5
 
 COMMANDS:
    run       Run wasmVision processors
-   download  Download computer vision models
+   download  Download computer vision models and processors
    info      Show installation info
    version   Show version
    about     About wasmVision
@@ -42,13 +42,33 @@ OPTIONS:
    --logging                                                    log detailed info to console (default: true) (default: true)
    --models-dir value, --models value                           directory for model loading (default to $home/models) [$WASMVISION_MODELS_DIR]
    --model-download, --download                                 automatically download known models (default: true) (default: true)
-   --help, -h                                                   show help                                                 show help
+   --processors-dir value, --processors value                   directory for processor loading (default to $home/processors) [$WASMVISION_PROCESSORS_DIR]
+   --processor-download                                         automatically download known processors (default: true) (default: true)
+   --help, -h                                                   show help
 ```
 
-### Capture from your webcam (default), process the video, and stream the output using MJPEG to port 8080 (default)
+### Automatically download the `blur` processor, capture from your webcam (default), process the video, and stream the output using MJPEG to port 8080 (default)
 
 ```shell
-wasmvision run -p /path/to/processors/mosaic.wasm
+wasmvision run -p blur
+```
+
+### Automatically download the `mosaic` processor and the `mosaic-9.onnx` model, capture from your webcam (default), process the video, and stream the output using MJPEG to port 8080 (default)
+
+```shell
+wasmvision run -p mosaic
+```
+
+### Capture from your webcam (default), process the video using the `mosaic.wasm` processor located in the default processor directory, and stream the output using MJPEG to port 8080 (default)
+
+```shell
+wasmvision run -p mosaic.wasm
+```
+
+### Capture from your webcam (default), process the video using the `yourcustom.wasm` processor located in a non-default directory, and stream the output using MJPEG to port 8080 (default)
+
+```shell
+wasmvision run -p /path/to/processors/yourcustom.wasm
 ```
 
 ### Capture from a secondary webcam, process the video, and stream the output using MJPEG to port 8080 (default)
