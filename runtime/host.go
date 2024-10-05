@@ -149,8 +149,12 @@ func (intp *Interpreter) Process(ctx context.Context, frm frame.Frame) frame.Fra
 	out := in
 
 	// close up all the frames except the last one
-	for i := 0; i < len(frames)-2; i++ {
-		frm, _ := intp.FrameCache.Get(frames[i])
+	for i := 0; i < len(frames)-1; i++ {
+		frm, ok := intp.FrameCache.Get(frames[i])
+		if !ok {
+			continue
+		}
+
 		frm.Close()
 
 		intp.FrameCache.Delete(frames[i])
