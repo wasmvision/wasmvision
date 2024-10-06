@@ -1,4 +1,4 @@
-package net
+package models
 
 import (
 	"context"
@@ -68,7 +68,7 @@ var KnownModels = map[string]ModelFile{
 	},
 }
 
-func DownloadModel(name string, modelsDir string) error {
+func Download(name string, modelsDir string) error {
 	model, ok := KnownModels[name]
 	if !ok {
 		return errors.New("unknown model")

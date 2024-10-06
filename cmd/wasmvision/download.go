@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/wasmvision/wasmvision/guest"
-	"github.com/wasmvision/wasmvision/net"
+	"github.com/wasmvision/wasmvision/models"
 )
 
 func downloadModel(cCtx *cli.Context) error {
@@ -15,7 +15,7 @@ func downloadModel(cCtx *cli.Context) error {
 	}
 	name := cCtx.Args().Get(0)
 
-	if !net.ModelWellKnown(name) {
+	if !models.ModelWellKnown(name) {
 		return fmt.Errorf("unknown model %s", name)
 	}
 
@@ -26,7 +26,7 @@ func downloadModel(cCtx *cli.Context) error {
 
 	fmt.Printf("Downloading model %s...\n", name)
 
-	err := net.DownloadModel(name, modelsDir)
+	err := models.Download(name, modelsDir)
 	if err != nil {
 		fmt.Printf("Error downloading model: %s", err)
 		return err

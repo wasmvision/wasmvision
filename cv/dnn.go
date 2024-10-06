@@ -2,8 +2,9 @@ package cv
 
 import (
 	"image"
+	"log"
 
-	"github.com/wasmvision/wasmvision/net"
+	"github.com/wasmvision/wasmvision/models"
 	"gocv.io/x/gocv"
 
 	"github.com/orsinium-labs/wypes"
@@ -24,19 +25,23 @@ func NetModules(config *Config) wypes.Modules {
 	}
 }
 
-func netReadNetFunc[T *net.Net](conf *Config) func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
+func netReadNetFunc[T *Net](conf *Config) func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
 	return func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := net.ModelFileName(name, conf.ModelsDir)
+		modelFile := models.ModelFileName(name, conf.ModelsDir)
 
 		switch {
-		case !net.ModelExists(modelFile) && net.ModelWellKnown(name):
-			if err := net.DownloadModel(name, conf.ModelsDir); err != nil {
-				// TODO: log error
+		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
+			if conf.Logging {
+				log.Printf("Downloading model %s...\n", name)
+			}
+
+			if err := models.Download(name, conf.ModelsDir); err != nil {
+				log.Printf("Error downloading model: %s", err)
 				return wypes.HostRef[T]{}
 			}
 
-		case !net.ModelExists(modelFile):
+		case !models.ModelExists(modelFile):
 			return wypes.HostRef[T]{}
 		}
 
@@ -45,7 +50,7 @@ func netReadNetFunc[T *net.Net](conf *Config) func(store wypes.Store, model wype
 			return wypes.HostRef[T]{}
 		}
 
-		nt := net.NewNet(model.Unwrap())
+		nt := NewNet(model.Unwrap())
 		nt.SetNet(n)
 
 		v := wypes.HostRef[T]{Raw: nt}
@@ -56,19 +61,23 @@ func netReadNetFunc[T *net.Net](conf *Config) func(store wypes.Store, model wype
 	}
 }
 
-func netReadNetFromONNXFunc[T *net.Net](conf *Config) func(wypes.Store, wypes.String) wypes.HostRef[T] {
+func netReadNetFromONNXFunc[T *Net](conf *Config) func(wypes.Store, wypes.String) wypes.HostRef[T] {
 	return func(store wypes.Store, model wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := net.ModelFileName(name, conf.ModelsDir)
+		modelFile := models.ModelFileName(name, conf.ModelsDir)
 
 		switch {
-		case !net.ModelExists(modelFile) && net.ModelWellKnown(name):
-			if err := net.DownloadModel(name, conf.ModelsDir); err != nil {
-				// TODO: log error
+		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
+			if conf.Logging {
+				log.Printf("Downloading model %s...\n", name)
+			}
+
+			if err := models.Download(name, conf.ModelsDir); err != nil {
+				log.Printf("Error downloading model: %s", err)
 				return wypes.HostRef[T]{}
 			}
 
-		case !net.ModelExists(modelFile):
+		case !models.ModelExists(modelFile):
 			return wypes.HostRef[T]{}
 		}
 
@@ -77,7 +86,7 @@ func netReadNetFromONNXFunc[T *net.Net](conf *Config) func(wypes.Store, wypes.St
 			return wypes.HostRef[T]{}
 		}
 
-		nt := net.NewNet(model.Unwrap())
+		nt := NewNet(model.Unwrap())
 		nt.SetNet(n)
 
 		v := wypes.HostRef[T]{Raw: nt}
@@ -88,8 +97,8 @@ func netReadNetFromONNXFunc[T *net.Net](conf *Config) func(wypes.Store, wypes.St
 	}
 }
 
-func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes.Void {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net]) wypes.Void {
+func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net]) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*Net]) wypes.Void {
 		nt := ref.Raw
 		nt.Close()
 
@@ -97,15 +106,15 @@ func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes
 	}
 }
 
-func netEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes.Bool {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net]) wypes.Bool {
+func netEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net]) wypes.Bool {
+	return func(store wypes.Store, ref wypes.HostRef[*Net]) wypes.Bool {
 		nt := ref.Raw
 		return wypes.Bool(nt.Net.Empty())
 	}
 }
 
-func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.HostRef[*Frame], wypes.String) wypes.Void {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net], blob wypes.HostRef[*Frame], name wypes.String) wypes.Void {
+func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.HostRef[*Frame], wypes.String) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*Net], blob wypes.HostRef[*Frame], name wypes.String) wypes.Void {
 		nt := ref.Raw
 		bl := blob.Raw
 		blb := bl.Image
@@ -116,8 +125,8 @@ func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wy
 	}
 }
 
-func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.String) wypes.HostRef[*Frame] {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net], output wypes.String) wypes.HostRef[*Frame] {
+func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.String) wypes.HostRef[*Frame] {
+	return func(store wypes.Store, ref wypes.HostRef[*Net], output wypes.String) wypes.HostRef[*Frame] {
 		nt := ref.Raw
 
 		dst := NewFrame(nt.Net.Forward(output.Unwrap()))
@@ -130,8 +139,8 @@ func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wyp
 	}
 }
 
-func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.List[uint32]) wypes.Void {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net], list wypes.List[uint32]) wypes.Void {
+func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.List[uint32]) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*Net], list wypes.List[uint32]) wypes.Void {
 		nt := ref.Raw
 
 		ls := nt.Net.GetUnconnectedOutLayers()
