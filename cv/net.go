@@ -1,4 +1,4 @@
-package net
+package cv
 
 import (
 	"github.com/orsinium-labs/wypes"
