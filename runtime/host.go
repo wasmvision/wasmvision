@@ -17,11 +17,11 @@ import (
 
 // Interpreter is a WebAssembly interpreter that can load and run guest modules.
 type Interpreter struct {
-	r            wazero.Runtime
-	Refs         *MapRefs
-	guestModules []guest.Module
-	Config       InterpreterConfig
-	ModuleConfig *cv.Config
+	r             wazero.Runtime
+	Refs          *MapRefs
+	guestModules  []guest.Module
+	Config        InterpreterConfig
+	ModuleContext *cv.Context
 }
 
 type InterpreterConfig struct {
@@ -35,32 +35,32 @@ func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	r := wazero.NewRuntime(ctx)
 	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
-	conf := cv.Config{
+	cctx := cv.Context{
 		ModelsDir: config.ModelsDir,
 		Logging:   config.Logging,
 	}
 
-	modules := hostModules(&conf)
+	modules := hostModules(&cctx)
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {
 		log.Panicf("error define host functions: %v\n", err)
 	}
 
 	return Interpreter{
-		r:            r,
-		Refs:         refs,
-		guestModules: []guest.Module{},
-		Config:       config,
-		ModuleConfig: &conf,
+		r:             r,
+		Refs:          refs,
+		guestModules:  []guest.Module{},
+		Config:        config,
+		ModuleContext: &cctx,
 	}
 }
 
-func hostModules(config *cv.Config) wypes.Modules {
-	modules := hostedModules(config)
+func hostModules(cctx *cv.Context) wypes.Modules {
+	modules := hostedModules(cctx)
 
-	maps.Copy(modules, cv.MatModules(config))
-	maps.Copy(modules, cv.ImgprocModules(config))
-	maps.Copy(modules, cv.NetModules(config))
+	maps.Copy(modules, cv.MatModules(cctx))
+	maps.Copy(modules, cv.ImgprocModules(cctx))
+	maps.Copy(modules, cv.NetModules(cctx))
 
 	return modules
 }
@@ -135,7 +135,7 @@ func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 			log.Panicf("failed to find function %s", process)
 		}
 
-		intp.ModuleConfig.ReturnDataPtr = mod.ReturnDataPtr
+		intp.ModuleContext.ReturnDataPtr = mod.ReturnDataPtr
 
 		out, err := fn.Call(ctx, api.EncodeU32(in.Unwrap()))
 		if err != nil {

@@ -10,33 +10,33 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-func NetModules(config *Config) wypes.Modules {
+func NetModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/dnn": wypes.Module{
-			"[static]net.read":                       wypes.H3(netReadNetFunc(config)),
-			"[static]net.read-from-onnx":             wypes.H2(netReadNetFromONNXFunc(config)),
-			"[method]net.close":                      wypes.H2(netCloseFunc(config)),
-			"[method]net.empty":                      wypes.H2(netEmptyFunc(config)),
-			"[method]net.set-input":                  wypes.H4(netSetInputFunc(config)),
-			"[method]net.forward":                    wypes.H3(netForwardFunc(config)),
-			"[method]net.get-unconnected-out-layers": wypes.H3(netGetUnconnectedOutLayersFunc(config)),
-			"blob-from-image":                        wypes.H11(netBlobFromImageFunc(config)),
+			"[static]net.read":                       wypes.H3(netReadNetFunc(ctx)),
+			"[static]net.read-from-onnx":             wypes.H2(netReadNetFromONNXFunc(ctx)),
+			"[method]net.close":                      wypes.H2(netCloseFunc(ctx)),
+			"[method]net.empty":                      wypes.H2(netEmptyFunc(ctx)),
+			"[method]net.set-input":                  wypes.H4(netSetInputFunc(ctx)),
+			"[method]net.forward":                    wypes.H3(netForwardFunc(ctx)),
+			"[method]net.get-unconnected-out-layers": wypes.H3(netGetUnconnectedOutLayersFunc(ctx)),
+			"blob-from-image":                        wypes.H11(netBlobFromImageFunc(ctx)),
 		},
 	}
 }
 
-func netReadNetFunc[T *Net](conf *Config) func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
+func netReadNetFunc[T *Net](ctx *Context) func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
 	return func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := models.ModelFileName(name, conf.ModelsDir)
+		modelFile := models.ModelFileName(name, ctx.ModelsDir)
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if conf.Logging {
+			if ctx.Logging {
 				log.Printf("Downloading model %s...\n", name)
 			}
 
-			if err := models.Download(name, conf.ModelsDir); err != nil {
+			if err := models.Download(name, ctx.ModelsDir); err != nil {
 				log.Printf("Error downloading model: %s", err)
 				return wypes.HostRef[T]{}
 			}
@@ -61,18 +61,18 @@ func netReadNetFunc[T *Net](conf *Config) func(store wypes.Store, model wypes.St
 	}
 }
 
-func netReadNetFromONNXFunc[T *Net](conf *Config) func(wypes.Store, wypes.String) wypes.HostRef[T] {
+func netReadNetFromONNXFunc[T *Net](ctx *Context) func(wypes.Store, wypes.String) wypes.HostRef[T] {
 	return func(store wypes.Store, model wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := models.ModelFileName(name, conf.ModelsDir)
+		modelFile := models.ModelFileName(name, ctx.ModelsDir)
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if conf.Logging {
+			if ctx.Logging {
 				log.Printf("Downloading model %s...\n", name)
 			}
 
-			if err := models.Download(name, conf.ModelsDir); err != nil {
+			if err := models.Download(name, ctx.ModelsDir); err != nil {
 				log.Printf("Error downloading model: %s", err)
 				return wypes.HostRef[T]{}
 			}
@@ -97,7 +97,7 @@ func netReadNetFromONNXFunc[T *Net](conf *Config) func(wypes.Store, wypes.String
 	}
 }
 
-func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net]) wypes.Void {
+func netCloseFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Net]) wypes.Void {
 	return func(store wypes.Store, ref wypes.HostRef[*Net]) wypes.Void {
 		nt := ref.Raw
 		nt.Close()
@@ -106,14 +106,14 @@ func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net]) wypes.Voi
 	}
 }
 
-func netEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net]) wypes.Bool {
+func netEmptyFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Net]) wypes.Bool {
 	return func(store wypes.Store, ref wypes.HostRef[*Net]) wypes.Bool {
 		nt := ref.Raw
 		return wypes.Bool(nt.Net.Empty())
 	}
 }
 
-func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.HostRef[*Frame], wypes.String) wypes.Void {
+func netSetInputFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Net], wypes.HostRef[*Frame], wypes.String) wypes.Void {
 	return func(store wypes.Store, ref wypes.HostRef[*Net], blob wypes.HostRef[*Frame], name wypes.String) wypes.Void {
 		nt := ref.Raw
 		bl := blob.Raw
@@ -125,7 +125,7 @@ func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.
 	}
 }
 
-func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.String) wypes.HostRef[*Frame] {
+func netForwardFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Net], wypes.String) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Net], output wypes.String) wypes.HostRef[*Frame] {
 		nt := ref.Raw
 
@@ -139,7 +139,7 @@ func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.S
 	}
 }
 
-func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+func netGetUnconnectedOutLayersFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Net], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 	return func(store wypes.Store, ref wypes.HostRef[*Net], list wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		nt := ref.Raw
 
@@ -150,14 +150,14 @@ func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRe
 		}
 
 		list.Raw = result
-		list.DataPtr = conf.ReturnDataPtr
+		list.DataPtr = ctx.ReturnDataPtr
 		list.Lower(store)
 
 		return wypes.Void{}
 	}
 }
 
-func netBlobFromImageFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*Frame] {
+func netBlobFromImageFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*Frame] {
 		frm := ref.Raw
 
