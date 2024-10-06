@@ -139,14 +139,14 @@ func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.S
 	}
 }
 
-func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.List[uint32]) wypes.Void {
-	return func(store wypes.Store, ref wypes.HostRef[*Net], list wypes.List[uint32]) wypes.Void {
+func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Net], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*Net], list wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		nt := ref.Raw
 
 		ls := nt.Net.GetUnconnectedOutLayers()
-		result := make([]uint32, len(ls))
+		result := make([]wypes.UInt32, len(ls))
 		for i, l := range ls {
-			result[i] = uint32(l)
+			result[i] = wypes.UInt32(l)
 		}
 
 		list.Raw = result
