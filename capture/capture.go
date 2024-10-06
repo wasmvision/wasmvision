@@ -3,7 +3,7 @@ package capture
 import (
 	"errors"
 
-	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/cv"
 )
 
 var ErrClosed = errors.New("capture device closed")
@@ -12,5 +12,5 @@ var ErrClosed = errors.New("capture device closed")
 type Capture interface {
 	Open() error
 	Close() error
-	Read() (*frame.Frame, error)
+	Read() (*cv.Frame, error)
 }
