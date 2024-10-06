@@ -351,8 +351,8 @@ github.com/mitchellh/go-testing-interface v1.14.1 h1:jrgshOhYAUVNMAJiKbEu7EqAwgJ
 github.com/mitchellh/go-testing-interface v1.14.1/go.mod h1:gfgS7OtZj6MA4U1UrDRp04twqAjfvlZyCfX3sDjEym8=
 github.com/orsinium-labs/tinytest v1.0.0 h1:YiGm/whlGm3mn/ynx9CCFuvEa3Q6yEGrzrKXEqJOkdc=
 github.com/orsinium-labs/tinytest v1.0.0/go.mod h1:GwcYBp0aKi6zujzBXFpCnqw6RSLSp9JSedDyu/V1DF4=
-github.com/orsinium-labs/wypes v0.1.6-0.20240927072953-9d92a194b3f2 h1:vBL2eKgbqoglcsBbE8ShwffbtY2aoJ4BgzYWqySe18M=
-github.com/orsinium-labs/wypes v0.1.6-0.20240927072953-9d92a194b3f2/go.mod h1:FSNWGo8I6/D5RYXMkCxyu71TXJAlwJGQUxgs4i6MAwo=
+github.com/orsinium-labs/wypes v0.1.6-0.20241006143822-fee2649c1188 h1:1tdP6+bDPZRvfcZgn7sPdNv5L1F3ZYLKwSrGWfTC1LY=
+github.com/orsinium-labs/wypes v0.1.6-0.20241006143822-fee2649c1188/go.mod h1:FSNWGo8I6/D5RYXMkCxyu71TXJAlwJGQUxgs4i6MAwo=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
