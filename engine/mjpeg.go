@@ -7,6 +7,7 @@ import (
 
 	"github.com/hybridgroup/mjpeg"
 	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/runtime"
 	"gocv.io/x/gocv"
 )
 
@@ -16,16 +17,16 @@ type MJPEGStream struct {
 	stream *mjpeg.Stream
 	server *http.Server
 	Port   string
-	cache  *frame.Cache
-	frames chan frame.Frame
+	refs   *runtime.MapRefs
+	frames chan *frame.Frame
 }
 
 // NewMJPEGStream creates a new MJPEGStream instance with the given port.
-func NewMJPEGStream(cache *frame.Cache, port string) MJPEGStream {
+func NewMJPEGStream(refs *runtime.MapRefs, port string) MJPEGStream {
 	return MJPEGStream{
 		Port:   port,
-		cache:  cache,
-		frames: make(chan frame.Frame, framebufferSize),
+		refs:   refs,
+		frames: make(chan *frame.Frame, framebufferSize),
 	}
 }
 
@@ -52,7 +53,7 @@ func (s *MJPEGStream) Close() {
 }
 
 // Publish publishes a frame to the MJPEG stream.
-func (s *MJPEGStream) Publish(frm frame.Frame) error {
+func (s *MJPEGStream) Publish(frm *frame.Frame) error {
 	s.frames <- frm
 	return nil
 }
@@ -68,6 +69,6 @@ func (s *MJPEGStream) publishFrames() {
 
 		buf.Close()
 		frame.Close()
-		s.cache.Delete(frame.ID)
+		s.refs.Drop(frame.ID.Unwrap())
 	}
 }

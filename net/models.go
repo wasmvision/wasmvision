@@ -2,6 +2,8 @@ package net
 
 import (
 	"context"
+	"errors"
+	"os"
 	"path/filepath"
 
 	"github.com/hashicorp/go-getter"
@@ -66,12 +68,17 @@ var KnownModels = map[string]ModelFile{
 	},
 }
 
-func DownloadModel(model ModelFile, targetDir string) error {
+func DownloadModel(name string, modelsDir string) error {
+	model, ok := KnownModels[name]
+	if !ok {
+		return errors.New("unknown model")
+	}
+
 	opts := []getter.ClientOption{}
 	client := &getter.Client{
 		Ctx:     context.Background(),
 		Src:     model.URL,
-		Dst:     filepath.Join(targetDir, filepath.Base(model.Filename)),
+		Dst:     filepath.Join(modelsDir, filepath.Base(model.Filename)),
 		Mode:    getter.ClientModeFile,
 		Options: opts,
 	}
@@ -81,4 +88,28 @@ func DownloadModel(model ModelFile, targetDir string) error {
 	}
 
 	return nil
+}
+
+// ModelFile gets the model file path name for the Net.
+func ModelFileName(model string, modelsDir string) string {
+	if km, ok := KnownModels[model]; ok {
+		return filepath.Join(modelsDir, km.Filename)
+	}
+
+	return filepath.Join(modelsDir, model)
+}
+
+func ModelExists(model string) bool {
+	if _, err := os.Stat(model); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return true
+}
+
+func ModelWellKnown(model string) bool {
+	if _, ok := KnownModels[model]; ok {
+		return true
+	}
+
+	return false
 }

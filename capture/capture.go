@@ -12,5 +12,5 @@ var ErrClosed = errors.New("capture device closed")
 type Capture interface {
 	Open() error
 	Close() error
-	Read() (frame.Frame, error)
+	Read() (*frame.Frame, error)
 }

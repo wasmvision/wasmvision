@@ -7,25 +7,20 @@ import (
 )
 
 func TestNewFrame(t *testing.T) {
-	frm := NewFrame()
-	if frm.ID == 0 {
-		t.Error("frame ID is 0")
-	}
-}
+	frm := NewFrame(gocv.NewMat())
+	defer frm.Close()
 
-func TestSetImage(t *testing.T) {
-	frm := NewFrame()
-	img := gocv.NewMat()
-	frm.SetImage(img)
-	if !frm.Empty() {
+	if !frm.Image.Empty() {
 		t.Error("frame image should be empty")
 	}
 }
 
 func TestClose(t *testing.T) {
-	frm := NewFrame()
-	img := gocv.NewMat()
-	frm.SetImage(img)
+	frm := NewFrame(gocv.NewMat())
+	if frm.Image.Closed() {
+		t.Error("frame image is closed")
+	}
+
 	frm.Close()
 	if !frm.Image.Closed() {
 		t.Error("frame image is not closed")
