@@ -8,21 +8,21 @@ import (
 	"gocv.io/x/gocv"
 )
 
-func ImgprocModules(config *Config) wypes.Modules {
+func ImgprocModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/cv": wypes.Module{
-			"adaptive-threshold": wypes.H7(adaptiveThresholdFunc(config)),
-			"blur":               wypes.H4(blurFunc(config)),
-			"box-filter":         wypes.H5(boxFilterFunc(config)),
-			"gaussian-blur":      wypes.H7(gaussianBlurFunc(config)),
-			"threshold":          wypes.H5(thresholdFunc(config)),
-			"resize":             wypes.H7(resizeFunc(config)),
-			"put-text":           wypes.H12(putTextFunc(config)),
+			"adaptive-threshold": wypes.H7(adaptiveThresholdFunc(ctx)),
+			"blur":               wypes.H4(blurFunc(ctx)),
+			"box-filter":         wypes.H5(boxFilterFunc(ctx)),
+			"gaussian-blur":      wypes.H7(gaussianBlurFunc(ctx)),
+			"threshold":          wypes.H5(thresholdFunc(ctx)),
+			"resize":             wypes.H7(resizeFunc(ctx)),
+			"put-text":           wypes.H12(putTextFunc(ctx)),
 		},
 	}
 }
 
-func adaptiveThresholdFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float32) wypes.HostRef[*Frame] {
+func adaptiveThresholdFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], maxValue wypes.Float32, adaptiveThresholdType0 wypes.UInt32, thresholdType0 wypes.UInt32, blockSize0 wypes.UInt32, c0 wypes.Float32) wypes.HostRef[*Frame] {
 		frm := ref.Raw
 
@@ -37,7 +37,7 @@ func adaptiveThresholdFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]
 	}
 }
 
-func blurFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
+func blurFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], size0 wypes.UInt32, size1 wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		src := f.Image
@@ -53,7 +53,7 @@ func blurFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt3
 	}
 }
 
-func boxFilterFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
+func boxFilterFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], depth0 wypes.UInt32, size0 wypes.UInt32, size1 wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		src := f.Image
@@ -69,7 +69,7 @@ func boxFilterFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.
 	}
 }
 
-func gaussianBlurFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
+func gaussianBlurFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], size0 wypes.UInt32, size1 wypes.UInt32, sigmaX0 wypes.Float32, sigmaY0 wypes.Float32, border0 wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		src := f.Image
@@ -85,7 +85,7 @@ func gaussianBlurFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wyp
 	}
 }
 
-func thresholdFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
+func thresholdFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], thresh wypes.Float32, maxValue wypes.Float32, thresholdType0 wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		src := f.Image
@@ -101,7 +101,7 @@ func thresholdFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.
 	}
 }
 
-func resizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
+func resizeFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], size0 wypes.UInt32, size1 wypes.UInt32, fx0 wypes.Float32, fy0 wypes.Float32, interp0 wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		src := f.Image
@@ -117,7 +117,7 @@ func resizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UIn
 	}
 }
 
-func putTextFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.String, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float64, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.Void {
+func putTextFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.String, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Float64, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.Void {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], text wypes.String, org0 wypes.UInt32, org1 wypes.UInt32, fontFace0 wypes.UInt32, fontScale0 wypes.Float64, c0 wypes.UInt32, c1 wypes.UInt32, c2 wypes.UInt32, c3 wypes.UInt32, thickness0 wypes.UInt32) wypes.Void {
 		f := ref.Raw
 		src := f.Image

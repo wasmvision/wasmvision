@@ -6,30 +6,30 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-func MatModules(config *Config) wypes.Modules {
+func MatModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
-			"[constructor]mat":          wypes.H4(matNewWithSizeFunc(config)),
-			"[resource-drop]mat":        wypes.H2(matCloseFunc(config)),
-			"[static]mat.new-mat":       wypes.H1(matNewFunc(config)),
-			"[static]mat.new-with-size": wypes.H4(matNewWithSizeFunc(config)),
-			"[method]mat.close":         wypes.H2(matCloseFunc(config)),
-			"[method]mat.cols":          wypes.H2(matColsFunc(config)),
-			"[method]mat.rows":          wypes.H2(matRowsFunc(config)),
-			"[method]mat.mattype":       wypes.H2(matTypeFunc(config)),
-			"[method]mat.empty":         wypes.H2(matEmptyFunc(config)),
-			"[method]mat.size":          wypes.H3(matSizeFunc(config)),
-			"[method]mat.reshape":       wypes.H4(matReshapeFunc(config)),
-			"[method]mat.get-float-at":  wypes.H4(matGetFloatAtFunc(config)),
-			"[method]mat.set-float-at":  wypes.H5(matSetFloatAtFunc(config)),
-			"[method]mat.get-uchar-at":  wypes.H4(matGetUcharAtFunc(config)),
-			"[method]mat.set-uchar-at":  wypes.H5(matSetUcharAtFunc(config)),
-			"[method]mat.get-vecb-at":   wypes.H5(matGetVecbAtFunc(config)),
+			"[constructor]mat":          wypes.H4(matNewWithSizeFunc(ctx)),
+			"[resource-drop]mat":        wypes.H2(matCloseFunc(ctx)),
+			"[static]mat.new-mat":       wypes.H1(matNewFunc(ctx)),
+			"[static]mat.new-with-size": wypes.H4(matNewWithSizeFunc(ctx)),
+			"[method]mat.close":         wypes.H2(matCloseFunc(ctx)),
+			"[method]mat.cols":          wypes.H2(matColsFunc(ctx)),
+			"[method]mat.rows":          wypes.H2(matRowsFunc(ctx)),
+			"[method]mat.mattype":       wypes.H2(matTypeFunc(ctx)),
+			"[method]mat.empty":         wypes.H2(matEmptyFunc(ctx)),
+			"[method]mat.size":          wypes.H3(matSizeFunc(ctx)),
+			"[method]mat.reshape":       wypes.H4(matReshapeFunc(ctx)),
+			"[method]mat.get-float-at":  wypes.H4(matGetFloatAtFunc(ctx)),
+			"[method]mat.set-float-at":  wypes.H5(matSetFloatAtFunc(ctx)),
+			"[method]mat.get-uchar-at":  wypes.H4(matGetUcharAtFunc(ctx)),
+			"[method]mat.set-uchar-at":  wypes.H5(matSetUcharAtFunc(ctx)),
+			"[method]mat.get-vecb-at":   wypes.H5(matGetVecbAtFunc(ctx)),
 		},
 	}
 }
 
-func matNewFunc(conf *Config) func(wypes.Store) wypes.HostRef[*Frame] {
+func matNewFunc(ctx *Context) func(wypes.Store) wypes.HostRef[*Frame] {
 	return func(s wypes.Store) wypes.HostRef[*Frame] {
 		f := NewEmptyFrame()
 
@@ -41,7 +41,7 @@ func matNewFunc(conf *Config) func(wypes.Store) wypes.HostRef[*Frame] {
 	}
 }
 
-func matNewWithSizeFunc(conf *Config) func(wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
+func matNewWithSizeFunc(ctx *Context) func(wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(s wypes.Store, rows, cols, matType wypes.UInt32) wypes.HostRef[*Frame] {
 		f := NewFrame(gocv.NewMatWithSize(int(rows), int(cols), gocv.MatType(matType)))
 
@@ -53,7 +53,7 @@ func matNewWithSizeFunc(conf *Config) func(wypes.Store, wypes.UInt32, wypes.UInt
 	}
 }
 
-func matCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.Void {
+func matCloseFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame]) wypes.Void {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame]) wypes.Void {
 		f := ref.Raw
 		f.Close()
@@ -62,7 +62,7 @@ func matCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.V
 	}
 }
 
-func matColsFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
+func matColsFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame]) wypes.UInt32 {
 		f := ref.Raw
 		mat := f.Image
@@ -71,7 +71,7 @@ func matColsFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UI
 	}
 }
 
-func matRowsFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
+func matRowsFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame]) wypes.UInt32 {
 		f := ref.Raw
 		mat := f.Image
@@ -80,7 +80,7 @@ func matRowsFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UI
 	}
 }
 
-func matTypeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
+func matTypeFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UInt32 {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame]) wypes.UInt32 {
 		f := ref.Raw
 		mat := f.Image
@@ -89,7 +89,7 @@ func matTypeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.UI
 	}
 }
 
-func matEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.Bool {
+func matEmptyFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame]) wypes.Bool {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame]) wypes.Bool {
 		f := ref.Raw
 		mat := f.Image
@@ -98,7 +98,7 @@ func matEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.B
 	}
 }
 
-func matSizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+func matSizeFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], list wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
@@ -110,14 +110,14 @@ func matSizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.Re
 		}
 
 		list.Raw = result
-		list.DataPtr = conf.ReturnDataPtr
+		list.DataPtr = ctx.ReturnDataPtr
 		list.Lower(s)
 
 		return wypes.Void{}
 	}
 }
 
-func matReshapeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
+func matReshapeFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], channels wypes.UInt32, rows wypes.UInt32) wypes.HostRef[*Frame] {
 		f := ref.Raw
 		mat := f.Image
@@ -133,7 +133,7 @@ func matReshapeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes
 	}
 }
 
-func matGetFloatAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.Float32 {
+func matGetFloatAtFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.Float32 {
 	return func(store wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32) wypes.Float32 {
 		f := ref.Raw
 		mat := f.Image
@@ -142,7 +142,7 @@ func matGetFloatAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matSetFloatAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32) wypes.Void {
+func matSetFloatAtFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Float32) wypes.Void {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32, v wypes.Float32) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
@@ -152,7 +152,7 @@ func matSetFloatAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matGetUcharAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.UInt8 {
+func matGetUcharAtFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.UInt8 {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32) wypes.UInt8 {
 		f := ref.Raw
 		mat := f.Image
@@ -161,7 +161,7 @@ func matGetUcharAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matSetUcharAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.UInt8) wypes.Void {
+func matSetUcharAtFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.UInt8) wypes.Void {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32, v wypes.UInt8) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
@@ -171,7 +171,7 @@ func matSetUcharAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matGetVecbAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+func matGetVecbAtFunc(ctx *Context) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32, v wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
@@ -183,7 +183,7 @@ func matGetVecbAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wyp
 		}
 
 		v.Raw = result
-		v.DataPtr = conf.ReturnDataPtr
+		v.DataPtr = ctx.ReturnDataPtr
 		v.Lower(s)
 
 		return wypes.Void{}

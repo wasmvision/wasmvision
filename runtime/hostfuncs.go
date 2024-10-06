@@ -7,11 +7,11 @@ import (
 	"github.com/wasmvision/wasmvision/cv"
 )
 
-func hostedModules(config *cv.Config) wypes.Modules {
+func hostedModules(ctx *cv.Context) wypes.Modules {
 	return wypes.Modules{
 		"hosted": wypes.Module{
 			"println": wypes.H1(hostPrintln),
-			"log":     wypes.H1(hostLogFunc(config)),
+			"log":     wypes.H1(hostLogFunc(ctx)),
 		},
 	}
 }
@@ -21,9 +21,9 @@ func hostPrintln(msg wypes.String) wypes.Void {
 	return wypes.Void{}
 }
 
-func hostLogFunc(config *cv.Config) func(wypes.String) wypes.Void {
+func hostLogFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
 	return func(msg wypes.String) wypes.Void {
-		if config.Logging {
+		if ctx.Logging {
 			log.Println(msg.Unwrap())
 		}
 		return wypes.Void{}
