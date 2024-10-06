@@ -98,15 +98,15 @@ func matEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame]) wypes.B
 	}
 }
 
-func matSizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.List[uint32]) wypes.Void {
-	return func(s wypes.Store, ref wypes.HostRef[*Frame], list wypes.List[uint32]) wypes.Void {
+func matSizeFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+	return func(s wypes.Store, ref wypes.HostRef[*Frame], list wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
 		dims := mat.Size()
 
-		result := make([]uint32, len(dims))
+		result := make([]wypes.UInt32, len(dims))
 		for i, dim := range dims {
-			result[i] = uint32(dim)
+			result[i] = wypes.UInt32(dim)
 		}
 
 		list.Raw = result
@@ -171,15 +171,15 @@ func matSetUcharAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matGetVecbAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.List[uint8]) wypes.Void {
-	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32, v wypes.List[uint8]) wypes.Void {
+func matGetVecbAtFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.ReturnedList[wypes.UInt32]) wypes.Void {
+	return func(s wypes.Store, ref wypes.HostRef[*Frame], row wypes.UInt32, col wypes.UInt32, v wypes.ReturnedList[wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
 		data := mat.GetVecbAt(int(row.Unwrap()), int(col.Unwrap()))
 
-		result := make([]uint8, len(data))
+		result := make([]wypes.UInt32, len(data))
 		for i, dim := range data {
-			result[i] = uint8(dim)
+			result[i] = wypes.UInt32(dim)
 		}
 
 		v.Raw = result
