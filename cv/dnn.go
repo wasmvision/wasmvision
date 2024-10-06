@@ -3,7 +3,6 @@ package cv
 import (
 	"image"
 
-	"github.com/wasmvision/wasmvision/frame"
 	"github.com/wasmvision/wasmvision/net"
 	"gocv.io/x/gocv"
 
@@ -105,8 +104,8 @@ func netEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes
 	}
 }
 
-func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.HostRef[*frame.Frame], wypes.String) wypes.Void {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net], blob wypes.HostRef[*frame.Frame], name wypes.String) wypes.Void {
+func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.HostRef[*Frame], wypes.String) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net], blob wypes.HostRef[*Frame], name wypes.String) wypes.Void {
 		nt := ref.Raw
 		bl := blob.Raw
 		blb := bl.Image
@@ -117,13 +116,13 @@ func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wy
 	}
 }
 
-func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.String) wypes.HostRef[*frame.Frame] {
-	return func(store wypes.Store, ref wypes.HostRef[*net.Net], output wypes.String) wypes.HostRef[*frame.Frame] {
+func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.String) wypes.HostRef[*Frame] {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net], output wypes.String) wypes.HostRef[*Frame] {
 		nt := ref.Raw
 
-		dst := frame.NewFrame(nt.Net.Forward(output.Unwrap()))
+		dst := NewFrame(nt.Net.Forward(output.Unwrap()))
 
-		v := wypes.HostRef[*frame.Frame]{Raw: dst}
+		v := wypes.HostRef[*Frame]{Raw: dst}
 		id := store.Refs.Put(v)
 		dst.ID = wypes.UInt32(id)
 
@@ -149,15 +148,15 @@ func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRe
 	}
 }
 
-func netBlobFromImageFunc(conf *Config) func(wypes.Store, wypes.HostRef[*frame.Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*frame.Frame] {
-	return func(store wypes.Store, ref wypes.HostRef[*frame.Frame], scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*frame.Frame] {
+func netBlobFromImageFunc(conf *Config) func(wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*Frame] {
+	return func(store wypes.Store, ref wypes.HostRef[*Frame], scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*Frame] {
 		frm := ref.Raw
 
 		b := gocv.BlobFromImage(frm.Image, float64(scale.Unwrap()), image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), gocv.NewScalar(float64(mean0.Unwrap()), float64(mean1.Unwrap()), float64(mean2.Unwrap()), float64(mean3.Unwrap())), swapRb.Unwrap(), crop.Unwrap())
 
-		blob := frame.NewFrame(b)
+		blob := NewFrame(b)
 
-		v := wypes.HostRef[*frame.Frame]{Raw: blob}
+		v := wypes.HostRef[*Frame]{Raw: blob}
 		id := store.Refs.Put(v)
 		blob.ID = wypes.UInt32(id)
 

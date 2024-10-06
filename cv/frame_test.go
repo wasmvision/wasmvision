@@ -1,4 +1,4 @@
-package frame
+package cv
 
 import (
 	"testing"

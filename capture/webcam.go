@@ -1,7 +1,7 @@
 package capture
 
 import (
-	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/cv"
 
 	"gocv.io/x/gocv"
 )
@@ -35,22 +35,22 @@ func (w *Webcam) Close() error {
 	return w.webcam.Close()
 }
 
-func (w *Webcam) Read() (*frame.Frame, error) {
+func (w *Webcam) Read() (*cv.Frame, error) {
 	img := gocv.NewMat()
 	if ok := w.webcam.Read(&img); !ok {
 		w.retries--
 		if w.retries == 0 {
-			return &frame.Frame{}, ErrClosed
+			return &cv.Frame{}, ErrClosed
 		}
 
-		frame := frame.NewEmptyFrame()
+		frame := cv.NewEmptyFrame()
 
 		return frame, nil
 	}
 
 	w.retries = defaultRetries
 
-	frame := frame.NewFrame(img)
+	frame := cv.NewFrame(img)
 
 	return frame, nil
 }

@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/wasmvision/wasmvision/cv"
-	"github.com/wasmvision/wasmvision/frame"
 	"github.com/wasmvision/wasmvision/guest"
 
 	"github.com/orsinium-labs/wypes"
@@ -124,7 +123,7 @@ func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte)
 const process = "process"
 
 // Process performs processing on a frame.
-func (intp *Interpreter) Process(ctx context.Context, frm *frame.Frame) *frame.Frame {
+func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 	var frames []wypes.UInt32
 
 	in := frm.ID
@@ -152,20 +151,20 @@ func (intp *Interpreter) Process(ctx context.Context, frm *frame.Frame) *frame.F
 
 	// close up all the frames except the last one
 	for i := 0; i < len(frames)-1; i++ {
-		f, ok := intp.Refs.Get(frames[i].Unwrap(), &frame.Frame{})
+		f, ok := intp.Refs.Get(frames[i].Unwrap(), &cv.Frame{})
 		if !ok {
 			continue
 		}
 
-		fc := f.(*frame.Frame)
+		fc := f.(*cv.Frame)
 		fc.Close()
 
 		intp.Refs.Drop(frames[i].Unwrap())
 	}
 
-	f, _ := intp.Refs.Get(out.Unwrap(), &frame.Frame{})
+	f, _ := intp.Refs.Get(out.Unwrap(), &cv.Frame{})
 
-	last := f.(*frame.Frame)
+	last := f.(*cv.Frame)
 
 	return last
 }
