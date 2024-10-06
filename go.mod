@@ -11,6 +11,7 @@ require (
 require (
 	github.com/hashicorp/go-getter v1.7.6
 	github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e
+	github.com/orsinium-labs/tinytest v1.0.0
 	github.com/urfave/cli/v2 v2.27.4
 )
 
