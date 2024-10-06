@@ -1,8 +1,6 @@
 package net
 
 import (
-	"math/rand/v2"
-
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
@@ -17,10 +15,8 @@ type Net struct {
 }
 
 // NewNet creates a new Net.
-func NewNet(model string) Net {
-	id := rand.IntN(102400)
-	return Net{
-		ID:   wypes.UInt32(id),
+func NewNet(model string) *Net {
+	return &Net{
 		Name: model,
 	}
 }

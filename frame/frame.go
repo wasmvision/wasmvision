@@ -1,8 +1,6 @@
 package frame
 
 import (
-	"math/rand/v2"
-
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
@@ -14,11 +12,13 @@ type Frame struct {
 }
 
 // NewFrame creates a new Frame.
-func NewFrame() Frame {
-	id := rand.IntN(102400)
-	return Frame{
-		ID: wypes.UInt32(id),
-	}
+func NewFrame(img gocv.Mat) *Frame {
+	return &Frame{Image: img}
+}
+
+// NewEmptyFrame creates a new Frame with an empty Mat.
+func NewEmptyFrame() *Frame {
+	return &Frame{Image: gocv.NewMat()}
 }
 
 // SetImage sets the image of the frame.

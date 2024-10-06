@@ -10,177 +10,157 @@ import (
 	"github.com/orsinium-labs/wypes"
 )
 
-func NetModules(fc *frame.Cache, nc *net.Cache) wypes.Modules {
+func NetModules(config *Config) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/dnn": wypes.Module{
-			"[static]net.read":                       wypes.H2(netReadNetFunc(nc)),
-			"[static]net.read-from-onnx":             wypes.H1(netReadNetFromONNXFunc(nc)),
-			"[method]net.close":                      wypes.H1(netCloseFunc(nc)),
-			"[method]net.empty":                      wypes.H1(netEmptyFunc(nc)),
-			"[method]net.set-input":                  wypes.H3(netSetInputFunc(nc, fc)),
-			"[method]net.forward":                    wypes.H2(netForwardFunc(nc, fc)),
-			"[method]net.get-unconnected-out-layers": wypes.H3(netGetUnconnectedOutLayersFunc(nc, fc)),
-			"blob-from-image":                        wypes.H10(netBlobFromImageFunc(fc)),
+			"[static]net.read":                       wypes.H3(netReadNetFunc(config)),
+			"[static]net.read-from-onnx":             wypes.H2(netReadNetFromONNXFunc(config)),
+			"[method]net.close":                      wypes.H2(netCloseFunc(config)),
+			"[method]net.empty":                      wypes.H2(netEmptyFunc(config)),
+			"[method]net.set-input":                  wypes.H4(netSetInputFunc(config)),
+			"[method]net.forward":                    wypes.H3(netForwardFunc(config)),
+			"[method]net.get-unconnected-out-layers": wypes.H3(netGetUnconnectedOutLayersFunc(config)),
+			"blob-from-image":                        wypes.H11(netBlobFromImageFunc(config)),
 		},
 	}
 }
 
-func netReadNetFunc(cache *net.Cache) func(wypes.String, wypes.String) wypes.UInt32 {
-	return func(model wypes.String, config wypes.String) wypes.UInt32 {
+func netReadNetFunc[T *net.Net](conf *Config) func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
+	return func(store wypes.Store, model wypes.String, config wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := cache.ModelFileName(name)
+		modelFile := net.ModelFileName(name, conf.ModelsDir)
 
 		switch {
-		case !cache.ModelExists(modelFile) && cache.ModelWellKnown(name):
-			if err := cache.DownloadModel(name); err != nil {
+		case !net.ModelExists(modelFile) && net.ModelWellKnown(name):
+			if err := net.DownloadModel(name, conf.ModelsDir); err != nil {
 				// TODO: log error
-				return wypes.UInt32(0)
+				return wypes.HostRef[T]{}
 			}
 
-		case !cache.ModelExists(modelFile):
-			return wypes.UInt32(0)
+		case !net.ModelExists(modelFile):
+			return wypes.HostRef[T]{}
 		}
 
 		n := gocv.ReadNet(modelFile, config.Unwrap())
 		if n.Empty() {
-			return wypes.UInt32(0)
+			return wypes.HostRef[T]{}
 		}
 
-		net := net.NewNet(model.Unwrap())
-		net.SetNet(n)
-		cache.Set(net)
+		nt := net.NewNet(model.Unwrap())
+		nt.SetNet(n)
 
-		return wypes.UInt32(net.ID)
+		v := wypes.HostRef[T]{Raw: nt}
+		id := store.Refs.Put(v)
+		nt.ID = wypes.UInt32(id)
+
+		return v
 	}
 }
 
-func netReadNetFromONNXFunc(cache *net.Cache) func(wypes.String) wypes.UInt32 {
-	return func(model wypes.String) wypes.UInt32 {
+func netReadNetFromONNXFunc[T *net.Net](conf *Config) func(wypes.Store, wypes.String) wypes.HostRef[T] {
+	return func(store wypes.Store, model wypes.String) wypes.HostRef[T] {
 		name := model.Unwrap()
-		modelFile := cache.ModelFileName(name)
+		modelFile := net.ModelFileName(name, conf.ModelsDir)
 
 		switch {
-		case !cache.ModelExists(modelFile) && cache.ModelWellKnown(name):
-			if err := cache.DownloadModel(name); err != nil {
+		case !net.ModelExists(modelFile) && net.ModelWellKnown(name):
+			if err := net.DownloadModel(name, conf.ModelsDir); err != nil {
 				// TODO: log error
-				return wypes.UInt32(0)
+				return wypes.HostRef[T]{}
 			}
 
-		case !cache.ModelExists(modelFile):
-			return wypes.UInt32(0)
+		case !net.ModelExists(modelFile):
+			return wypes.HostRef[T]{}
 		}
 
 		n := gocv.ReadNetFromONNX(modelFile)
 		if n.Empty() {
-			return wypes.UInt32(0)
+			return wypes.HostRef[T]{}
 		}
 
-		net := net.NewNet(model.Unwrap())
-		net.SetNet(n)
-		cache.Set(net)
+		nt := net.NewNet(model.Unwrap())
+		nt.SetNet(n)
 
-		return wypes.UInt32(net.ID)
+		v := wypes.HostRef[T]{Raw: nt}
+		id := store.Refs.Put(v)
+		nt.ID = wypes.UInt32(id)
+
+		return v
 	}
 }
 
-func netCloseFunc(cache *net.Cache) func(wypes.UInt32) wypes.Void {
-	return func(ref wypes.UInt32) wypes.Void {
-		n, ok := cache.Get(ref)
-		if !ok {
-			return wypes.Void{}
-		}
-
-		net := n.Net
-		net.Close()
+func netCloseFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net]) wypes.Void {
+		nt := ref.Raw
+		nt.Close()
 
 		return wypes.Void{}
 	}
 }
 
-func netEmptyFunc(cache *net.Cache) func(wypes.UInt32) wypes.Bool {
-	return func(ref wypes.UInt32) wypes.Bool {
-		n, ok := cache.Get(ref)
-		if !ok {
-			return wypes.Bool(true)
-		}
-		net := n.Net
-
-		return wypes.Bool(net.Empty())
+func netEmptyFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net]) wypes.Bool {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net]) wypes.Bool {
+		nt := ref.Raw
+		return wypes.Bool(nt.Net.Empty())
 	}
 }
 
-func netSetInputFunc(cache *net.Cache, framecache *frame.Cache) func(wypes.UInt32, wypes.UInt32, wypes.String) wypes.Void {
-	return func(ref wypes.UInt32, blob wypes.UInt32, name wypes.String) wypes.Void {
-		n, ok := cache.Get(ref)
-		if !ok {
-			return wypes.Void{}
-		}
-		nt := n.Net
+func netSetInputFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.HostRef[*frame.Frame], wypes.String) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net], blob wypes.HostRef[*frame.Frame], name wypes.String) wypes.Void {
+		nt := ref.Raw
+		bl := blob.Raw
+		blb := bl.Image
 
-		b, ok := framecache.Get(blob)
-		if !ok {
-			return wypes.Void{}
-		}
-		blb := b.Image
-
-		nt.SetInput(blb, name.Unwrap())
+		nt.Net.SetInput(blb, name.Unwrap())
 
 		return wypes.Void{}
 	}
 }
 
-func netForwardFunc(cache *net.Cache, framecache *frame.Cache) func(wypes.UInt32, wypes.String) wypes.UInt32 {
-	return func(ref wypes.UInt32, output wypes.String) wypes.UInt32 {
-		n, ok := cache.Get(ref)
-		if !ok {
-			return wypes.UInt32(0)
-		}
-		nt := n.Net
+func netForwardFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.String) wypes.HostRef[*frame.Frame] {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net], output wypes.String) wypes.HostRef[*frame.Frame] {
+		nt := ref.Raw
 
-		dst := frame.NewFrame()
-		dst.SetImage(nt.Forward(output.Unwrap()))
-		framecache.Set(dst)
+		dst := frame.NewFrame(nt.Net.Forward(output.Unwrap()))
 
-		return wypes.UInt32(dst.ID)
+		v := wypes.HostRef[*frame.Frame]{Raw: dst}
+		id := store.Refs.Put(v)
+		dst.ID = wypes.UInt32(id)
+
+		return v
 	}
 }
 
-func netGetUnconnectedOutLayersFunc(cache *net.Cache, framecache *frame.Cache) func(wypes.Store, wypes.UInt32, wypes.List[uint32]) wypes.Void {
-	return func(s wypes.Store, ref wypes.UInt32, list wypes.List[uint32]) wypes.Void {
-		n, ok := cache.Get(ref)
-		if !ok {
-			return wypes.Void{}
-		}
-		nt := n.Net
+func netGetUnconnectedOutLayersFunc(conf *Config) func(wypes.Store, wypes.HostRef[*net.Net], wypes.List[uint32]) wypes.Void {
+	return func(store wypes.Store, ref wypes.HostRef[*net.Net], list wypes.List[uint32]) wypes.Void {
+		nt := ref.Raw
 
-		ls := nt.GetUnconnectedOutLayers()
+		ls := nt.Net.GetUnconnectedOutLayers()
 		result := make([]uint32, len(ls))
 		for i, l := range ls {
 			result[i] = uint32(l)
 		}
 
 		list.Raw = result
-		list.DataPtr = framecache.ReturnDataPtr
-		list.Lower(s)
+		list.DataPtr = conf.ReturnDataPtr
+		list.Lower(store)
 
 		return wypes.Void{}
 	}
 }
 
-func netBlobFromImageFunc(cache *frame.Cache) func(wypes.UInt32, wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.UInt32 {
-	return func(matref wypes.UInt32, scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.UInt32 {
-		f, ok := cache.Get(matref)
-		if !ok {
-			return wypes.UInt32(0)
-		}
-		src := f.Image
+func netBlobFromImageFunc(conf *Config) func(wypes.Store, wypes.HostRef[*frame.Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*frame.Frame] {
+	return func(store wypes.Store, ref wypes.HostRef[*frame.Frame], scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*frame.Frame] {
+		frm := ref.Raw
 
-		b := gocv.BlobFromImage(src, float64(scale.Unwrap()), image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), gocv.NewScalar(float64(mean0.Unwrap()), float64(mean1.Unwrap()), float64(mean2.Unwrap()), float64(mean3.Unwrap())), swapRb.Unwrap(), crop.Unwrap())
+		b := gocv.BlobFromImage(frm.Image, float64(scale.Unwrap()), image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), gocv.NewScalar(float64(mean0.Unwrap()), float64(mean1.Unwrap()), float64(mean2.Unwrap()), float64(mean3.Unwrap())), swapRb.Unwrap(), crop.Unwrap())
 
-		blob := frame.NewFrame()
-		blob.SetImage(b)
-		cache.Set(blob)
+		blob := frame.NewFrame(b)
 
-		return wypes.UInt32(blob.ID)
+		v := wypes.HostRef[*frame.Frame]{Raw: blob}
+		id := store.Refs.Put(v)
+		blob.ID = wypes.UInt32(id)
+
+		return v
 	}
 }

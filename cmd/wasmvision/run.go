@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/orsinium-labs/wypes"
 	"github.com/urfave/cli/v2"
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/engine"
@@ -64,7 +65,7 @@ func run(cCtx *cli.Context) error {
 		if dest == "" {
 			dest = ":8080"
 		}
-		mjpegstream = engine.NewMJPEGStream(r.FrameCache, dest)
+		mjpegstream = engine.NewMJPEGStream(r.Refs, dest)
 
 		go mjpegstream.Start()
 		defer mjpegstream.Close()
@@ -73,7 +74,7 @@ func run(cCtx *cli.Context) error {
 		if dest == "" {
 			return fmt.Errorf("you must profile a file destination for output=file")
 		}
-		videoWriter = engine.NewVideoWriter(r.FrameCache, dest)
+		videoWriter = engine.NewVideoWriter(r.Refs, dest)
 
 		if err := videoWriter.Start(webcam); err != nil {
 			return fmt.Errorf("failed starting video writer: %w", err)
@@ -111,7 +112,8 @@ func run(cCtx *cli.Context) error {
 			continue
 		}
 
-		r.FrameCache.Set(frame)
+		id := r.Refs.Put(frame)
+		frame.ID = wypes.UInt32(id)
 
 		i++
 		if logging {

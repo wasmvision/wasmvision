@@ -5,6 +5,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/frame"
+	"github.com/wasmvision/wasmvision/runtime"
 	"gocv.io/x/gocv"
 )
 
@@ -20,17 +21,17 @@ type VideoWriter struct {
 	Filename string
 	codec    string
 	fps      float64
-	cache    *frame.Cache
-	frames   chan frame.Frame
+	refs     *runtime.MapRefs
+	frames   chan *frame.Frame
 }
 
-func NewVideoWriter(cache *frame.Cache, dest string) VideoWriter {
+func NewVideoWriter(refs *runtime.MapRefs, dest string) VideoWriter {
 	return VideoWriter{
 		Filename: dest,
 		codec:    defaultCodec,
 		fps:      defaultFBS,
-		cache:    cache,
-		frames:   make(chan frame.Frame, framebufferSize),
+		refs:     refs,
+		frames:   make(chan *frame.Frame, framebufferSize),
 	}
 }
 
@@ -38,7 +39,7 @@ func (vw *VideoWriter) Close() {
 	vw.writer.Close()
 }
 
-func (vw *VideoWriter) Write(img frame.Frame) error {
+func (vw *VideoWriter) Write(img *frame.Frame) error {
 	vw.frames <- img
 	return nil
 }
@@ -70,6 +71,6 @@ func (vw *VideoWriter) writeFrames() {
 		}
 
 		frame.Close()
-		vw.cache.Delete(frame.ID)
+		vw.refs.Drop(frame.ID.Unwrap())
 	}
 }

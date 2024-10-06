@@ -15,8 +15,7 @@ func downloadModel(cCtx *cli.Context) error {
 	}
 	name := cCtx.Args().Get(0)
 
-	dl, ok := net.KnownModels[name]
-	if !ok {
+	if !net.ModelWellKnown(name) {
 		return fmt.Errorf("unknown model %s", name)
 	}
 
@@ -27,7 +26,7 @@ func downloadModel(cCtx *cli.Context) error {
 
 	fmt.Printf("Downloading model %s...\n", name)
 
-	err := net.DownloadModel(dl, modelsDir)
+	err := net.DownloadModel(name, modelsDir)
 	if err != nil {
 		fmt.Printf("Error downloading model: %s", err)
 		return err

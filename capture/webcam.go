@@ -35,24 +35,22 @@ func (w *Webcam) Close() error {
 	return w.webcam.Close()
 }
 
-func (w *Webcam) Read() (frame.Frame, error) {
+func (w *Webcam) Read() (*frame.Frame, error) {
 	img := gocv.NewMat()
 	if ok := w.webcam.Read(&img); !ok {
 		w.retries--
 		if w.retries == 0 {
-			return frame.Frame{}, ErrClosed
+			return &frame.Frame{}, ErrClosed
 		}
 
-		frame := frame.NewFrame()
-		frame.SetImage(gocv.NewMat())
+		frame := frame.NewEmptyFrame()
 
 		return frame, nil
 	}
 
 	w.retries = defaultRetries
 
-	frame := frame.NewFrame()
-	frame.SetImage(img)
+	frame := frame.NewFrame(img)
 
 	return frame, nil
 }
