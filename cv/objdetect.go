@@ -1,6 +1,7 @@
 package cv
 
 import (
+	"image"
 	"log"
 
 	"github.com/orsinium-labs/wypes"
@@ -15,6 +16,10 @@ func ObjDetectModules(ctx *Context) wypes.Modules {
 			"[method]cascade-classifier.close":              wypes.H2(closeCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.load":               wypes.H3(loadCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.detect-multi-scale": wypes.H4(detectMultiScaleCascadeClassifierFunc(ctx)),
+			"[constructor]face-detector-YN":                 wypes.H5(newFaceDetectorYNFunc(ctx)),
+			"[method]face-detector-YN.close":                wypes.H2(closeFaceDetectorYNFunc(ctx)),
+			"[method]face-detector-YN.set-input-size":       wypes.H4(faceDetectorYNSetInputSizeFunc(ctx)),
+			"[method]face-detector-YN.detect":               wypes.H3(faceDetectorYNDetectFunc(ctx)),
 		},
 	}
 }
@@ -96,5 +101,66 @@ func detectMultiScaleCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wype
 		list.Lower(s)
 
 		return wypes.Void{}
+	}
+}
+
+func newFaceDetectorYNFunc[T *FaceDetectorYN](ctx *Context) func(*wypes.Store, wypes.String, wypes.String, wypes.UInt32, wypes.UInt32) wypes.HostRef[T] {
+	return func(s *wypes.Store, model wypes.String, config wypes.String, size0 wypes.UInt32, size1 wypes.UInt32) wypes.HostRef[T] {
+		name := model.Unwrap()
+		modelFile := models.ModelFileName(name, ctx.ModelsDir)
+
+		switch {
+		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
+			if ctx.Logging {
+				log.Printf("Downloading model %s...\n", name)
+			}
+
+			if err := models.Download(name, ctx.ModelsDir); err != nil {
+				log.Printf("Error downloading model: %s", err)
+				return wypes.HostRef[T]{}
+			}
+
+		case !models.ModelExists(modelFile):
+			return wypes.HostRef[T]{}
+		}
+
+		f := gocv.NewFaceDetectorYN(modelFile, "", image.Point{X: int(size0), Y: int(size1)})
+
+		fd := NewFaceDetectorYN(modelFile)
+		fd.SetDetector(f)
+
+		v := wypes.HostRef[T]{Raw: fd}
+		return v
+	}
+}
+
+func closeFaceDetectorYNFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*FaceDetectorYN]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*FaceDetectorYN]) wypes.Void {
+		f := ref.Raw
+		f.Close()
+
+		return wypes.Void{}
+	}
+}
+
+func faceDetectorYNSetInputSizeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*FaceDetectorYN], wypes.UInt32, wypes.UInt32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*FaceDetectorYN], size0 wypes.UInt32, size1 wypes.UInt32) wypes.Void {
+		f := ref.Raw
+		f.Detector.SetInputSize(image.Point{X: int(size0), Y: int(size1)})
+
+		return wypes.Void{}
+	}
+}
+
+func faceDetectorYNDetectFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*FaceDetectorYN], wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
+	return func(s *wypes.Store, ref wypes.HostRef[*FaceDetectorYN], mat wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
+		f := ref.Raw
+
+		dst := NewEmptyFrame()
+		f.Detector.Detect(mat.Unwrap().Image, &dst.Image)
+
+		v := wypes.HostRef[*Frame]{Raw: dst}
+
+		return v
 	}
 }

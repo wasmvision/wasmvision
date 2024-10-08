@@ -66,6 +66,11 @@ var KnownModels = map[string]ModelFile{
 		Filename: "udnie-8.onnx",
 		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-8.onnx",
 	},
+	"face_detection_yunet_2023mar": {
+		Alias:    "face_detection_yunet_2023mar",
+		Filename: "face_detection_yunet_2023mar.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+	},
 }
 
 func Download(name string, modelsDir string) error {
