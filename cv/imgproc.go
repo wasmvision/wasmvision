@@ -19,6 +19,7 @@ func ImgprocModules(ctx *Context) wypes.Modules {
 			"resize":             wypes.H7(resizeFunc(ctx)),
 			"put-text":           wypes.H12(putTextFunc(ctx)),
 			"rectangle":          wypes.H8(rectangleFunc(ctx)),
+			"circle":             wypes.H9(circleFunc(ctx)),
 		},
 	}
 }
@@ -125,6 +126,18 @@ func rectangleFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Rect,
 
 		clr := color.RGBA{R: uint8(c0.Unwrap()), G: uint8(c1.Unwrap()), B: uint8(c2.Unwrap()), A: uint8(c3.Unwrap())}
 		gocv.Rectangle(&src, rect.Unwrap(), clr, int(thickness0.Unwrap()))
+
+		return wypes.Void{}
+	}
+}
+
+func circleFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Size, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], size Size, radius wypes.UInt32, c0 wypes.UInt32, c1 wypes.UInt32, c2 wypes.UInt32, c3 wypes.UInt32, thickness0 wypes.UInt32) wypes.Void {
+		f := ref.Raw
+		src := f.Image
+
+		clr := color.RGBA{R: uint8(c0.Unwrap()), G: uint8(c1.Unwrap()), B: uint8(c2.Unwrap()), A: uint8(c3.Unwrap())}
+		gocv.Circle(&src, size.Unwrap(), int(radius), clr, int(thickness0.Unwrap()))
 
 		return wypes.Void{}
 	}

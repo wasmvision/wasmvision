@@ -17,6 +17,10 @@ type Size struct {
 	Y wypes.Int32
 }
 
+func (v Size) Unwrap() image.Point {
+	return image.Point{X: int(v.X.Unwrap()), Y: int(v.Y.Unwrap())}
+}
+
 func (v Size) ValueTypes() []wypes.ValueType {
 	types := make([]wypes.ValueType, 0, 2)
 	types = append(types, v.X.ValueTypes()...)

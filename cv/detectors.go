@@ -32,3 +32,29 @@ func (cc *CascadeClassifier) SetClassifier(c gocv.CascadeClassifier) {
 func (c *CascadeClassifier) Close() {
 	c.Classifier.Close()
 }
+
+// FaceDetectorYN is a wrapper around gocv.FaceDectectorYN for detection.
+type FaceDetectorYN struct {
+	ID       wypes.UInt32
+	Name     string
+	Filename string
+
+	Detector gocv.FaceDetectorYN
+}
+
+// NewFaceDetectorYN creates a new FaceDetectorYN.
+func NewFaceDetectorYN(model string) *FaceDetectorYN {
+	return &FaceDetectorYN{
+		Filename: model,
+	}
+}
+
+// Close closes the FaceDectectorYN.
+func (d *FaceDetectorYN) Close() {
+	d.Detector.Close()
+}
+
+// SetDetector sets the gocv.FaceDetectorYN for the FaceDectectorYN.
+func (d *FaceDetectorYN) SetDetector(dd gocv.FaceDetectorYN) {
+	d.Detector = dd
+}
