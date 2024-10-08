@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-const maxIndex = 483647
+const maxIndex = 1048560
 
 // MapRefs is a [Refs] implementation powered by a map protected by a mutex.
 // Indexes are generated randomly and checked for collisions.
@@ -30,8 +30,10 @@ func (r *MapRefs) Get(idx uint32, def any) (any, bool) {
 
 	val, found := r.Raw[idx]
 	if !found {
+		//		fmt.Println("get not found", idx, val)
 		return def, false
 	}
+	//	fmt.Println("get found", idx, val)
 	return val, true
 }
 
@@ -40,6 +42,7 @@ func (r *MapRefs) Set(idx uint32, val any) {
 	r.mux.Lock()
 	defer r.mux.Unlock()
 
+	//	fmt.Println("set", idx, val)
 	r.Raw[idx] = val
 }
 
@@ -49,6 +52,8 @@ func (r *MapRefs) Put(val any) uint32 {
 	defer r.mux.Unlock()
 
 	r.idx = uint32(rand.IntN(maxIndex))
+
+	//	fmt.Println("put", r.idx, val)
 
 	// skip already used cells
 	_, used := r.Raw[r.idx]

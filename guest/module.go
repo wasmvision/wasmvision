@@ -17,7 +17,7 @@ func NewModule(ctx context.Context, m api.Module) Module {
 	var returnDataPtr uint32
 	malloc := m.ExportedFunction("malloc")
 	if malloc != nil {
-		res, err := malloc.Call(ctx, 256)
+		res, err := malloc.Call(ctx, 1024)
 		if err == nil {
 			returnDataPtr = uint32(res[0])
 		}
