@@ -36,6 +36,11 @@ var KnownProcessors = map[string]ProcessorFile{
 		Filename: "candy.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/candy.wasm",
 	},
+	"facedetectyn": {
+		Alias:    "facedetectyn",
+		Filename: "facedetectyn.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/facedetectyn.wasm",
+	},
 	"gaussianblur": {
 		Alias:    "gaussianblur",
 		Filename: "gaussianblur.wasm",
