@@ -1,6 +1,8 @@
 package cv
 
 import (
+	"math/rand/v2"
+
 	"github.com/orsinium-labs/wypes"
 	"gocv.io/x/gocv"
 )
@@ -13,12 +15,18 @@ type Frame struct {
 
 // NewFrame creates a new Frame.
 func NewFrame(img gocv.Mat) *Frame {
-	return &Frame{Image: img}
+	return &Frame{
+		ID:    wypes.UInt32(rand.IntN(maxIndex)),
+		Image: img,
+	}
 }
 
 // NewEmptyFrame creates a new Frame with an empty Mat.
 func NewEmptyFrame() *Frame {
-	return &Frame{Image: gocv.NewMat()}
+	return &Frame{
+		ID:    wypes.UInt32(rand.IntN(maxIndex)),
+		Image: gocv.NewMat(),
+	}
 }
 
 // SetImage sets the image of the frame.

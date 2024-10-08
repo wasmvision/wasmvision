@@ -61,6 +61,7 @@ func hostModules(cctx *cv.Context) wypes.Modules {
 	maps.Copy(modules, cv.MatModules(cctx))
 	maps.Copy(modules, cv.ImgprocModules(cctx))
 	maps.Copy(modules, cv.NetModules(cctx))
+	maps.Copy(modules, cv.ObjDetectModules(cctx))
 
 	return modules
 }
@@ -93,7 +94,7 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 			log.Printf("Loading wasmCV guest module %s...\n", p)
 		}
 
-		if err := intp.RegisterGuestModule(ctx, module); err != nil {
+		if err := intp.RegisterGuestModule(ctx, p, module); err != nil {
 			return err
 		}
 	}
@@ -107,10 +108,9 @@ func (intp *Interpreter) Processors() []guest.Module {
 }
 
 // RegisterGuestModule registers a guest module with the interpreter.
-func (intp *Interpreter) RegisterGuestModule(ctx context.Context, module []byte) error {
-	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithName("").WithStartFunctions("_initialize"))
+func (intp *Interpreter) RegisterGuestModule(ctx context.Context, name string, module []byte) error {
+	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithName(name).WithStartFunctions("_initialize"))
 	if err != nil {
-		println("error instantiate module")
 		return err
 	}
 

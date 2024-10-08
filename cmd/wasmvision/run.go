@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/orsinium-labs/wypes"
 	"github.com/urfave/cli/v2"
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/engine"
@@ -112,8 +111,7 @@ func run(cCtx *cli.Context) error {
 			continue
 		}
 
-		id := r.Refs.Put(frame)
-		frame.ID = wypes.UInt32(id)
+		r.Refs.Set(frame.ID.Unwrap(), frame)
 
 		i++
 		if logging {

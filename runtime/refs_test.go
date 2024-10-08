@@ -26,9 +26,9 @@ func TestHostRef_Lower(t *testing.T) {
 
 	val1 := wypes.HostRef[*cv.Frame]{Raw: frm1}
 	val2 := wypes.HostRef[*cv.Frame]{Raw: frm2}
-	val1.Lower(store)
-	val2.Lower(store)
-	val3 := val2.Lift(store)
+	val1.Lower(&store)
+	val2.Lower(&store)
+	val3 := val2.Lift(&store)
 	is.Equal(c, val3.Unwrap().ID, frm2.ID)
 }
 
@@ -45,8 +45,8 @@ func TestHostRef_Drop(t *testing.T) {
 	defer frm1.Close()
 
 	val1 := wypes.HostRef[*cv.Frame]{Raw: frm1}
-	val1.Lower(store)
-	val2 := val1.Lift(store)
+	val1.Lower(&store)
+	val2 := val1.Lift(&store)
 	is.Equal(c, val2.Unwrap().ID, frm1.ID)
 	is.Equal(c, len(refs.Raw), 1)
 	val2.Drop()
