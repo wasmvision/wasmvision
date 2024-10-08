@@ -14,6 +14,7 @@ func MatModules(ctx *Context) wypes.Modules {
 			"[static]mat.new-mat":       wypes.H1(matNewFunc(ctx)),
 			"[static]mat.new-with-size": wypes.H4(matNewWithSizeFunc(ctx)),
 			"[method]mat.close":         wypes.H2(matCloseFunc(ctx)),
+			"[method]mat.clone":         wypes.H2(matCloneFunc(ctx)),
 			"[method]mat.cols":          wypes.H2(matColsFunc(ctx)),
 			"[method]mat.rows":          wypes.H2(matRowsFunc(ctx)),
 			"[method]mat.mattype":       wypes.H2(matTypeFunc(ctx)),
@@ -64,6 +65,16 @@ func matColsFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame]) wypes.U
 		mat := f.Image
 
 		return wypes.UInt32(mat.Cols())
+	}
+}
+
+func matCloneFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
+		f := ref.Raw
+		mat := f.Image
+
+		v := wypes.HostRef[*Frame]{Raw: NewFrame(mat.Clone())}
+		return v
 	}
 }
 
