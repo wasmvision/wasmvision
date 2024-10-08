@@ -1,7 +1,6 @@
 package cv
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/orsinium-labs/wypes"
@@ -12,7 +11,7 @@ import (
 func ObjDetectModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/objdetect": wypes.Module{
-			"[static]cascade-classifier.new":                wypes.H1(newCascadeClassifierFunc(ctx)),
+			"[constructor]cascade-classifier":               wypes.H2(newCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.close":              wypes.H2(closeCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.load":               wypes.H3(loadCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.detect-multi-scale": wypes.H4(detectMultiScaleCascadeClassifierFunc(ctx)),
@@ -20,11 +19,11 @@ func ObjDetectModules(ctx *Context) wypes.Modules {
 	}
 }
 
-func newCascadeClassifierFunc[T *CascadeClassifier](ctx *Context) func(*wypes.Store) wypes.HostRef[T] {
-	return func(s *wypes.Store) wypes.HostRef[T] {
+func newCascadeClassifierFunc[T *CascadeClassifier](ctx *Context) func(*wypes.Store, wypes.String) wypes.HostRef[T] {
+	return func(s *wypes.Store, name wypes.String) wypes.HostRef[T] {
 		c := gocv.NewCascadeClassifier()
 
-		cl := NewCascadeClassifier("classy")
+		cl := NewCascadeClassifier(name.Raw)
 		cl.SetClassifier(c)
 
 		v := wypes.HostRef[T]{Raw: cl}
@@ -41,10 +40,8 @@ func closeCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*
 	}
 }
 
-func loadCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*CascadeClassifier], wypes.String) wypes.Void {
-	return func(s *wypes.Store, ref wypes.HostRef[*CascadeClassifier], file wypes.String) wypes.Void {
-		fmt.Println("loadCascadeClassifierFunc", "err:", s.Error, "ref", ref.Raw)
-
+func loadCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*CascadeClassifier], wypes.String) wypes.Bool {
+	return func(s *wypes.Store, ref wypes.HostRef[*CascadeClassifier], file wypes.String) wypes.Bool {
 		cl := ref.Raw
 		name := file.Unwrap()
 		modelFile := models.ModelFileName(name, ctx.ModelsDir)
@@ -57,26 +54,23 @@ func loadCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*C
 
 			if err := models.Download(name, ctx.ModelsDir); err != nil {
 				log.Printf("Error downloading classifier: %s", err)
-				//return wypes.Bool(false)
-				return wypes.Void{}
+				return wypes.Bool(false)
 			}
 
 		case !models.ModelExists(modelFile):
-			//return wypes.Bool(false)
-			return wypes.Void{}
+			return wypes.Bool(false)
 		}
 
 		if cl == nil {
-			fmt.Println("classifier is nil")
-			//return wypes.Bool(false)
-			return wypes.Void{}
+			log.Println("classifier is nil")
+			return wypes.Bool(false)
 		}
 
 		res := cl.Classifier.Load(modelFile)
 		if !res {
-			fmt.Println("classifier load failed")
+			log.Println("classifier load failed")
 		}
-		return wypes.Void{}
+		return wypes.Bool(true)
 	}
 }
 
@@ -84,7 +78,7 @@ func detectMultiScaleCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wype
 	return func(s *wypes.Store, ref wypes.HostRef[*CascadeClassifier], mat wypes.HostRef[*Frame], list wypes.ReturnedList[Rect]) wypes.Void {
 		cl := ref.Raw
 		if cl == nil {
-			fmt.Println("classifier ref is nil", ref)
+			log.Println("classifier ref is nil", ref)
 			return wypes.Void{}
 		}
 		rects := cl.Classifier.DetectMultiScale(mat.Raw.Image)
