@@ -33,4 +33,4 @@ rain-princess:
 udnie:
 	cd processors/udnie; tinygo build -o ../udnie.wasm -target=wasm-unknown .
 
-processors: asciify blur blurrs candy gaussianblur hello mosaic pointilism rain-princess udnie
+processors: asciify blur blurrs candy facedetectyn gaussianblur hello mosaic pointilism rain-princess udnie
