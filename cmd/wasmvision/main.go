@@ -34,9 +34,10 @@ var (
 
 func main() {
 	app := &cli.App{
-		Name:    "wasmvision",
-		Usage:   "wasmVision CLI",
-		Version: Version(),
+		Name:        "wasmvision",
+		Usage:       "wasmVision CLI",
+		Description: "wasmVision gets you up and running with computer vision.",
+		Version:     Version(),
 		Commands: []*cli.Command{
 			{
 				Name:   "run",

@@ -8,12 +8,16 @@ USAGE:
    wasmvision [global options] command [command options]
 
 VERSION:
-   0.1.0-pre5
+   0.1.0-beta1
+
+DESCRIPTION:
+   wasmVision gets you up and running with computer vision.
 
 COMMANDS:
    run       Run wasmVision processors
    download  Download computer vision models and processors
    info      Show installation info
+   listall   Lists all known models and processors
    version   Show version
    about     About wasmVision
    help, h   Shows a list of commands or help for one command
