@@ -1,5 +1,7 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
+# Get up and running with computer vision
+
 [![Linux](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml) [![Windows](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
 
 wasmVision gets you up and running with computer vision.
@@ -8,7 +10,7 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
-- Capture image frames from a camera or video file
+- Capture images from a camera or video file
 - Process them using WebAssembly
 - Output the results to a stream or video file
 
@@ -37,15 +39,23 @@ See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
 ### wasmVision Processors
 
-wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://github.com/wasmvision/wasmcv).
+wasmVision processing modules are WebAssembly guest modules that support the [wasmCV interface](https://wasmcv.org).
 
-You can filter images, analyze them, and modify them using traditional computer vision algorithms.
+Processors can filter images, analyze them, and modify them using traditional computer vision algorithms.
 
-You can also use deep neural networks and other machine learning algorithms which can automatically download the models they need.
+Processors can also use deep neural networks and other machine learning algorithms, and can even download the models they need automatically.
 
-See the [processors directory](./processors/) for some pre-compiled processors you can try out right away.
+Want some pre-compiled processors you can try out right away? Take a look at a few such as:
+
+- [`blur.wasm`](./processors/blur/) for image blurring
+- [`facedetectyn.wasm`](./processors/facedetectyn/) for face detection using a deep neural network
+- [`mosaic.wasm`](./processors/mosaic/) for a cool effect using fast neural style transfer
+
+Check out the [processors directory](./processors/) for the complete list.
 
 Processors can be written in Go, Rust, or the C programming language.
+
+See the [PROCESSOR.md](PROCESSOR.md) document for more information about how processors work and how to develop your own.
 
 ## Quick start
 
