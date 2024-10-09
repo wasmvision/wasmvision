@@ -52,7 +52,7 @@ var KnownProcessors = map[string]ProcessorFile{
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/hello.wasm",
 	},
 	"mosaic": {
-		Alias:    "mosaic.wasm",
+		Alias:    "mosaic",
 		Filename: "mosaic.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/mosaic.wasm",
 	},
