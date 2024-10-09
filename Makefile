@@ -12,6 +12,9 @@ blurrs:
 candy:
 	cd processors/candy; tinygo build -o ../candy.wasm -target=wasm-unknown .
 
+faceblur:
+	cd processors/faceblur; tinygo build -o ../faceblur.wasm -target=wasm-unknown .
+
 facedetectyn:
 	cd processors/facedetectyn; tinygo build -o ../facedetectyn.wasm -target=wasm-unknown .
 
@@ -33,4 +36,4 @@ rain-princess:
 udnie:
 	cd processors/udnie; tinygo build -o ../udnie.wasm -target=wasm-unknown .
 
-processors: asciify blur blurrs candy facedetectyn gaussianblur hello mosaic pointilism rain-princess udnie
+processors: asciify blur blurrs candy faceblur facedetectyn gaussianblur hello mosaic pointilism rain-princess udnie
