@@ -32,6 +32,12 @@ Processor written in Go that performs fast neural style transfer.
 
 Processor written in Go that performs a gaussian blur on the image frame.
 
+## faceblur.wasm
+
+![faceblur](../images/faceblur-processor.png)
+
+Processor that detects and then blurs faces using YuNet, a light-weight, fast and accurate face detection model.
+
 ## facedetectyn.wasm
 
 ![facedetectyn](../images/facedetectyn-processor.png)
