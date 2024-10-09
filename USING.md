@@ -124,3 +124,33 @@ wasmvision download processor candy
 ```shell
 wasmvision download model candy-9
 ```
+
+## `wasmvision listall`
+
+```shell
+NAME:
+   wasmvision listall - Lists all known models and processors
+
+USAGE:
+   wasmvision listall command [command options]
+
+COMMANDS:
+   models      lists all known computer vision models
+   processors  lists all known wasm processors
+   help, h     Shows a list of commands or help for one command
+
+OPTIONS:
+   --help, -h  show help
+```
+
+### Show a list of all models that can be downloaded, either manually or automatically.
+
+```shell
+wasmvision listall models
+```
+
+### Show a list of all processors that can be downloaded, either manually or automatically.
+
+```shell
+wasmvision listall processors
+```
