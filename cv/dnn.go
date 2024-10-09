@@ -1,7 +1,6 @@
 package cv
 
 import (
-	"image"
 	"log"
 
 	"github.com/wasmvision/wasmvision/models"
@@ -20,7 +19,7 @@ func NetModules(ctx *Context) wypes.Modules {
 			"[method]net.set-input":                  wypes.H4(netSetInputFunc(ctx)),
 			"[method]net.forward":                    wypes.H3(netForwardFunc(ctx)),
 			"[method]net.get-unconnected-out-layers": wypes.H3(netGetUnconnectedOutLayersFunc(ctx)),
-			"blob-from-image":                        wypes.H11(netBlobFromImageFunc(ctx)),
+			"blob-from-image":                        wypes.H7(netBlobFromImageFunc(ctx)),
 		},
 	}
 }
@@ -151,11 +150,11 @@ func netGetUnconnectedOutLayersFunc(ctx *Context) func(*wypes.Store, wypes.HostR
 	}
 }
 
-func netBlobFromImageFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.UInt32, wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Float32, wypes.Bool, wypes.Bool) wypes.HostRef[*Frame] {
-	return func(s *wypes.Store, ref wypes.HostRef[*Frame], scale wypes.Float32, size0 wypes.UInt32, size1 wypes.UInt32, mean0 wypes.Float32, mean1 wypes.Float32, mean2 wypes.Float32, mean3 wypes.Float32, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*Frame] {
+func netBlobFromImageFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32, Size, Scalar, wypes.Bool, wypes.Bool) wypes.HostRef[*Frame] {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], scale wypes.Float32, sz Size, scalar Scalar, swapRb wypes.Bool, crop wypes.Bool) wypes.HostRef[*Frame] {
 		frm := ref.Raw
 
-		b := gocv.BlobFromImage(frm.Image, float64(scale.Unwrap()), image.Pt(int(size0.Unwrap()), int(size1.Unwrap())), gocv.NewScalar(float64(mean0.Unwrap()), float64(mean1.Unwrap()), float64(mean2.Unwrap()), float64(mean3.Unwrap())), swapRb.Unwrap(), crop.Unwrap())
+		b := gocv.BlobFromImage(frm.Image, float64(scale.Unwrap()), sz.Unwrap(), scalar.Unwrap(), swapRb.Unwrap(), crop.Unwrap())
 
 		blob := NewFrame(b)
 
