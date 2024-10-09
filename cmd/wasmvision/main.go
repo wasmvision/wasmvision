@@ -70,6 +70,22 @@ func main() {
 				Action: info,
 			},
 			{
+				Name:  "listall",
+				Usage: "Lists all known models and processors",
+				Subcommands: []*cli.Command{
+					{
+						Name:   "models",
+						Usage:  "lists all known computer vision models",
+						Action: listallModels,
+					},
+					{
+						Name:   "processors",
+						Usage:  "lists all known wasm processors",
+						Action: listallProcessors,
+					},
+				},
+			},
+			{
 				Name:   "version",
 				Usage:  "Show version",
 				Action: version,
