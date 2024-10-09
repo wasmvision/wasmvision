@@ -1,6 +1,8 @@
 package cv
 
 import (
+	"fmt"
+
 	"gocv.io/x/gocv"
 
 	"github.com/orsinium-labs/wypes"
@@ -15,11 +17,13 @@ func MatModules(ctx *Context) wypes.Modules {
 			"[static]mat.new-with-size": wypes.H4(matNewWithSizeFunc(ctx)),
 			"[method]mat.close":         wypes.H2(matCloseFunc(ctx)),
 			"[method]mat.clone":         wypes.H2(matCloneFunc(ctx)),
+			"[method]mat.copy-to":       wypes.H3(matCopyToFunc(ctx)),
 			"[method]mat.cols":          wypes.H2(matColsFunc(ctx)),
 			"[method]mat.rows":          wypes.H2(matRowsFunc(ctx)),
 			"[method]mat.mattype":       wypes.H2(matTypeFunc(ctx)),
 			"[method]mat.empty":         wypes.H2(matEmptyFunc(ctx)),
 			"[method]mat.size":          wypes.H3(matSizeFunc(ctx)),
+			"[method]mat.region":        wypes.H3(matRegionFunc(ctx)),
 			"[method]mat.reshape":       wypes.H4(matReshapeFunc(ctx)),
 			"[method]mat.get-float-at":  wypes.H4(matGetFloatAtFunc(ctx)),
 			"[method]mat.set-float-at":  wypes.H5(matSetFloatAtFunc(ctx)),
@@ -74,6 +78,32 @@ func matCloneFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame]) wypes.
 		mat := f.Image
 
 		v := wypes.HostRef[*Frame]{Raw: NewFrame(mat.Clone())}
+		return v
+	}
+}
+
+func matCopyToFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], dst wypes.HostRef[*Frame]) wypes.Void {
+		f := ref.Raw
+		srcMat := f.Image
+
+		dstF := dst.Raw
+		dstMat := dstF.Image
+
+		srcMat.CopyTo(&dstMat)
+
+		return wypes.Void{}
+	}
+}
+
+func matRegionFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Rect) wypes.HostRef[*Frame] {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], rect Rect) wypes.HostRef[*Frame] {
+		f := ref.Raw
+		mat := f.Image
+
+		r := rect.Unwrap()
+		fmt.Println(r.Min, r.Max, mat.Cols(), mat.Rows())
+		v := wypes.HostRef[*Frame]{Raw: NewFrame(mat.Region(r))}
 		return v
 	}
 }
