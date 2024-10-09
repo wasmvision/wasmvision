@@ -12,6 +12,9 @@ blurrs:
 candy:
 	cd processors/candy; tinygo build -o ../candy.wasm -target=wasm-unknown .
 
+facedetectyn:
+	cd processors/facedetectyn; tinygo build -o ../facedetectyn.wasm -target=wasm-unknown .
+
 gaussianblur:
 	cd processors/gaussianblur; tinygo build -o ../gaussianblur.wasm -target=wasm-unknown .
 
