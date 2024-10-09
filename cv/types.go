@@ -87,31 +87,31 @@ func (v Rect) ValueTypes() []wypes.ValueType {
 func (Rect) Lift(s *wypes.Store) Rect {
 	var T Size
 	return Rect{
-		Min: T.Lift(s),
 		Max: T.Lift(s),
+		Min: T.Lift(s),
 	}
 }
 
 // Lower implements [Lower] interface.
 func (v Rect) Lower(s *wypes.Store) {
-	v.Min.Lower(s)
 	v.Max.Lower(s)
+	v.Min.Lower(s)
 }
 
 // MemoryLift implements [MemoryLift] interface.
 func (Rect) MemoryLift(s *wypes.Store, offset uint32) (Rect, uint32) {
 	var T Size
 
-	min, minSize := T.MemoryLift(s, offset)
-	max, maxSize := T.MemoryLift(s, offset+minSize)
+	max, maxSize := T.MemoryLift(s, offset)
+	min, minSize := T.MemoryLift(s, offset+maxSize)
 
 	return Rect{Min: min, Max: max}, minSize + maxSize
 }
 
 // MemoryLower implements [MemoryLower] interface.
 func (v Rect) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
-	minSize := v.Min.MemoryLower(s, offset)
-	maxSize := v.Max.MemoryLower(s, offset+minSize)
+	maxSize := v.Max.MemoryLower(s, offset)
+	minSize := v.Min.MemoryLower(s, offset+maxSize)
 
 	return minSize + maxSize
 }
