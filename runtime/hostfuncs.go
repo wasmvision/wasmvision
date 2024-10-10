@@ -9,7 +9,7 @@ import (
 
 func hostedModules(ctx *cv.Context) wypes.Modules {
 	return wypes.Modules{
-		"hosted": wypes.Module{
+		"wasmvision:platform/logging": wypes.Module{
 			"println": wypes.H1(hostPrintln),
 			"log":     wypes.H1(hostLogFunc(ctx)),
 		},
