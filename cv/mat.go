@@ -1,8 +1,6 @@
 package cv
 
 import (
-	"fmt"
-
 	"gocv.io/x/gocv"
 
 	"github.com/orsinium-labs/wypes"
@@ -102,7 +100,6 @@ func matRegionFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Rect)
 		mat := f.Image
 
 		r := rect.Unwrap()
-		fmt.Println(r.Min, r.Max, mat.Cols(), mat.Rows())
 		v := wypes.HostRef[*Frame]{Raw: NewFrame(mat.Region(r))}
 		return v
 	}
