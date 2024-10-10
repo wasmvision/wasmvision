@@ -5,7 +5,7 @@ package main
 import (
 	"unsafe"
 
-	"github.com/hybridgroup/mechanoid/convert"
+	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
 	"wasmcv.org/wasm/cv/dnn"
 	"wasmcv.org/wasm/cv/mat"
@@ -17,9 +17,6 @@ const (
 	greenAdjust = 116.779
 	blueAdjust  = 123.68
 )
-
-//go:wasmimport hosted log
-func log(ptr, size uint32)
 
 var princessNet dnn.Net
 
@@ -69,7 +66,7 @@ func process(image mat.Mat) mat.Mat {
 	// resize back to original size
 	out := cv.Resize(candied, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear)
 
-	log(convert.StringToWasmPtr("Performed neural style transfer on image"))
+	logging.Log("Performed neural style transfer on image")
 
 	return out
 }

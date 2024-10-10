@@ -5,15 +5,12 @@ package main
 import (
 	"unsafe"
 
-	"github.com/hybridgroup/mechanoid/convert"
+	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
 	"wasmcv.org/wasm/cv/mat"
 	"wasmcv.org/wasm/cv/objdetect"
 	"wasmcv.org/wasm/cv/types"
 )
-
-//go:wasmimport hosted log
-func log(ptr, size uint32)
 
 var (
 	detector objdetect.FaceDetectorYN
@@ -84,7 +81,7 @@ func process(image mat.Mat) mat.Mat {
 		cv.Circle(out, leftMouthCorner, 1, yellow, 1)
 	}
 
-	log(convert.StringToWasmPtr("Performed face detection on image"))
+	logging.Log("Performed face detection on image")
 
 	return out
 }
