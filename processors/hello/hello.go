@@ -6,22 +6,20 @@ import (
 	"unsafe"
 
 	"github.com/hybridgroup/mechanoid/convert"
+	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/mat"
 )
 
-//go:wasmimport hosted log
-func log(ptr, size uint32)
-
 //export process
 func process(image mat.Mat) mat.Mat {
-	log(convert.StringToWasmPtr("Cols: " +
+	logging.Log("Cols: " +
 		convert.IntToString(int(image.Cols())) +
 		" Rows: " +
 		convert.IntToString(int(image.Rows())) +
 		" Type: " +
 		convert.IntToString(int(image.Mattype())) +
 		" Size: " +
-		convert.IntToString(int(image.Size().Len()))))
+		convert.IntToString(int(image.Size().Len())))
 
 	return image
 }
