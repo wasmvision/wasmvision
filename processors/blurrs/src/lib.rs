@@ -5,34 +5,16 @@ extern crate wee_alloc;
 extern crate alloc;
 extern crate wasmcv;
 
-use alloc::string::String;
 use alloc::string::ToString;
 use wasmcv::wasm::cv;
+use wasmvision::wasmvision::platform::logging;
 
 #[no_mangle]
 pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
-    log(&["Performing blur on image with Cols: ", &mat.cols().to_string(), " Rows: ", &mat.rows().to_string()].concat());
+    logging::log(&["Performing blur on image with Cols: ", &mat.cols().to_string(), " Rows: ", &mat.rows().to_string()].concat());
 
     let out = cv::cv::blur(mat, cv::types::Size{x: 25, y: 25});
     return out;
-}
-
-/// Print a message to the host [`_log`].
-fn log(message: &String) {
-    unsafe {
-        let (ptr, len) = string_to_ptr(message);
-        _log(ptr, len);
-    }
-}
-
-#[link(wasm_import_module = "hosted")]
-extern "C" {
-    #[link_name = "log"]
-    fn _log(ptr: u32, size: u32);
-}
-
-unsafe fn string_to_ptr(s: &String) -> (u32, u32) {
-    return (s.as_ptr() as u32, s.len() as u32);
 }
 
 // Use `wee_alloc` as the global allocator...for now.

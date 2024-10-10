@@ -31,6 +31,7 @@ name = "blurrs"
 version = "0.1.0"
 dependencies = [
  "wasmcv",
+ "wasmvision",
  "wee_alloc",
 ]
 
@@ -288,6 +289,15 @@ dependencies = [
  "hashbrown",
  "indexmap",
  "semver",
+]
+
+[[package]]
+name = "wasmvision"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f49f385f28f0e725e983c930e4de1004479b621ec3fdb2f91b3ced51eba955e"
+dependencies = [
+ "wit-bindgen",
 ]
 
 [[package]]
