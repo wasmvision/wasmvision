@@ -6,6 +6,7 @@ import (
 	"maps"
 	"os"
 
+	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/guest"
 
@@ -17,11 +18,12 @@ import (
 
 // Interpreter is a WebAssembly interpreter that can load and run guest modules.
 type Interpreter struct {
-	r             wazero.Runtime
-	Refs          *MapRefs
-	guestModules  []guest.Module
-	Config        InterpreterConfig
-	ModuleContext *cv.Context
+	r               wazero.Runtime
+	Refs            *MapRefs
+	guestModules    []guest.Module
+	Config          InterpreterConfig
+	ModuleContext   *cv.Context
+	ProcessorConfig *config.Store
 }
 
 type InterpreterConfig struct {
@@ -31,13 +33,19 @@ type InterpreterConfig struct {
 }
 
 // New creates a new Interpreter.
-func New(ctx context.Context, config InterpreterConfig) Interpreter {
+func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 	r := wazero.NewRuntime(ctx)
 	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
+	configStore := config.NewStore()
+
+	// TODO: populate configStore from config file
+	configStore.Set("default", "value")
+
 	cctx := cv.Context{
-		ModelsDir: config.ModelsDir,
-		Logging:   config.Logging,
+		ModelsDir: conf.ModelsDir,
+		Logging:   conf.Logging,
+		Config:    configStore,
 	}
 
 	modules := hostModules(&cctx)
@@ -47,11 +55,12 @@ func New(ctx context.Context, config InterpreterConfig) Interpreter {
 	}
 
 	return Interpreter{
-		r:             r,
-		Refs:          refs,
-		guestModules:  []guest.Module{},
-		Config:        config,
-		ModuleContext: &cctx,
+		r:               r,
+		Refs:            refs,
+		guestModules:    []guest.Module{},
+		Config:          conf,
+		ModuleContext:   &cctx,
+		ProcessorConfig: configStore,
 	}
 }
 
