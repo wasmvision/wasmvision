@@ -6,9 +6,9 @@ type Store struct {
 }
 
 // NewStore creates a new Store.
-func NewStore() *Store {
+func NewStore(s map[string]string) *Store {
 	return &Store{
-		storeMap: map[string]string{},
+		storeMap: s,
 	}
 }
 

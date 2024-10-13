@@ -24,6 +24,11 @@ var (
 		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
 		&cli.StringFlag{Name: "processors-dir", Aliases: []string{"processors"}, EnvVars: []string{"WASMVISION_PROCESSORS_DIR"}, Usage: "directory for processor loading (default to $home/processors)"},
 		&cli.BoolFlag{Name: "processor-download", Value: true, Usage: "automatically download known processors (default: true)"},
+		&cli.StringSliceFlag{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Usage:   "configuration for processors. Format: -config key1=val1 -config key2=val2",
+		},
 	}
 
 	downloadFlags = []cli.Flag{

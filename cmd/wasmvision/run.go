@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 	"github.com/wasmvision/wasmvision/capture"
@@ -32,6 +33,16 @@ func run(cCtx *cli.Context) error {
 	}
 	logging := cCtx.Bool("logging")
 
+	settings := map[string]string{}
+	config := cCtx.StringSlice("config")
+	for _, c := range config {
+		parts := strings.Split(c, "=")
+		if len(parts) != 2 {
+			return fmt.Errorf("invalid config format: %v", c)
+		}
+		settings[parts[0]] = parts[1]
+	}
+
 	ctx := context.Background()
 
 	// load wasm runtime
@@ -39,6 +50,7 @@ func run(cCtx *cli.Context) error {
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
 		Logging:       logging,
+		Settings:      settings,
 	})
 	defer r.Close(ctx)
 

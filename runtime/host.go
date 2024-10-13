@@ -30,6 +30,7 @@ type InterpreterConfig struct {
 	ProcessorsDir string
 	ModelsDir     string
 	Logging       bool
+	Settings      map[string]string
 }
 
 // New creates a new Interpreter.
@@ -37,10 +38,7 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 	r := wazero.NewRuntime(ctx)
 	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
-	configStore := config.NewStore()
-
-	// TODO: populate configStore from config file
-	configStore.Set("default", "value")
+	configStore := config.NewStore(conf.Settings)
 
 	cctx := cv.Context{
 		ModelsDir: conf.ModelsDir,
