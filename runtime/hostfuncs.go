@@ -206,6 +206,9 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		m := payload.(map[string]interface{})
 
 		val := m[responseKey.Unwrap()].(string)
+		if len(val) > 128 {
+			val = val[:128]
+		}
 
 		result.IsError = false
 		result.OK = wypes.Bytes{Raw: []byte(val)}
