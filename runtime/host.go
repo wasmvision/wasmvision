@@ -116,7 +116,7 @@ func (intp *Interpreter) Processors() []guest.Module {
 
 // RegisterGuestModule registers a guest module with the interpreter.
 func (intp *Interpreter) RegisterGuestModule(ctx context.Context, name string, module []byte) error {
-	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithName(name).WithStartFunctions("_initialize"))
+	mod, err := intp.r.InstantiateWithConfig(ctx, module, wazero.NewModuleConfig().WithName(name).WithStartFunctions("_initialize", "_start"))
 	if err != nil {
 		return err
 	}
