@@ -24,6 +24,9 @@ gaussianblur:
 hello:
 	cd processors/hello; tinygo build -o ../hello.wasm -target=wasm-unknown .
 
+ollama:
+	cd processors/ollama; tinygo build -o ../ollama.wasm -target=wasm-unknown .
+
 mosaic:
 	cd processors/mosaic; tinygo build -o ../mosaic.wasm -target=wasm-unknown .
 
@@ -36,4 +39,4 @@ rain-princess:
 udnie:
 	cd processors/udnie; tinygo build -o ../udnie.wasm -target=wasm-unknown .
 
-processors: asciify blur blurrs candy faceblur facedetectyn gaussianblur hello mosaic pointilism rain-princess udnie
+processors: asciify blur blurrs candy faceblur facedetectyn gaussianblur hello llava mosaic pointilism rain-princess udnie

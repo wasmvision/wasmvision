@@ -61,6 +61,11 @@ var KnownProcessors = map[string]ProcessorFile{
 		Filename: "mosaic.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/mosaic.wasm",
 	},
+	"ollama": {
+		Alias:    "ollama",
+		Filename: "ollama.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/ollama.wasm",
+	},
 	"pointilism": {
 		Alias:    "pointilism",
 		Filename: "pointilism.wasm",
