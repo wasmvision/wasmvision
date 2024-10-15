@@ -193,25 +193,31 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			result.IsError = true
-			result.Error = wypes.UInt32(3) // HTTPErrorRequestError
+			result.Error = wypes.UInt32(4) // HTTPErrorRuntimeError
 			return wypes.Void{}
 		}
 
 		var payload interface{}
 		if err := json.Unmarshal(body, &payload); err != nil {
 			result.IsError = true
-			result.Error = wypes.UInt32(3) // HTTPErrorRequestError
+			result.Error = wypes.UInt32(4) // HTTPErrorRuntimeError
 			return wypes.Void{}
 		}
-		m := payload.(map[string]interface{})
 
-		val := m[responseKey.Unwrap()].(string)
-		if len(val) > 128 {
-			val = val[:128]
+		m := payload.(map[string]interface{})
+		v, ok := m[responseKey.Unwrap()]
+		if !ok {
+			result.IsError = true
+			result.Error = wypes.UInt32(4) // HTTPErrorRuntimeError
+			return wypes.Void{}
 		}
 
+		val := v.(string)
+		res := make([]byte, len(val))
+		copy(res, val)
+
 		result.IsError = false
-		result.OK = wypes.Bytes{Raw: []byte(val)}
+		result.OK = wypes.Bytes{Raw: res}
 		result.DataPtr = ctx.ReturnDataPtr
 
 		result.Lower(s)
