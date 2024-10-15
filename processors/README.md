@@ -14,6 +14,12 @@ Processor written in Go that converts image frames to ascii art.
 
 Processor written in Go that performs a blur on image frames.
 
+## blurc.wasm
+
+![blurc](../images/blur-processor.png)
+
+Processor written in C that performs a blur on the image frame.
+
 ## blurrs.wasm
 
 ![blurrs](../images/blur-processor.png)

@@ -28,6 +28,26 @@ set `WASMCV_C_COMPONENTS_PATH` variable in `<wasmvision_directory>/processors/bl
 WASMCV_C_COMPONENTS_PATH="<your_sources_directory>/wasmcv/components/c"
 ```
 
+
+### wasmVision C SDK
+
+Download `wasmvision-sdk` C components:
+
+```shell
+cd <your_sources_directory>
+git clone https://github.com/wasmvision/wasmvision-sdk.git 
+```
+
+### wasmVision C processor
+
+set `WASMVISION_C_COMPONENTS_PATH` variable in `<wasmvision_directory>/processors/blurc/build.sh`
+
+```shell
+WASMVISION_C_COMPONENTS_PATH="<your_sources_directory>/wasmvision-sdk/components/c"
+```
+
+### Building
+
 run:
 
 ```shell

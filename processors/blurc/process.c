@@ -1,18 +1,12 @@
-#include <string.h>
 #include <wasmcv/imports.h>
+#include <wasmvision/platform.h>
 
-
-wasm_cv_mat_borrow_mat_t process(wasm_cv_mat_borrow_mat_t image) {
-    wasm_cv_cv_own_mat_t frame;
-    wasm_cv_cv_own_mat_t out_mat;
+wasm_cv_mat_own_mat_t process(wasm_cv_mat_own_mat_t image) {
     wasm_cv_cv_size_t size = {.x = 25, .y = 25};
-       
-    frame = wasm_cv_mat_method_mat_clone(image);
-    wasm_cv_mat_method_mat_close(image);
+    wasm_cv_mat_own_mat_t out_mat = wasm_cv_cv_blur(image, &size);
 
-    out_mat = wasm_cv_cv_blur(frame, &size);
+    platform_string_t msg = {(unsigned char *)"Blurc processor called", 23};
+    wasmvision_platform_logging_log(&msg);
 
-    image = wasm_cv_mat_borrow_mat(out_mat);
-
-    return image;
+    return out_mat;
 }
