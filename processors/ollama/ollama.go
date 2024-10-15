@@ -4,7 +4,6 @@ package main
 
 import (
 	"time"
-	"unsafe"
 
 	"github.com/bytecodealliance/wasm-tools-go/cm"
 	"github.com/wasmvision/wasmvision-sdk-go/config"
@@ -80,16 +79,6 @@ func loadConfig() {
 
 		logging.Log("Using Ollama model " + model)
 	}
-}
-
-// malloc is needed for wasm-unknown-unknown target for functions that return a List.
-//
-//export malloc
-func malloc(size uint32) uint32 {
-	data := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(unsafe.SliceData(data)))
-
-	return uint32(ptr)
 }
 
 func main() {}

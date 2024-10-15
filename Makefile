@@ -25,7 +25,7 @@ hello:
 	cd processors/hello; tinygo build -o ../hello.wasm -target=wasm-unknown .
 
 ollama:
-	cd processors/ollama; tinygo build -o ../ollama.wasm -target=wasm-unknown .
+	cd processors/ollama; tinygo build -o ../ollama.wasm -target=wasip1 .
 
 mosaic:
 	cd processors/mosaic; tinygo build -o ../mosaic.wasm -target=wasm-unknown .
