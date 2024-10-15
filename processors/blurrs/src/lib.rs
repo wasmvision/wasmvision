@@ -1,9 +1,7 @@
 #![no_std]
 
 extern crate core;
-extern crate wee_alloc;
 extern crate alloc;
-extern crate wasmcv;
 
 use alloc::string::ToString;
 use wasmcv::wasm::cv;
