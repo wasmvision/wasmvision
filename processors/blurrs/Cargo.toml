@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wasmcv = "0.4.0"
+wasmcv = "0.5.0"
 wee_alloc = "0.4.5"
-wasmvision = "0.0.2"
+wasmvision = "0.2.2"
 
 [lib]
 crate-type = ["cdylib"]
