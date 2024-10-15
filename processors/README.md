@@ -58,7 +58,7 @@ Processor written in Go that performs fast neural style transfer.
 
 ![ollama](../images/ollama-processor.png)
 
-Processor that sends image frames to an [Ollama](https://ollama.com/) server running a model for image descriptions such as `llava`.
+Processor that obtains text descriptions of image frames, by sending frames to an [Ollama](https://ollama.com/) server running a model for generating image descriptions such as `llava`.
 
 ## pointilism.wasm
 
