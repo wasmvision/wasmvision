@@ -96,14 +96,11 @@ func httpGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.Result[
 			return wypes.Void{}
 		}
 
-		// HACK: limit the size of the response to 128 bytes, for now.
-		max := 128
-		if len(body) < max {
-			max = len(body)
-		}
+		res := make([]byte, len(body))
+		copy(res, body)
 
 		result.IsError = false
-		result.OK = wypes.Bytes{Raw: body[:max]}
+		result.OK = wypes.Bytes{Raw: res}
 		result.DataPtr = ctx.ReturnDataPtr
 
 		result.Lower(s)
@@ -138,14 +135,11 @@ func httpPostFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String
 			return wypes.Void{}
 		}
 
-		// HACK: limit the size of the response to 128 bytes, for now.
-		max := 128
-		if len(body) < max {
-			max = len(body)
-		}
+		res := make([]byte, len(body))
+		copy(res, body)
 
 		result.IsError = false
-		result.OK = wypes.Bytes{Raw: body[:max]}
+		result.OK = wypes.Bytes{Raw: res}
 		result.DataPtr = ctx.ReturnDataPtr
 
 		result.Lower(s)
