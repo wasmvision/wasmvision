@@ -5,6 +5,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/runtime"
+	"gocv.io/x/gocv"
 )
 
 func TestVideoWriter(t *testing.T) {
@@ -45,7 +46,8 @@ func TestVideoWriter(t *testing.T) {
 
 		defer vw.Close()
 
-		frm := cv.NewEmptyFrame()
+		img := gocv.IMRead("../images/wasmvision-logo.png", gocv.IMReadColor)
+		frm := cv.NewFrame(img)
 
 		if err := vw.Write(frm); err != nil {
 			t.Errorf("unexpected error: %v", err)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/runtime"
+	"gocv.io/x/gocv"
 )
 
 func TestMJPEGStream(t *testing.T) {
@@ -35,12 +36,10 @@ func TestMJPEGStreamStart(t *testing.T) {
 
 		s := NewMJPEGStream(refs, port)
 
+		s.Start()
 		defer s.Close()
-
-		go s.Start()
-
-		frm := cv.NewEmptyFrame()
-
+		img := gocv.IMRead("../images/wasmvision-logo.png", gocv.IMReadColor)
+		frm := cv.NewFrame(img)
 		if err := s.Publish(frm); err != nil {
 			t.Errorf("unexpected error: %v", err)
 		}
