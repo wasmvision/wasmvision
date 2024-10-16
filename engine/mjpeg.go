@@ -22,8 +22,8 @@ type MJPEGStream struct {
 }
 
 // NewMJPEGStream creates a new MJPEGStream instance with the given port.
-func NewMJPEGStream(refs *runtime.MapRefs, port string) MJPEGStream {
-	return MJPEGStream{
+func NewMJPEGStream(refs *runtime.MapRefs, port string) *MJPEGStream {
+	return &MJPEGStream{
 		Port:   port,
 		refs:   refs,
 		frames: make(chan *cv.Frame, framebufferSize),
@@ -49,7 +49,9 @@ func (s *MJPEGStream) Start() {
 // Close closes the MJPEG stream.
 func (s *MJPEGStream) Close() {
 	close(s.frames)
-	s.server.Close()
+	if s.server != nil {
+		s.server.Close()
+	}
 }
 
 // Publish publishes a frame to the MJPEG stream.
