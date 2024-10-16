@@ -59,9 +59,9 @@ func (vw *VideoWriter) Start(source capture.Capture) error {
 		return err
 	}
 
-	go vw.writeFrames()
-
 	vw.writer = videoWriter
+
+	go vw.writeFrames()
 
 	return nil
 }

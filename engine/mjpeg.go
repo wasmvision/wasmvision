@@ -31,7 +31,7 @@ func NewMJPEGStream(refs *runtime.MapRefs, port string) *MJPEGStream {
 }
 
 // Start starts the MJPEG stream server.
-func (s *MJPEGStream) Start() {
+func (s *MJPEGStream) Start() error {
 	s.stream = mjpeg.NewStream()
 
 	http.Handle("/", s.stream)
@@ -42,8 +42,11 @@ func (s *MJPEGStream) Start() {
 	}
 
 	go s.publishFrames()
+	go func() {
+		log.Println(s.server.ListenAndServe())
+	}()
 
-	log.Fatal(s.server.ListenAndServe())
+	return nil
 }
 
 // Close closes the MJPEG stream.
