@@ -25,8 +25,8 @@ type VideoWriter struct {
 	frames   chan *cv.Frame
 }
 
-func NewVideoWriter(refs *runtime.MapRefs, dest string) VideoWriter {
-	return VideoWriter{
+func NewVideoWriter(refs *runtime.MapRefs, dest string) *VideoWriter {
+	return &VideoWriter{
 		Filename: dest,
 		codec:    defaultCodec,
 		fps:      defaultFBS,
@@ -36,7 +36,9 @@ func NewVideoWriter(refs *runtime.MapRefs, dest string) VideoWriter {
 }
 
 func (vw *VideoWriter) Close() {
-	vw.writer.Close()
+	if vw.writer != nil {
+		vw.writer.Close()
+	}
 }
 
 func (vw *VideoWriter) Write(img *cv.Frame) error {

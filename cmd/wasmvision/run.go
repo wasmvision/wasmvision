@@ -67,8 +67,8 @@ func run(cCtx *cli.Context) error {
 	defer webcam.Close()
 
 	var (
-		mjpegstream engine.MJPEGStream
-		videoWriter engine.VideoWriter
+		mjpegstream *engine.MJPEGStream
+		videoWriter *engine.VideoWriter
 	)
 
 	switch output {
