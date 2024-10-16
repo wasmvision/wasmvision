@@ -27,25 +27,24 @@ The pipeline of Processor modules are called in order, one after another. The ou
 
 ### Engine
 
-The wasmVision engine.
+The wasmVision engine. Includes some platform capabilities such as MJPEG streaming and saving to files.
 
 ### Capture
 
-This is how wasmVision can capture or import images or video to be processed,
+This is how wasmVision can capture or import images or video to be processed.
 
 ### Devices
 
-Specific hardware or software devices that capture images or video,
+Specific hardware or software devices that capture images or video. Currently supported devices are a connected camera or a file input.
 
 ### Runtime
 
-The WebAssembly runtime engine, currently Wazero.
+The wasmVision runtime consists of the WebAssembly runtime engine (currently Wazero) and the wasmVision host platform API functions such as logging and configuration.
 
 ### Processors
 
-The wasmCV image processing modules that are used by wasmVision. See [processors](./processors/) directory.
+The wasmCV image processing modules that are used by wasmVision. See [processors directory](./processors/).
 
 ### OpenCV
 
-The computer vision processing capabilities implemented using OpenCV/GoCV.
-
+The computer vision processing capabilities implemented using OpenCV/GoCV. Take a look at the [`cv` directory](./cv/) for the code for this integration.

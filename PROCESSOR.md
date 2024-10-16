@@ -37,7 +37,7 @@ wasmVision processors call OpenCV functions implemented by the wasmVision engine
 
 Full documentation of the computer vision functions supported by the wasmCV interface definitions is here:
 
-https://wasmcv.org/docs/0.4.0/
+https://wasmcv.org/docs/0.5.0/
 
 The repository with the wasmCV interface and bindings can be found here:
 
@@ -54,6 +54,10 @@ https://github.com/wasmvision/wasmvision-sdk
 
 ### Go
 
+Many of the processors in this repo have been written using TinyGo as an example of some of the things you can do:
+
+https://github.com/wasmvision/wasmvision/tree/main/processors
+
 Developing a new processor using the Go programming language requires using TinyGo to compile the module to WebAssembly using either the `wasm-unknown` or `wasip1` target.
 
 The package with the Go bindings for wasmCV is located here:
@@ -66,6 +70,10 @@ https://github.com/wasmvision/wasmvision-sdk-go
 
 ### Rust
 
+The `blurrs.wasm` processor in this repo has been written using Rust as an example of some of the things you can do:
+
+https://github.com/wasmvision/wasmvision/tree/main/processors/blurrs
+
 Developing a new processor using the Rust programming language requires compiling the module to WebAssembly using the `wasm32-unknown-unknown` target.
 
 The crate with the Rust bindings for wasmCV is located here:
@@ -77,6 +85,10 @@ The crate with the Rust bindings for the wasmVision platform SDK is located here
 https://crates.io/crates/wasmvision
 
 ### C
+
+The `blurc.wasm` processor in this repo has been written using C as an example of some of the things you can do:
+
+https://github.com/wasmvision/wasmvision/tree/main/processors/blurc
 
 Developing a new processor using the C programming language requires using `clang` to compile the module to WebAssembly using either the `wasm32-unknown-unknown` target.
 

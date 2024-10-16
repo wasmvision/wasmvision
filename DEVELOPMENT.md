@@ -1,6 +1,8 @@
-# Development
+# wasmVision Development
 
-It you want to try out the latest development builds, or work on developing wasmVision itself, this is the place for information.
+Do you want to try out the latest development builds, or work on developing wasmVision itself? If so, this is the place for information.
+
+However, if what you want to do is develop a wasmVision processing module, please see the [PROCESSOR.md document](./PROCESSOR.md).
 
 ## Latest builds
 

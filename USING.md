@@ -8,7 +8,7 @@ USAGE:
    wasmvision [global options] command [command options]
 
 VERSION:
-   0.1.0-beta1
+   0.1.0-beta2
 
 DESCRIPTION:
    wasmVision gets you up and running with computer vision.
@@ -48,6 +48,7 @@ OPTIONS:
    --model-download, --download                                 automatically download known models (default: true) (default: true)
    --processors-dir value, --processors value                   directory for processor loading (default to $home/processors) [$WASMVISION_PROCESSORS_DIR]
    --processor-download                                         automatically download known processors (default: true) (default: true)
+   --config value, -c value [ --config value, -c value ]        configuration for processors. Format: -config key1=val1 -config key2=val2
    --help, -h                                                   show help
 ```
 
