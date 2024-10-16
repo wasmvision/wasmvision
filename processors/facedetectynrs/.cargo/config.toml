@@ -1,0 +1,4 @@
+[target."wasm32-unknown-unknown"]
+rustflags = ["-C", "target-feature=+bulk-memory",
+             "-C", "link-arg=--initial-memory=65536",
+             "-C", "link-arg=-zstack-size=4096"]

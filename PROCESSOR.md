@@ -70,9 +70,12 @@ https://github.com/wasmvision/wasmvision-sdk-go
 
 ### Rust
 
-The `blurrs.wasm` processor in this repo has been written using Rust as an example of some of the things you can do:
+The `blurrs.wasm` and `facedetectynrs.wasm` processors in this repo have been written using Rust as an example of some of the things you can do:
 
 https://github.com/wasmvision/wasmvision/tree/main/processors/blurrs
+
+https://github.com/wasmvision/wasmvision/tree/main/processors/facedetectynrs
+
 
 Developing a new processor using the Rust programming language requires compiling the module to WebAssembly using the `wasm32-unknown-unknown` target.
 

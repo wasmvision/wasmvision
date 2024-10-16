@@ -1,0 +1,13 @@
+[package]
+name = "facedetectynrs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+spin = "0.9.8"
+wasmcv = "0.6.0"
+wasmvision = "0.2.2"
+wee_alloc = "0.4.5"
+
+[lib]
+crate-type = ["cdylib"]

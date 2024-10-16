@@ -48,7 +48,13 @@ Processor that detects and then blurs faces using YuNet, a light-weight, fast an
 
 ![facedetectyn](../images/facedetectyn-processor.png)
 
-Processor that recognizes faces using YuNet, a light-weight, fast and accurate face detection model.
+Processor written using TinyGo that recognizes faces using YuNet, a light-weight, fast and accurate face detection model.
+
+## facedetectynrs.wasm
+
+![facedetectyn](../images/facedetectyn-processor.png)
+
+Processor written using Rust that recognizes faces using YuNet, a light-weight, fast and accurate face detection model.
 
 ## hello.wasm
 
