@@ -33,7 +33,9 @@ flowchart LR
 
 ### wasmVision Engine
 
-The wasmVision engine is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
+The wasmVision engine is a standalone binary application for Linux, macOS, or Windows that contains everything you need with no other dependencies.
+
+It is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
 
 See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
 
@@ -50,6 +52,7 @@ Want some pre-compiled processors you can try out right away? Take a look at a f
 - [`blur.wasm`](./processors/blur/) for image blurring
 - [`facedetectyn.wasm`](./processors/facedetectyn/) for face detection using a deep neural network
 - [`mosaic.wasm`](./processors/mosaic/) for a cool effect using fast neural style transfer
+- [`ollama.wasm`](./processors/ollama/) live image descriptions using integration with [Ollama](https://ollama.com/)
 
 Check out the [processors directory](./processors/) for the complete list.
 
