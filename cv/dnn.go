@@ -14,6 +14,7 @@ func NetModules(ctx *Context) wypes.Modules {
 		"wasm:cv/dnn": wypes.Module{
 			"[static]net.read":                       wypes.H3(netReadNetFunc(ctx)),
 			"[static]net.read-from-onnx":             wypes.H2(netReadNetFromONNXFunc(ctx)),
+			"[resource-drop]net":                     wypes.H2(netCloseFunc(ctx)),
 			"[method]net.close":                      wypes.H2(netCloseFunc(ctx)),
 			"[method]net.empty":                      wypes.H2(netEmptyFunc(ctx)),
 			"[method]net.set-input":                  wypes.H4(netSetInputFunc(ctx)),

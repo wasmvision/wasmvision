@@ -12,10 +12,12 @@ func ObjDetectModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/objdetect": wypes.Module{
 			"[constructor]cascade-classifier":               wypes.H2(newCascadeClassifierFunc(ctx)),
+			"[resource-drop]cascade-classifier":             wypes.H2(closeFaceDetectorYNFunc(ctx)),
 			"[method]cascade-classifier.close":              wypes.H2(closeCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.load":               wypes.H3(loadCascadeClassifierFunc(ctx)),
 			"[method]cascade-classifier.detect-multi-scale": wypes.H4(detectMultiScaleCascadeClassifierFunc(ctx)),
 			"[constructor]face-detector-YN":                 wypes.H4(newFaceDetectorYNFunc(ctx)),
+			"[resource-drop]face-detector-YN":               wypes.H2(closeFaceDetectorYNFunc(ctx)),
 			"[method]face-detector-YN.close":                wypes.H2(closeFaceDetectorYNFunc(ctx)),
 			"[method]face-detector-YN.set-input-size":       wypes.H3(faceDetectorYNSetInputSizeFunc(ctx)),
 			"[method]face-detector-YN.detect":               wypes.H3(faceDetectorYNDetectFunc(ctx)),
