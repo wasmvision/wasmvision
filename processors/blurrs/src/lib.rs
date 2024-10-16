@@ -14,3 +14,7 @@ pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
     let out = cv::cv::blur(mat, cv::types::Size{x: 25, y: 25});
     return out;
 }
+
+// Use `wee_alloc` as the global allocator...for now.
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
