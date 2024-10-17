@@ -37,7 +37,7 @@ wasmVision processors call OpenCV functions implemented by the wasmVision engine
 
 Full documentation of the computer vision functions supported by the wasmCV interface definitions is here:
 
-https://wasmcv.org/docs/0.5.0/
+https://wasmcv.org/docs/0.6.0/
 
 The repository with the wasmCV interface and bindings can be found here:
 
@@ -93,7 +93,7 @@ The `blurc.wasm` processor in this repo has been written using C as an example o
 
 https://github.com/wasmvision/wasmvision/tree/main/processors/blurc
 
-Developing a new processor using the C programming language requires using `clang` to compile the module to WebAssembly using either the `wasm32-unknown-unknown` target.
+Developing a new processor using the C programming language requires using `clang` to compile the module to WebAssembly using the `wasm32-unknown-unknown` target.
 
 The files for the C bindings for wasmCV are located here:
 
