@@ -1,10 +1,10 @@
 ![wasmvision-logo](./images/wasmvision-logo.png)
 
-# Get up and running with computer vision
+# Get going with computer vision
 
 [![Linux](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml) [![Windows](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
 
-wasmVision gets you up and running with computer vision.
+wasmVision gets you going with computer vision.
 
 It provides a high-performance computer vision processing engine that is designed to be customized and extended using WebAssembly.
 
@@ -47,16 +47,19 @@ Processors can filter images, analyze them, and modify them using traditional co
 
 Processors can also use deep neural networks and other machine learning algorithms, and can even download the models they need automatically.
 
-Want some pre-compiled processors you can try out right away? Take a look at a few such as:
+You can use Go, Rust, or the C programming language to write the code for processors.
 
-- [`blur.wasm`](./processors/blur/) for image blurring
-- [`facedetectyn.wasm`](./processors/facedetectyn/) for face detection using a deep neural network
-- [`mosaic.wasm`](./processors/mosaic/) for a cool effect using fast neural style transfer
-- [`ollama.wasm`](./processors/ollama/) live image descriptions using integration with [Ollama](https://ollama.com/)
+Want some processors you can try out right away? Take a look at these:
+
+- [`blur.wasm`](./processors/blur/) for image blurring using Go
+- [`blurrs.wasm`](./processors/blurrs/) for image blurring using Rust
+- [`blurc.wasm`](./processors/blurc/) for image blurring using C
+- [`facedetectyn.wasm`](./processors/facedetectyn/) for face detection using a deep neural network using Go
+- [`facedetectynrs.wasm`](./processors/facedetectynrs/) for face detection using a deep neural network using Rust
+- [`mosaic.wasm`](./processors/mosaic/) for a cool effect using fast neural style transfer using Go
+- [`ollama.wasm`](./processors/ollama/) live image descriptions using integration with [Ollama](https://ollama.com/) using Go
 
 Check out the [processors directory](./processors/) for the complete list.
-
-Processors can be written in Go, Rust, or the C programming language.
 
 See the [PROCESSOR.md](PROCESSOR.md) document for more information about how processors work and how to develop your own.
 
@@ -100,7 +103,7 @@ Want to know more? Please see [USING.md](./USING.md)
 
 ### macOS
 
-**NOTE: wasmVision currently runs on M-series processors only.**
+**NOTE: wasmVision currently runs on M-series processors only when using the Homebrew installer. You must install from source to use Intel processors.**
 
 Install wasmVision on macOS using Homebrew:
 
