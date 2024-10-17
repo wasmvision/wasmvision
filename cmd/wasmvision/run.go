@@ -78,7 +78,10 @@ func run(cCtx *cli.Context) error {
 		}
 		mjpegstream = engine.NewMJPEGStream(r.Refs, dest)
 
-		go mjpegstream.Start()
+		if err := mjpegstream.Start(); err != nil {
+			return fmt.Errorf("failed starting mjpeg stream: %w", err)
+		}
+
 		defer mjpegstream.Close()
 
 	case "file":
