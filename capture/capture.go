@@ -6,6 +6,8 @@ import (
 	"github.com/wasmvision/wasmvision/cv"
 )
 
+const defaultRetries = 3
+
 var ErrClosed = errors.New("capture device closed")
 
 // Capture is the interface that wraps the basic methods for capturing frames.

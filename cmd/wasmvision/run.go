@@ -59,12 +59,26 @@ func run(cCtx *cli.Context) error {
 		return fmt.Errorf("failed to load processors: %w", err)
 	}
 
-	// Open the webcam.
-	webcam := capture.NewWebcam(source)
-	if err := webcam.Open(); err != nil {
-		return fmt.Errorf("failed opening video capture: %w", err)
+	// Open the capture device.
+	cap := cCtx.String("capture")
+	var device capture.Capture
+
+	switch cap {
+	case "auto", "webcam":
+		device = capture.NewWebcam(source)
+		if err := device.Open(); err != nil {
+			return fmt.Errorf("failed opening video capture: %w", err)
+		}
+	case "gstreamer":
+		device = capture.NewGStreamer(source)
+		if err := device.Open(); err != nil {
+			return fmt.Errorf("failed opening video capture stream: %w", err)
+		}
+	default:
+		return fmt.Errorf("unknown capture type %v", cap)
 	}
-	defer webcam.Close()
+
+	defer device.Close()
 
 	var (
 		mjpegstream *engine.MJPEGStream
@@ -90,7 +104,7 @@ func run(cCtx *cli.Context) error {
 		}
 		videoWriter = engine.NewVideoWriter(r.Refs, dest)
 
-		if err := videoWriter.Start(webcam); err != nil {
+		if err := videoWriter.Start(device); err != nil {
 			return fmt.Errorf("failed starting video writer: %w", err)
 		}
 
@@ -105,7 +119,7 @@ func run(cCtx *cli.Context) error {
 	i := 0
 
 	for {
-		frame, err := webcam.Read()
+		frame, err := device.Read()
 		if err != nil {
 			switch err {
 			case capture.ErrClosed:
