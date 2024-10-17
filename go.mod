@@ -7,7 +7,7 @@ replace github.com/orsinium-labs/wypes => github.com/hybridgroup/wypes v0.0.0-20
 require (
 	github.com/orsinium-labs/wypes v0.2.0
 	github.com/tetratelabs/wazero v1.8.1
-	gocv.io/x/gocv v0.38.1-0.20241005133257-f4509078d485
+	gocv.io/x/gocv v0.39.0
 )
 
 require (
