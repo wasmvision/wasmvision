@@ -6,8 +6,6 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const defaultRetries = 3
-
 type Webcam struct {
 	device  string
 	webcam  *gocv.VideoCapture

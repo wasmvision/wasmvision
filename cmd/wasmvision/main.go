@@ -11,7 +11,8 @@ import (
 
 var (
 	runFlags = []cli.Flag{
-		&cli.StringFlag{Name: "source", Aliases: []string{"s"}, Value: "0", Usage: "video capture source to use such as webcam or file (0 is the default webcam on most systems)"},
+		&cli.StringFlag{Name: "source", Aliases: []string{"s"}, Value: "0", Usage: "video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems)"},
+		&cli.StringFlag{Name: "capture", Value: "auto", Usage: "video capture source type to use (auto, webcam, gstreamer)"},
 		&cli.StringFlag{Name: "output", Aliases: []string{"o"}, Value: "mjpeg", Usage: "output type (mjpeg, file)"},
 		&cli.StringFlag{Name: "destination", Aliases: []string{"d"}, Usage: "output destination (port, file path)"},
 		&cli.StringSliceFlag{
