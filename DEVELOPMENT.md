@@ -2,7 +2,9 @@
 
 Do you want to try out the latest development builds, or work on developing wasmVision itself? If so, this is the place for information.
 
-However, if what you want to do is develop a wasmVision processing module, please see the [PROCESSOR.md document](./PROCESSOR.md).
+Do you want to develop a wasmVision processing module using WebAssembly? See the [PROCESSOR.md document](./PROCESSOR.md).
+
+Otherwise, read on!
 
 ## Latest builds
 
@@ -46,6 +48,8 @@ Run your desired docker commands using the tagged image `ghcr.io/wasmvision/wasm
 
 ## Local development
 
+### Linux
+
 If you have a local installation of both Go and OpenCV you can install wasmVision directly:
 
 ```shell
@@ -57,8 +61,34 @@ go install ./cmd/wasmvision/
 And run it:
 
 ```shell
-wasmvision run -p ./processors/hello.wasm -mjpeg=true
+wasmvision run -p ./processors/hello.wasm
+```
 
+### macOS
+
+You need to install Go and also OpenCV to build and run wasmVision locally.
+
+To install OpenCV using Homebrew:
+
+```shell
+brew install opencv
+```
+
+Now you can clone the repo and install it locally:
+
+```shell
+git clone https://github.com/wasmvision/wasmvision.git
+cd wasmvision
+go install ./cmd/wasmvision/
+```
+
+And run it:
+
+```shell
+wasmvision run -p ./processors/hello.wasm
+```
+
+### Docker
 
 You can run wasmVision using Docker.
 
@@ -66,4 +96,10 @@ Pull the current development version:
 
 ```shell
 docker pull ghcr.io/wasmvision/wasmvision:main
+```
+
+And run it:
+
+```shell
+docker run ghcr.io/wasmvision/wasmvision:main
 ```

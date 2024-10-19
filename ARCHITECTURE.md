@@ -31,19 +31,19 @@ The wasmVision engine. Includes some platform capabilities such as MJPEG streami
 
 ### Capture
 
-This is how wasmVision can capture or import images or video to be processed.
+This is how wasmVision can capture or import images or video to be processed from a connected webcam, from files, or from streams.
 
 ### Devices
 
-Specific hardware or software devices that capture images or video. Currently supported devices are a connected camera or a file input.
+Specific hardware or software devices that capture images or video. Currently supported devices are a connected camera, a file input, or a stream input using GStreamer.
 
 ### Runtime
 
-The wasmVision runtime consists of the WebAssembly runtime engine (currently Wazero) and the wasmVision host platform API functions such as logging and configuration.
+The wasmVision runtime consists of the WebAssembly runtime engine (currently Wazero) and the wasmVision host platform API functions such as logging, configuration, and making http calls to external servers.
 
 ### Processors
 
-The wasmCV image processing modules that are used by wasmVision. See [processors directory](./processors/).
+The image processing modules that are used by wasmVision. These are modules written using Go, Rust, or C, and compiled into WebAssembly. They use the [wasmCV interface](https://github.com/wasmvision/wasmcv) and the [wasmVision platform interface](https://github.com/wasmvision/wasmvision-sdk). See [processors directory](./processors/) for several processors you can use, or use as examples.
 
 ### OpenCV
 

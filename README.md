@@ -10,8 +10,8 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
-- Capture images from a camera or video file
-- Process them using WebAssembly
+- Capture video from a camera, video file, or stream
+- Process the video frames using WebAssembly
 - Output the results to a stream or video file
 
 ```mermaid
