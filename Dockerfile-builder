@@ -2,8 +2,67 @@
 #
 # running:
 # docker run --rm -v $(pwd):/src -v $(pwd)/build/amd64/:/build -a stdout -a stderr --platform linux/amd64 ghcr.io/wasmvision/wasmvision-static-builder
-FROM ghcr.io/hybridgroup/opencv:4.10.0-static AS wasmvision-static-builder
+FROM --platform=linux/amd64 ghcr.io/hybridgroup/opencv:4.10.0-alpine AS opencv-amd64
+
+RUN apk update && apk add --no-cache \
+    build-base \
+    cmake \
+    git \
+    wget \
+    unzip \
+    pkgconfig \
+    glib-static \
+    gobject-introspection-dev
+
+# Install Go
+ARG GO_VERSION=1.23.2
+ARG TARGETARCH
+
+RUN wget https://golang.org/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \
+    rm go${GO_VERSION}.linux-${TARGETARCH}.tar.gz
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH=/go
 
 WORKDIR /src
 
-CMD go build -ldflags "-linkmode 'external' -extldflags '-static'" -tags netgo,osusergo,opencvstatic -o /build/wasmvision -buildvcs=false ./cmd/wasmvision
+ENV CGO_CXXFLAGS="--std=c++11"
+ENV CGO_CPPFLAGS="-I/usr/local/include/opencv4"
+ENV CGO_LDFLAGS="-static -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_signal -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core -L/usr/local/lib/opencv4/3rdparty -llibprotobuf -lade -littnotify -llibwebp -llibtiff -llibopenjp2 -lippiw -lippicv -llibjpeg-turbo -llibpng -L/lib -lzlib -lIlmImf -ldl -lm -lpthread -lrt -lavdevice -lm -latomic -lavfilter -pthread -lm -latomic -lswscale -lm -latomic -lpostproc -lm -latomic -lavformat -lm -latomic -lavcodec -lvpx -lx264 -lswresample -lm -latomic -lavutil -lbz2_static -llzma -lgstadaptivedemux-1.0 -lgstallocators-1.0 -lgstanalytics-1.0 -lgstapp-1.0 -lgstaudio-1.0 -lgstbadaudio-1.0 -lgstbase-1.0 -lgstbasecamerabinsrc-1.0 -lgstcodecparsers-1.0 -lgstcodecs-1.0 -lgstcontroller-1.0 -lgstcuda-1.0 -lgstfft-1.0 -lgstinsertbin-1.0 -lgstisoff-1.0 -lgstmpegts-1.0 -lgstmse-1.0 -lgstnet-1.0 -lgstpbutils-1.0 -lgstphotography-1.0 -lgstplay-1.0 -lgstplayer-1.0 -lgstreamer-1.0 -lgstriff-1.0 -lgstrtp-1.0 -lgstrtsp-1.0 -lgstsctp-1.0 -lgstsdp-1.0 -lgsttag-1.0 -lgsttranscoder-1.0 -lgsturidownloader-1.0 -lgstvideo-1.0 -lgstwebrtc-1.0 -lopenh264 -lstdc++ -lglib-2.0 -lgio-2.0 -lgmodule-2.0 -lgobject-2.0 -lgthread-2.0 -lgirepository-2.0 -lffi -lpcre2-8 -lintl"
+
+CMD go build -ldflags "-linkmode 'external' -extldflags '-static'" -tags netgo,osusergo,customenv -o /build/wasmvision -buildvcs=false ./cmd/wasmvision
+
+
+FROM --platform=linux/arm64 ghcr.io/hybridgroup/opencv:4.10.0-alpine AS opencv-arm64
+
+RUN apk update && apk add --no-cache \
+    build-base \
+    cmake \
+    git \
+    wget \
+    unzip \
+    pkgconfig \
+    glib-static \
+    gobject-introspection-dev
+
+# Install Go
+ARG GO_VERSION=1.23.2
+ARG TARGETARCH
+
+RUN wget https://golang.org/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \
+    rm go${GO_VERSION}.linux-${TARGETARCH}.tar.gz
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH=/go
+
+WORKDIR /src
+
+ENV CGO_CXXFLAGS="--std=c++11"
+ENV CGO_CPPFLAGS="-I/usr/local/include/opencv4"
+ENV CGO_LDFLAGS="-static -L/usr/local/lib -lopencv_gapi -lopencv_stitching -lopencv_alphamat -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn_objdetect -lopencv_dnn_superres -lopencv_dpm -lopencv_face -lopencv_fuzzy -lopencv_hfs -lopencv_img_hash -lopencv_intensity_transform -lopencv_line_descriptor -lopencv_mcc -lopencv_quality -lopencv_rapid -lopencv_reg -lopencv_rgbd -lopencv_saliency -lopencv_signal -lopencv_stereo -lopencv_structured_light -lopencv_phase_unwrapping -lopencv_superres -lopencv_optflow -lopencv_surface_matching -lopencv_tracking -lopencv_highgui -lopencv_datasets -lopencv_text -lopencv_plot -lopencv_videostab -lopencv_videoio -lopencv_wechat_qrcode -lopencv_xfeatures2d -lopencv_shape -lopencv_ml -lopencv_ximgproc -lopencv_video -lopencv_xobjdetect -lopencv_objdetect -lopencv_calib3d -lopencv_imgcodecs -lopencv_features2d -lopencv_dnn -lopencv_flann -lopencv_xphoto -lopencv_photo -lopencv_imgproc -lopencv_core -L/usr/local/lib/opencv4/3rdparty -llibprotobuf -lade -littnotify -llibwebp -llibtiff -llibopenjp2 -llibjpeg-turbo -llibpng -L/lib -lzlib -lIlmImf -ldl -lm -lpthread -lrt -lavdevice -lm -latomic -lavfilter -pthread -lm -latomic -lswscale -lm -latomic -lpostproc -lm -latomic -lavformat -lm -latomic -lavcodec -lvpx -lx264 -lswresample -lm -latomic -lavutil -lbz2_static -llzma -lgstadaptivedemux-1.0 -lgstallocators-1.0 -lgstanalytics-1.0 -lgstapp-1.0 -lgstaudio-1.0 -lgstbadaudio-1.0 -lgstbase-1.0 -lgstbasecamerabinsrc-1.0 -lgstcodecparsers-1.0 -lgstcodecs-1.0 -lgstcontroller-1.0 -lgstcuda-1.0 -lgstfft-1.0 -lgstinsertbin-1.0 -lgstisoff-1.0 -lgstmpegts-1.0 -lgstmse-1.0 -lgstnet-1.0 -lgstpbutils-1.0 -lgstphotography-1.0 -lgstplay-1.0 -lgstplayer-1.0 -lgstreamer-1.0 -lgstriff-1.0 -lgstrtp-1.0 -lgstrtsp-1.0 -lgstsctp-1.0 -lgstsdp-1.0 -lgsttag-1.0 -lgsttranscoder-1.0 -lgsturidownloader-1.0 -lgstvideo-1.0 -lgstwebrtc-1.0 -lopenh264 -lstdc++ -lglib-2.0 -lgio-2.0 -lgmodule-2.0 -lgobject-2.0 -lgthread-2.0 -lgirepository-2.0 -lffi -lpcre2-8 -lintl -ltegra_hal"
+
+FROM opencv-${TARGETARCH} AS builder
+
+CMD go build -ldflags "-linkmode 'external' -extldflags '-static'" -tags netgo,osusergo,customenv -o /build/wasmvision -buildvcs=false ./cmd/wasmvision
