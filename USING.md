@@ -8,7 +8,7 @@ USAGE:
    wasmvision [global options] command [command options]
 
 VERSION:
-   0.1.0-beta2
+   0.1.0-beta3
 
 DESCRIPTION:
    wasmVision gets you up and running with computer vision.
@@ -39,7 +39,8 @@ USAGE:
    wasmvision run [command options]
 
 OPTIONS:
-   --source value, -s value                                     video capture source to use such as webcam or file (0 is the default webcam on most systems) (default: "0")
+   --source value, -s value                                     video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems) (default: "0")
+   --capture value                                              video capture source type to use (auto, webcam, gstreamer) (default: "auto")
    --output value, -o value                                     output type (mjpeg, file) (default: "mjpeg")
    --destination value, -d value                                output destination (port, file path)
    --processor value, -p value [ --processor value, -p value ]  wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm
@@ -128,6 +129,28 @@ wasmvision download processor candy
 
 ```shell
 wasmvision download model candy-9
+```
+
+## `wasmvision info`
+
+```shell
+NAME:
+   wasmvision info - Show installation info
+
+USAGE:
+   wasmvision info [command options]
+
+OPTIONS:
+   --help, -h  show help
+```
+
+Run this to obtain information about the installed capabilities of wasmVision.
+
+```shell
+wasmVision version 0.1.0-beta3 linux/amd64
+Camera backends:  GSTREAMER V4L2 FIREWIRE UEYE OBSENSOR
+Stream backends:  FFMPEG GSTREAMER INTEL_MFX V4L2 CV_IMAGES CV_MJPEG
+Writer backends:  FFMPEG GSTREAMER INTEL_MFX CV_IMAGES CV_MJPEG
 ```
 
 ## `wasmvision listall`
