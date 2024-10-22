@@ -10,9 +10,9 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
-- Capture video from a camera, video file, or stream
-- Process the video frames using WebAssembly
-- Output the results to a stream or video file
+- [Capture video from a camera, video file, or stream](./CAPTURE.md)
+- [Process the video frames using WebAssembly](./PROCESSOR.md)
+- [Output the results to a stream or video file](./OUTPUT.md)
 
 ```mermaid
 flowchart LR
