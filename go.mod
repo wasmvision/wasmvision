@@ -2,12 +2,10 @@ module github.com/wasmvision/wasmvision
 
 go 1.22.0
 
-replace github.com/orsinium-labs/wypes => github.com/hybridgroup/wypes v0.0.0-20241014173510-50b43aa5accc
-
 require (
-	github.com/orsinium-labs/wypes v0.2.0
+	github.com/orsinium-labs/wypes v0.3.0
 	github.com/tetratelabs/wazero v1.8.1
-	gocv.io/x/gocv v0.39.0
+	gocv.io/x/gocv v0.39.1-0.20241021192257-dc6fbbedf935
 )
 
 require (
