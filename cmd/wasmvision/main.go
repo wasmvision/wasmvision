@@ -20,7 +20,7 @@ var (
 			Aliases: []string{"p"},
 			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
 		},
-		&cli.BoolFlag{Name: "logging", Value: true, Usage: "log detailed info to console (default: true)"},
+		&cli.StringFlag{Name: "logging", Value: "info", Usage: "logging level to use (error, warn, info, debug)"},
 		&cli.StringFlag{Name: "models-dir", Aliases: []string{"models"}, EnvVars: []string{"WASMVISION_MODELS_DIR"}, Usage: "directory for model loading (default to $home/models)"},
 		&cli.BoolFlag{Name: "model-download", Aliases: []string{"download"}, Value: true, Usage: "automatically download known models (default: true)"},
 		&cli.StringFlag{Name: "processors-dir", Aliases: []string{"processors"}, EnvVars: []string{"WASMVISION_PROCESSORS_DIR"}, Usage: "directory for processor loading (default to $home/processors)"},

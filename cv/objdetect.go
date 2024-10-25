@@ -1,7 +1,8 @@
 package cv
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
 
 	"github.com/orsinium-labs/wypes"
 	"github.com/wasmvision/wasmvision/models"
@@ -54,12 +55,10 @@ func loadCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*C
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if ctx.Logging {
-				log.Printf("Downloading classifier %s...\n", name)
-			}
+			slog.Info(fmt.Sprintf("Downloading classifier %s...", name))
 
 			if err := models.Download(name, ctx.ModelsDir); err != nil {
-				log.Printf("Error downloading classifier: %s", err)
+				slog.Error(fmt.Sprintf("Error downloading classifier: %v", err))
 				return wypes.Bool(false)
 			}
 
@@ -68,13 +67,13 @@ func loadCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*C
 		}
 
 		if cl == nil {
-			log.Println("classifier is nil")
+			slog.Error("classifier is nil")
 			return wypes.Bool(false)
 		}
 
 		res := cl.Classifier.Load(modelFile)
 		if !res {
-			log.Println("classifier load failed")
+			slog.Error("classifier load failed")
 		}
 		return wypes.Bool(true)
 	}
@@ -84,7 +83,7 @@ func detectMultiScaleCascadeClassifierFunc(ctx *Context) func(*wypes.Store, wype
 	return func(s *wypes.Store, ref wypes.HostRef[*CascadeClassifier], mat wypes.HostRef[*Frame], list wypes.ReturnedList[Rect]) wypes.Void {
 		cl := ref.Raw
 		if cl == nil {
-			log.Println("classifier ref is nil", ref)
+			slog.Error("classifier ref is nil")
 			return wypes.Void{}
 		}
 		rects := cl.Classifier.DetectMultiScale(mat.Raw.Image)
@@ -112,12 +111,10 @@ func newFaceDetectorYNFunc[T *FaceDetectorYN](ctx *Context) func(*wypes.Store, w
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if ctx.Logging {
-				log.Printf("Downloading model %s...\n", name)
-			}
+			slog.Info(fmt.Sprintf("Downloading model %s...", name))
 
 			if err := models.Download(name, ctx.ModelsDir); err != nil {
-				log.Printf("Error downloading model: %s", err)
+				slog.Error(fmt.Sprintf("Error downloading model %v", err))
 				return wypes.HostRef[T]{}
 			}
 

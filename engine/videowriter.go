@@ -1,7 +1,8 @@
 package engine
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
 
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/cv"
@@ -69,7 +70,7 @@ func (vw *VideoWriter) Start(source capture.Capture) error {
 func (vw *VideoWriter) writeFrames() {
 	for frame := range vw.frames {
 		if err := vw.writer.Write(frame.Image); err != nil {
-			log.Printf("error writing frame: %v\n", err)
+			slog.Error(fmt.Sprintf("error writing frame: %v", err))
 		}
 
 		frame.Close()
