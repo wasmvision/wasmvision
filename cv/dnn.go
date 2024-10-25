@@ -1,7 +1,8 @@
 package cv
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
 
 	"github.com/wasmvision/wasmvision/models"
 	"gocv.io/x/gocv"
@@ -32,12 +33,10 @@ func netReadNetFunc[T *Net](ctx *Context) func(*wypes.Store, wypes.String, wypes
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if ctx.Logging {
-				log.Printf("Downloading model %s...\n", name)
-			}
+			slog.Info(fmt.Sprintf("Downloading model %s...", name))
 
 			if err := models.Download(name, ctx.ModelsDir); err != nil {
-				log.Printf("Error downloading model: %s", err)
+				slog.Error(fmt.Sprintf("Error downloading model: %v", err))
 				return wypes.HostRef[T]{}
 			}
 
@@ -66,12 +65,10 @@ func netReadNetFromONNXFunc[T *Net](ctx *Context) func(*wypes.Store, wypes.Strin
 
 		switch {
 		case !models.ModelExists(modelFile) && models.ModelWellKnown(name):
-			if ctx.Logging {
-				log.Printf("Downloading model %s...\n", name)
-			}
+			slog.Info(fmt.Sprintf("Downloading model %s...", name))
 
 			if err := models.Download(name, ctx.ModelsDir); err != nil {
-				log.Printf("Error downloading model: %s", err)
+				slog.Error(fmt.Sprintf("Error downloading model: %v", err))
 				return wypes.HostRef[T]{}
 			}
 

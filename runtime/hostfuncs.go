@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -29,6 +29,10 @@ func hostedModules(ctx *cv.Context) wypes.Modules {
 		"wasmvision:platform/logging": wypes.Module{
 			"println": wypes.H1(hostPrintln),
 			"log":     wypes.H1(hostLogFunc(ctx)),
+			"error":   wypes.H1(hostErrorFunc(ctx)),
+			"warn":    wypes.H1(hostWarnFunc(ctx)),
+			"info":    wypes.H1(hostInfoFunc(ctx)),
+			"debug":   wypes.H1(hostDebugFunc(ctx)),
 		},
 		"wasmvision:platform/time": wypes.Module{
 			"now": wypes.H2(hostTimeNowFunc(ctx)),
@@ -43,9 +47,35 @@ func hostPrintln(msg wypes.String) wypes.Void {
 
 func hostLogFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
 	return func(msg wypes.String) wypes.Void {
-		if ctx.Logging {
-			log.Println(msg.Unwrap())
-		}
+		slog.Warn(msg.Unwrap())
+		return wypes.Void{}
+	}
+}
+
+func hostErrorFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
+	return func(msg wypes.String) wypes.Void {
+		slog.Error(msg.Unwrap())
+		return wypes.Void{}
+	}
+}
+
+func hostWarnFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
+	return func(msg wypes.String) wypes.Void {
+		slog.Warn(msg.Unwrap())
+		return wypes.Void{}
+	}
+}
+
+func hostInfoFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
+	return func(msg wypes.String) wypes.Void {
+		slog.Info(msg.Unwrap())
+		return wypes.Void{}
+	}
+}
+
+func hostDebugFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
+	return func(msg wypes.String) wypes.Void {
+		slog.Debug(msg.Unwrap())
 		return wypes.Void{}
 	}
 }
@@ -53,7 +83,7 @@ func hostLogFunc(ctx *cv.Context) func(wypes.String) wypes.Void {
 func hostGetConfigFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.Result[wypes.String, wypes.String, wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, key wypes.String, result wypes.Result[wypes.String, wypes.String, wypes.UInt32]) wypes.Void {
 		if s.Error != nil {
-			log.Printf("error in store after lift: %v\n", s.Error)
+			slog.Error(fmt.Sprintf("error in store after lift: %v", s.Error))
 		}
 		val, ok := ctx.Config.Get(key.Unwrap())
 		if !ok {
@@ -68,7 +98,7 @@ func hostGetConfigFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.R
 		result.Lower(s)
 
 		if s.Error != nil {
-			log.Printf("error in store after lower: %v\n", s.Error)
+			slog.Error(fmt.Sprintf("error in store after lower: %v", s.Error))
 		}
 
 		return wypes.Void{}
@@ -77,9 +107,7 @@ func hostGetConfigFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.R
 
 func httpGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, url wypes.String, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
-		if ctx.Logging {
-			log.Println("http get:", url.Unwrap())
-		}
+		slog.Info(fmt.Sprintf("http get: %s", url.Unwrap()))
 
 		resp, err := http.Get(url.Unwrap())
 		if err != nil {
@@ -105,7 +133,7 @@ func httpGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.Result[
 
 		result.Lower(s)
 		if s.Error != nil {
-			log.Printf("httpGetFunc error in store after lower: %v\n", s.Error)
+			slog.Error(fmt.Sprintf("httpGetFunc error in store after lower: %v", s.Error))
 		}
 
 		return wypes.Void{}
@@ -114,9 +142,7 @@ func httpGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.Result[
 
 func httpPostFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String, wypes.Bytes, wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, url wypes.String, contentType wypes.String, request wypes.Bytes, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
-		if ctx.Logging {
-			log.Println("http post:", url.Unwrap())
-		}
+		slog.Info(fmt.Sprintf("http post: %s\n", url.Unwrap()))
 
 		reqBody := bytes.NewBuffer(request.Raw)
 
@@ -144,7 +170,7 @@ func httpPostFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String
 
 		result.Lower(s)
 		if s.Error != nil {
-			log.Printf("httpPostFunc error in store after lower: %v\n", s.Error)
+			slog.Error(fmt.Sprintf("httpPostFunc error in store after lower: %v", s.Error))
 		}
 
 		return wypes.Void{}
@@ -153,16 +179,14 @@ func httpPostFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String
 
 func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String, wypes.Bytes, wypes.String, wypes.HostRef[*cv.Frame], wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, url wypes.String, contentType wypes.String, template wypes.Bytes, responseKey wypes.String, mat wypes.HostRef[*cv.Frame], result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
-		if ctx.Logging {
-			log.Println("http post image:", url.Unwrap())
-		}
+		slog.Info(fmt.Sprintf("http post image: %s\n", url.Unwrap()))
 
 		// TODO: support other content types
 		ct := "application/json"
 
 		buffer, err := gocv.IMEncode(gocv.JPEGFileExt, mat.Raw.Image)
 		if err != nil {
-			log.Printf("error encoding image: %v\n", err)
+			slog.Error(fmt.Sprintf("error encoding image: %v", err))
 			result.IsError = true
 			result.Error = wypes.UInt32(3) // HTTPErrorRequestError
 			return wypes.Void{}
@@ -177,7 +201,7 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 
 		resp, err := http.Post(url.Unwrap(), ct, reqBody)
 		if err != nil {
-			log.Printf("error posting image: %v\n", err)
+			slog.Error(fmt.Sprintf("error posting image: %v", err))
 			result.IsError = true
 			result.Error = wypes.UInt32(3) // HTTPErrorRequestError
 			return wypes.Void{}
@@ -216,7 +240,7 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 
 		result.Lower(s)
 		if s.Error != nil {
-			log.Printf("httpPostImageFunc error in store after lower: %v\n", s.Error)
+			slog.Error(fmt.Sprintf("httpPostImageFunc error in store after lower: %v", s.Error))
 		}
 
 		return wypes.Void{}

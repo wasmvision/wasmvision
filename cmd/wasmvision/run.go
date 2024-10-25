@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -31,7 +31,20 @@ func run(cCtx *cli.Context) error {
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
 	}
-	logging := cCtx.Bool("logging")
+
+	logging := cCtx.String("logging")
+	switch logging {
+	case "error":
+		slog.SetLogLoggerLevel(slog.LevelError)
+	case "warn":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	case "info":
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	case "debug":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	default:
+		return fmt.Errorf("unknown log level %v", logging)
+	}
 
 	settings := map[string]string{}
 	config := cCtx.StringSlice("config")
@@ -49,7 +62,6 @@ func run(cCtx *cli.Context) error {
 	r := runtime.New(ctx, runtime.InterpreterConfig{
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
-		Logging:       logging,
 		Settings:      settings,
 	})
 	defer r.Close(ctx)
@@ -113,9 +125,7 @@ func run(cCtx *cli.Context) error {
 		return fmt.Errorf("unknown output kind %v", output)
 	}
 
-	if logging {
-		log.Printf("Reading video from source '%v'\n", source)
-	}
+	slog.Info(fmt.Sprintf("Reading video from source '%v", source))
 	i := 0
 
 	for {
@@ -124,9 +134,7 @@ func run(cCtx *cli.Context) error {
 			switch err {
 			case capture.ErrClosed:
 				frame.Close()
-				if logging {
-					log.Println("Capture closed.")
-				}
+				slog.Info("Capture closed.")
 
 				return nil
 
@@ -143,9 +151,7 @@ func run(cCtx *cli.Context) error {
 		r.Refs.Set(frame.ID.Unwrap(), frame)
 
 		i++
-		if logging {
-			log.Printf("Read frame %d\n", i)
-		}
+		slog.Info(fmt.Sprintf("Read frame %d", i))
 
 		frame = r.Process(ctx, frame)
 

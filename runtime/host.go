@@ -2,7 +2,9 @@ package runtime
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"log/slog"
 	"maps"
 	"os"
 
@@ -29,7 +31,6 @@ type Interpreter struct {
 type InterpreterConfig struct {
 	ProcessorsDir string
 	ModelsDir     string
-	Logging       bool
 	Settings      map[string]string
 }
 
@@ -42,7 +43,6 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 
 	cctx := cv.Context{
 		ModelsDir: conf.ModelsDir,
-		Logging:   conf.Logging,
 		Config:    configStore,
 	}
 
@@ -82,7 +82,7 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 	for _, p := range processors {
 		if guest.ProcessorWellKnown(p) {
 			if !guest.ProcessorExists(guest.ProcessorFilename(p, intp.Config.ProcessorsDir)) {
-				log.Printf("Downloading processor %s to %s...\n", p, intp.Config.ProcessorsDir)
+				slog.Info(fmt.Sprintf("Downloading processor %s to %s...", p, intp.Config.ProcessorsDir))
 
 				if err := guest.DownloadProcessor(p, intp.Config.ProcessorsDir); err != nil {
 					return err
@@ -97,9 +97,7 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 			return err
 		}
 
-		if intp.Config.Logging {
-			log.Printf("Loading wasmCV guest module %s...\n", p)
-		}
+		slog.Info(fmt.Sprintf("Loading wasmCV guest module %s...", p))
 
 		if err := intp.RegisterGuestModule(ctx, p, module); err != nil {
 			return err

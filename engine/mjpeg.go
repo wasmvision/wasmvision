@@ -1,7 +1,8 @@
 package engine
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -43,7 +44,7 @@ func (s *MJPEGStream) Start() error {
 
 	go s.publishFrames()
 	go func() {
-		log.Println(s.server.ListenAndServe())
+		slog.Error(fmt.Sprintf("mjpeg streamer exited with result %v", s.server.ListenAndServe()))
 	}()
 
 	return nil
@@ -67,7 +68,7 @@ func (s *MJPEGStream) publishFrames() {
 	for frame := range s.frames {
 		buf, err := gocv.IMEncode(".jpg", frame.Image)
 		if err != nil {
-			log.Printf("error writing frame: %v\n", err)
+			slog.Error(fmt.Sprintf("error writing frame: %v", err))
 		}
 
 		s.stream.UpdateJPEG(buf.GetBytes())

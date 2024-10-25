@@ -7,6 +7,5 @@ import "github.com/wasmvision/wasmvision/config"
 type Context struct {
 	ReturnDataPtr uint32
 	ModelsDir     string
-	Logging       bool
 	Config        *config.Store
 }
