@@ -35,6 +35,7 @@ pub extern "C" fn _start() {
 #[no_mangle]
 pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
     if mat.empty() {
+        logging::warn("image was empty");
         return mat;
     }
 
@@ -52,7 +53,7 @@ pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
         }
     }
 
-    logging::log("Performed face detection on image");
+    logging::info("Performed face detection on image");
 
     out
 }

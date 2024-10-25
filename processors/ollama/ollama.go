@@ -25,7 +25,7 @@ func process(image mat.Mat) mat.Mat {
 
 	now := time.UnixMicro(int64(hosttime.Now(0)))
 	if now.Sub(lastUpdate) > 5*time.Second {
-		logging.Log("Asking for image description...")
+		logging.Info("Asking for image description...")
 
 		template := `{
   "model": "` + model + `",
@@ -38,7 +38,7 @@ func process(image mat.Mat) mat.Mat {
 
 		data := http.PostImage(url+"/api/generate", "application/json", tmpl, "response", uint32(image))
 		if data.IsErr() {
-			logging.Log("HTTP error: " + data.Err().String())
+			logging.Error("HTTP error: " + data.Err().String())
 		} else {
 			logging.Println(string(data.OK().Slice()))
 		}
@@ -66,7 +66,7 @@ func loadConfig() {
 			url = *conf.OK()
 		}
 
-		logging.Log("Using Ollama server at " + url)
+		logging.Info("Using Ollama server at " + url)
 	}
 
 	if model == "" {
@@ -77,7 +77,7 @@ func loadConfig() {
 			model = *conf.OK()
 		}
 
-		logging.Log("Using Ollama model " + model)
+		logging.Info("Using Ollama model " + model)
 	}
 }
 

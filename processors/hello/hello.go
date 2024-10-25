@@ -17,14 +17,14 @@ func process(image mat.Mat) mat.Mat {
 		conf := config.GetConfig("default")
 		if conf.IsErr() {
 			configValue = conf.Err().String()
-			logging.Log("Config error: " + configValue)
+			logging.Error("Config error: " + configValue)
 		} else {
 			configValue = *conf.OK()
-			logging.Log("Config: " + configValue)
+			logging.Info("Config: " + configValue)
 		}
 	}
 
-	logging.Log("Cols: " +
+	logging.Info("Cols: " +
 		strconv.Itoa(int(image.Cols())) +
 		" Rows: " +
 		strconv.Itoa(int(image.Rows())) +

@@ -29,6 +29,7 @@ func init() {
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() {
+		logging.Warn("image was empty")
 		return image
 	}
 
@@ -81,7 +82,7 @@ func process(image mat.Mat) mat.Mat {
 		cv.Circle(out, leftMouthCorner, 1, yellow, 1)
 	}
 
-	logging.Log("Performed face detection on image")
+	logging.Info("Performed face detection on image")
 
 	return out
 }

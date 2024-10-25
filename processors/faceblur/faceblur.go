@@ -23,6 +23,7 @@ func init() {
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() {
+		logging.Warn("image was empty")
 		return image
 	}
 
@@ -50,7 +51,7 @@ func process(image mat.Mat) mat.Mat {
 		area.Close()
 	}
 
-	logging.Log("Performed face blur on image")
+	logging.Info("Performed face blur on image")
 
 	return out
 }
