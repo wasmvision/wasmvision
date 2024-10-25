@@ -1,6 +1,6 @@
 github.com/bytecodealliance/wasm-tools-go v0.3.0 h1:9aeDFYpbi3gtIW/nJCH+P+LhFMqezGoOfzqbUZLadho=
 github.com/bytecodealliance/wasm-tools-go v0.3.0/go.mod h1:VY+9FlpLi6jnhCrZLkyJjF9rjU4aEekgaRTk28MS2JE=
-github.com/wasmvision/wasmvision-sdk-go v0.2.2 h1:9vUeehO/r98ArYQDhVIyR7mEpehOZvLlx1v4mHuMEcE=
-github.com/wasmvision/wasmvision-sdk-go v0.2.2/go.mod h1:Wd4BGWd4Xa+R5TnqkIbtRFr0OjxyVzttIBRq/TL0xyM=
+github.com/wasmvision/wasmvision-sdk-go v0.3.1 h1:tbWlow96lB/awdespma+GIWcfKZGzmWGY/odCtPBU/g=
+github.com/wasmvision/wasmvision-sdk-go v0.3.1/go.mod h1:Wd4BGWd4Xa+R5TnqkIbtRFr0OjxyVzttIBRq/TL0xyM=
 wasmcv.org/wasm/cv v0.6.0 h1:lWx6DjB7zjBOCDcyMEqTuVz0GJJdTZ7azto6tkP16R4=
 wasmcv.org/wasm/cv v0.6.0/go.mod h1:+yqVHtUF7auI4nclB8HrItSwt3QS/hYutUIKvoTRnoQ=

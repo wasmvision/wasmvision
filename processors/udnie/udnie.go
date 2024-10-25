@@ -27,6 +27,7 @@ func init() {
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() || udnieNet.Empty() {
+		logging.Warn("image was empty")
 		return image
 	}
 
@@ -66,7 +67,7 @@ func process(image mat.Mat) mat.Mat {
 	// resize back to original size
 	out := cv.Resize(candied, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear)
 
-	logging.Log("Performed neural style transfer on image")
+	logging.Info("Performed neural style transfer on image")
 
 	return out
 }

@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 wasmcv = "0.6.0"
-wasmvision = "0.2.2"
+wasmvision = "0.3.0"
 wee_alloc = "0.4.5"
 
 [lib]

@@ -12,7 +12,7 @@ import (
 //export process
 func process(image mat.Mat) mat.Mat {
 	imageOut := cv.Blur(image, types.Size{X: 25, Y: 25})
-	logging.Log("Performed Blur on image")
+	logging.Info("Performed Blur on image")
 
 	return imageOut
 }

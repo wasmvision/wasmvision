@@ -3,7 +3,7 @@ module github.com/wasmvision/wasmvision/examples/processors/pointilism
 go 1.22.0
 
 require (
-	github.com/wasmvision/wasmvision-sdk-go v0.2.2
+	github.com/wasmvision/wasmvision-sdk-go v0.3.1
 	wasmcv.org/wasm/cv v0.6.0
 )
 
