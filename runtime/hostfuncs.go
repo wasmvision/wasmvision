@@ -231,6 +231,9 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		}
 
 		val := v.(string)
+		if len(val) >= 172 {
+			val = val[:168] + "..."
+		}
 		res := make([]byte, len(val))
 		copy(res, val)
 
