@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hashicorp/go-getter"
+	getter "github.com/hashicorp/go-getter/v2"
 )
 
 type ProcessorFile struct {
@@ -89,16 +89,14 @@ func DownloadProcessor(processor string, processorDir string) error {
 		return errors.New("not known processor")
 	}
 
-	opts := []getter.ClientOption{}
-	client := &getter.Client{
-		Ctx:     context.Background(),
+	req := &getter.Request{
 		Src:     p.URL,
 		Dst:     filepath.Join(processorDir, filepath.Base(p.Filename)),
-		Mode:    getter.ClientModeFile,
-		Options: opts,
+		GetMode: getter.ModeFile,
 	}
 
-	if err := client.Get(); err != nil {
+	client := &getter.Client{}
+	if _, err := client.Get(context.Background(), req); err != nil {
 		return err
 	}
 
