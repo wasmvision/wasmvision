@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hashicorp/go-getter"
+	getter "github.com/hashicorp/go-getter/v2"
 )
 
 type ModelFile struct {
@@ -79,16 +79,14 @@ func Download(name string, modelsDir string) error {
 		return errors.New("unknown model")
 	}
 
-	opts := []getter.ClientOption{}
-	client := &getter.Client{
-		Ctx:     context.Background(),
+	req := &getter.Request{
 		Src:     model.URL,
 		Dst:     filepath.Join(modelsDir, filepath.Base(model.Filename)),
-		Mode:    getter.ClientModeFile,
-		Options: opts,
+		GetMode: getter.ModeFile,
 	}
 
-	if err := client.Get(); err != nil {
+	client := &getter.Client{}
+	if _, err := client.Get(context.Background(), req); err != nil {
 		return err
 	}
 
