@@ -16,10 +16,22 @@ import (
 	"gocv.io/x/gocv"
 )
 
+// hostModules returns the modules that the host provides to the guest.
+// These are all defined in the wasmvision platform sdk.
+// See https://github.com/wasmvision/wasmvision-sdk
 func hostedModules(ctx *cv.Context) wypes.Modules {
 	return wypes.Modules{
 		"wasmvision:platform/config": wypes.Module{
 			"get-config": wypes.H3(hostGetConfigFunc(ctx)),
+		},
+		"wasmvision:platform/datastore": wypes.Module{
+			"[constructor]frame-store":     wypes.H2(hostFramedataOpenFunc(ctx)),
+			"[resource-drop]frame-store":   wypes.H2(hostFramedataDropFunc(ctx)),
+			"[method]frame-store.delete":   wypes.H5(hostFramedataDeleteFunc(ctx)),
+			"[method]frame-store.exists":   wypes.H4(hostFramedataExistsFunc(ctx)),
+			"[method]frame-store.get":      wypes.H5(hostFramedataGetFunc(ctx)),
+			"[method]frame-store.get-keys": wypes.H4(hostFramedataGetKeysFunc(ctx)),
+			"[method]frame-store.set":      wypes.H6(hostFramedataSetFunc(ctx)),
 		},
 		"wasmvision:platform/http": wypes.Module{
 			"get":        wypes.H3(httpGetFunc(ctx)),
