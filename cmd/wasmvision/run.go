@@ -86,6 +86,11 @@ func run(cCtx *cli.Context) error {
 		if err := device.Open(); err != nil {
 			return fmt.Errorf("failed opening video capture stream: %w", err)
 		}
+	case "ffmpeg":
+		device = capture.NewFFmpeg(source)
+		if err := device.Open(); err != nil {
+			return fmt.Errorf("failed opening video capture stream: %w", err)
+		}
 	default:
 		return fmt.Errorf("unknown capture type %v", cap)
 	}
