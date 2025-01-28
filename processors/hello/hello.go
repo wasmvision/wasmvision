@@ -45,5 +45,3 @@ func malloc(size uint32) uint32 {
 
 	return uint32(ptr)
 }
-
-func main() {}

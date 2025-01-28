@@ -87,8 +87,6 @@ func process(image mat.Mat) mat.Mat {
 	return out
 }
 
-func main() {}
-
 // malloc is needed for wasm-unknown-unknown target for functions that return a List.
 //
 //export malloc

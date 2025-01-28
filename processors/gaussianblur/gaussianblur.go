@@ -16,5 +16,3 @@ func process(image mat.Mat) mat.Mat {
 
 	return imageOut
 }
-
-func main() {}

@@ -29,7 +29,7 @@ hello:
 	cd processors/hello; go mod tidy; tinygo build -o ../hello.wasm -target=wasm-unknown .
 
 ollama:
-	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 .
+	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared .
 
 mosaic:
 	cd processors/mosaic; go mod tidy; tinygo build -o ../mosaic.wasm -target=wasm-unknown .

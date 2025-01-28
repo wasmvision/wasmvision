@@ -80,5 +80,3 @@ func loadConfig() {
 		logging.Info("Using Ollama model " + model)
 	}
 }
-
-func main() {}
