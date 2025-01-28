@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ghcr.io/hybridgroup/opencv:4.11.0
     steps:
       - name: Checkout
@@ -52,7 +52,7 @@ jobs:
 
   build-arm64:
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
