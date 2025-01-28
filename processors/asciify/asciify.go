@@ -33,5 +33,3 @@ func process(image mat.Mat) mat.Mat {
 
 	return asciified
 }
-
-func main() {}

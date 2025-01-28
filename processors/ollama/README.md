@@ -9,7 +9,7 @@ LLaVA is a multimodal model that combines a vision encoder and Vicuna for genera
 ## How to build
 
 ```shell
-tinygo build -o ../ollama.wasm -target=wasip1 .
+tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared .
 ```
 
 ## Running Ollama
