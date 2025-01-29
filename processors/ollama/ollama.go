@@ -5,11 +5,11 @@ package main
 import (
 	"time"
 
-	"github.com/bytecodealliance/wasm-tools-go/cm"
 	"github.com/wasmvision/wasmvision-sdk-go/config"
 	"github.com/wasmvision/wasmvision-sdk-go/http"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	hosttime "github.com/wasmvision/wasmvision-sdk-go/time"
+	"go.bytecodealliance.org/cm"
 	"wasmcv.org/wasm/cv/mat"
 )
 
