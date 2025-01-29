@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	v   = "0.2.0-dev"
+	v   = "0.2.0"
 	sha string
 )
 
