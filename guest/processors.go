@@ -26,6 +26,11 @@ var KnownProcessors = map[string]ProcessorFile{
 		Filename: "blur.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blur.wasm",
 	},
+	"blurc": {
+		Alias:    "blurc",
+		Filename: "blurc.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blurc.wasm",
+	},
 	"blurrs": {
 		Alias:    "blurrs",
 		Filename: "blurrs.wasm",
