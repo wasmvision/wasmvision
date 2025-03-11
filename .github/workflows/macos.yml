@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,7 +26,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: '1.24.1'
           cache: true
       - name: Run tests
         run: go test -v ./...
