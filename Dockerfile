@@ -24,7 +24,7 @@ RUN apk update && apk add --no-cache \
     gobject-introspection-dev libmount libeconf-dev
 
 # Install Go
-ARG GO_VERSION=1.23.4
+ARG GO_VERSION=1.24.1
 ARG TARGETARCH
 
 RUN wget https://golang.org/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \

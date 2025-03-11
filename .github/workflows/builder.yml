@@ -5,6 +5,7 @@ on:
     push:
       branches:
         - 'build-static-image'
+    workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
