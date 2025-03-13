@@ -1,5 +1,5 @@
-github.com/wasmvision/wasmvision-sdk-go v0.5.0 h1:f4DMfzn9KkUFksDRbIDjUoQwTYn2OmByrYDFcyRxJLo=
-github.com/wasmvision/wasmvision-sdk-go v0.5.0/go.mod h1:mT5BgtTjEp3CP4enEeJoMpUiJBtyFGYAMTXGVCexIEY=
+github.com/wasmvision/wasmvision-sdk-go v0.5.2-0.20250312221511-37f766fcd2b5 h1:2Vbbs9gXSnzKtuxgaQpl3e4FKwsxlU4ySN137diEHp0=
+github.com/wasmvision/wasmvision-sdk-go v0.5.2-0.20250312221511-37f766fcd2b5/go.mod h1:mT5BgtTjEp3CP4enEeJoMpUiJBtyFGYAMTXGVCexIEY=
 go.bytecodealliance.org/cm v0.1.1-0.20250127224617-c53528d4b8b4 h1:uY4JJfbq+ln3u6Qv9j56eJ7nIDlWovTq6Gj9fwCdnOs=
 go.bytecodealliance.org/cm v0.1.1-0.20250127224617-c53528d4b8b4/go.mod h1:NZ2UT0DyGhBfpIPOxPMCuG6g1YTR4YF3xweD7mHX5VQ=
 wasmcv.org/wasm/cv v0.7.0 h1:YNyhZbqYOl+slGQA64NoNu1Bp3cirQCodTQFSTzNKXs=
