@@ -23,8 +23,14 @@ func process(image mat.Mat) mat.Mat {
 	out := image.Clone()
 
 	fs := datastore.NewFrameStore(1)
-	data := fs.GetKeys(uint32(image))
-	faces := data.Slice()
+	check := fs.Exists(uint32(image))
+
+	if check.IsErr() || !check.IsOK() {
+		logging.Info("no faces for frame")
+		return out
+	}
+
+	faces := fs.GetKeys(uint32(image)).Slice()
 
 	for _, face := range faces {
 		val := fs.Get(uint32(image), face)
@@ -35,7 +41,7 @@ func process(image mat.Mat) mat.Mat {
 
 		rect := faceRect(val.OK().Slice())
 		if emptyRect(rect) {
-			logging.Error("empty rect")
+			logging.Error("empty rect for face")
 			continue
 		}
 
