@@ -10,6 +10,7 @@ import (
 
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/cv"
+	"github.com/wasmvision/wasmvision/datastore"
 	"github.com/wasmvision/wasmvision/guest"
 
 	"github.com/orsinium-labs/wypes"
@@ -42,8 +43,9 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 	configStore := config.NewStore(conf.Settings)
 
 	cctx := cv.Context{
-		ModelsDir: conf.ModelsDir,
-		Config:    configStore,
+		ModelsDir:  conf.ModelsDir,
+		Config:     configStore,
+		FrameStore: datastore.NewFrames(map[int]map[string]string{}),
 	}
 
 	modules := hostModules(&cctx)
@@ -165,6 +167,9 @@ func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 		fc.Close()
 
 		intp.Refs.Drop(frames[i].Unwrap())
+
+		// clear any frame data
+		intp.ModuleContext.FrameStore.DeleteAll(int(frames[i].Unwrap()))
 	}
 
 	f, _ := intp.Refs.Get(out.Unwrap(), &cv.Frame{})

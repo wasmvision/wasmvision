@@ -2,9 +2,9 @@
 
 ![faceblur](../../images/faceblur-processor.png)
 
-wasmVision processor that blurs faces by first detecting them and then blurring each before outputting the final image. 
+wasmVision processor that blurs previously detected faces before outputting the final image. 
 
-The detection is done using YuNet, a light-weight, fast and accurate face detection model, which achieves 0.834(AP_easy), 0.824(AP_medium), 0.708(AP_hard) on the WIDER Face validation set.
+The detection is first done using the `facedetectyn` processor. Then this processor acts on any faces found for each frame and blurs them for the output frame.
 
 ## How to build
 
@@ -12,12 +12,10 @@ The detection is done using YuNet, a light-weight, fast and accurate face detect
 tinygo build -o ../faceblur.wasm -target=wasm-unknown .
 ```
 
-## Downloading the model
-
-The first time you run the processor it will automatically download the model, or you can download it by running the command:
+## How to run
 
 ```shell
-wasmvision download face_detection_yunet_2023mar
+wasmvision run -p facedetectyn.wasm -p faceblur.wasm
 ```
 
-For more information see https://github.com/opencv/opencv_zoo/blob/main/models/face_detection_yunet/README.md
+The `facedetectyn.wasm` processor uses the built-in datastore to save any information about detected faces for each frame. The `faceblur.wasm` processor looks for this information and then blurs any faces that have been detected for each frame for the final output image.
