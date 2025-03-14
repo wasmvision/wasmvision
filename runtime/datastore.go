@@ -58,7 +58,7 @@ func hostFramedataGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wype
 
 		if !ok {
 			result.IsError = true
-			result.Error = wypes.UInt32(1) // no-such-key
+			result.Error = wypes.UInt32(2) // no-such-key
 		} else {
 			result.IsError = false
 			result.OK = wypes.Bytes{Raw: []byte(val)}
@@ -119,6 +119,124 @@ func hostFramedataSetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wype
 		result.Lower(s)
 		if s.Error != nil {
 			slog.Error(fmt.Sprintf("hostFramedataSetFunc error in store after lower: %v", s.Error))
+		}
+
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorOpenFunc is just here to fulfill the interface for the host datastore constructor function.
+func hostProcessorDataOpenFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32) wypes.UInt32 {
+	return func(*wypes.Store, wypes.UInt32) wypes.UInt32 {
+		return wypes.UInt32(1)
+	}
+}
+
+// hostProcessorDataDropFunc is just here to fulfill the interface for the host datastore drop function.
+func hostProcessorDataDropFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32) wypes.Void {
+	return func(*wypes.Store, wypes.UInt32) wypes.Void {
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorDataDeleteFunc deletes a key from the processor store for a given processor.
+func hostProcessorDataDeleteFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wypes.String, wypes.String, wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, key wypes.String, result wypes.Result[wypes.UInt32, wypes.UInt32, wypes.UInt32]) wypes.Void {
+		ctx.ProcessorStore.Delete(processor.Unwrap(), key.Unwrap())
+
+		result.IsError = false
+		result.OK = 0
+
+		result.DataPtr = ctx.ReturnDataPtr
+		result.Lower(s)
+		if s.Error != nil {
+			slog.Error(fmt.Sprintf("hostProcessorDataDeleteFunc error in store after lower: %v", s.Error))
+		}
+
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorDataExistsFunc checks if there is any data in the processor store for a given processor.
+func hostProcessorDataExistsFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wypes.String, wypes.Result[wypes.Bool, wypes.Bool, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, result wypes.Result[wypes.Bool, wypes.Bool, wypes.UInt32]) wypes.Void {
+		ok := ctx.ProcessorStore.Exists(processor.Unwrap())
+		result.IsError = false
+		result.OK = wypes.Bool(ok)
+
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorDataGetFunc gets the data for a key from the processor store for a given processor.
+func hostProcessorDataGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wypes.String, wypes.String, wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, key wypes.String, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+		val, ok := ctx.ProcessorStore.Get(processor.Unwrap(), key.Unwrap())
+
+		if !ok {
+			result.IsError = true
+			result.Error = wypes.UInt32(2) // no-such-key
+		} else {
+			result.IsError = false
+			result.OK = wypes.Bytes{Raw: val}
+		}
+
+		result.DataPtr = ctx.ReturnDataPtr
+		result.Lower(s)
+		if s.Error != nil {
+			slog.Error(fmt.Sprintf("hostProcessorDataGetFunc error in store after lower: %v", s.Error))
+		}
+
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorDataGetKeysFunc gets all the keys for a given processor from the processor store.
+func hostProcessorDataGetKeysFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wypes.String, wypes.ReturnedList[wypes.String]) wypes.Void {
+	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, result wypes.ReturnedList[wypes.String]) wypes.Void {
+		keys, ok := ctx.ProcessorStore.GetKeys(processor.Unwrap())
+
+		if !ok {
+			// no data for this processor
+			result.Raw = []wypes.String{}
+		} else {
+			res := make([]wypes.String, 0, len(keys))
+			for i := range keys {
+				v := keys[i]
+				res = append(res, wypes.String{Raw: v})
+			}
+			result.Raw = res
+		}
+
+		result.DataPtr = ctx.ReturnDataPtr
+		result.Lower(s)
+		if s.Error != nil {
+			slog.Error(fmt.Sprintf("hostProcessorDataGetKeysFunc error in store after lower: %v", s.Error))
+		}
+
+		return wypes.Void{}
+	}
+}
+
+// hostProcessorDataSetFunc sets the data for a key in the processor store for a given processor.
+func hostProcessorDataSetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, wypes.String, wypes.String, wypes.Bytes, wypes.Result[wypes.UInt32, wypes.Bool, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, key wypes.String, data wypes.Bytes, result wypes.Result[wypes.UInt32, wypes.Bool, wypes.UInt32]) wypes.Void {
+		value := make([]byte, 0, len(data.Raw))
+		value = append(value, data.Raw...)
+		err := ctx.ProcessorStore.Set(processor.Unwrap(), key.Unwrap(), value)
+		if err != nil {
+			slog.Error(fmt.Sprintf("hostProcessorDataSetFunc error in store after set: %v", err))
+			result.IsError = true
+			result.Error = wypes.UInt32(1)
+		} else {
+			result.IsError = false
+			result.OK = wypes.Bool(true)
+		}
+
+		result.DataPtr = ctx.ReturnDataPtr
+		result.Lower(s)
+		if s.Error != nil {
+			slog.Error(fmt.Sprintf("hostProcessorDataSetFunc error in store after lower: %v", s.Error))
 		}
 
 		return wypes.Void{}

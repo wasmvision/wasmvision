@@ -43,9 +43,10 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 	configStore := config.NewStore(conf.Settings)
 
 	cctx := cv.Context{
-		ModelsDir:  conf.ModelsDir,
-		Config:     configStore,
-		FrameStore: datastore.NewFrames(map[int]map[string]string{}),
+		ModelsDir:      conf.ModelsDir,
+		Config:         configStore,
+		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
+		ProcessorStore: datastore.NewProcessors(map[string]map[string][]byte{}),
 	}
 
 	modules := hostModules(&cctx)

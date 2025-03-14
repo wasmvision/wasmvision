@@ -3,7 +3,7 @@ module github.com/wasmvision/wasmvision/examples/processors/ollama
 go 1.22.0
 
 require (
-	github.com/wasmvision/wasmvision-sdk-go v0.5.0
+	github.com/wasmvision/wasmvision-sdk-go v0.6.0
 	wasmcv.org/wasm/cv v0.7.0
 )
 
