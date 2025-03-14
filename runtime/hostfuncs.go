@@ -25,13 +25,20 @@ func hostedModules(ctx *cv.Context) wypes.Modules {
 			"get-config": wypes.H3(hostGetConfigFunc(ctx)),
 		},
 		"wasmvision:platform/datastore": wypes.Module{
-			"[constructor]frame-store":     wypes.H2(hostFramedataOpenFunc(ctx)),
-			"[resource-drop]frame-store":   wypes.H2(hostFramedataDropFunc(ctx)),
-			"[method]frame-store.delete":   wypes.H5(hostFramedataDeleteFunc(ctx)),
-			"[method]frame-store.exists":   wypes.H4(hostFramedataExistsFunc(ctx)),
-			"[method]frame-store.get":      wypes.H5(hostFramedataGetFunc(ctx)),
-			"[method]frame-store.get-keys": wypes.H4(hostFramedataGetKeysFunc(ctx)),
-			"[method]frame-store.set":      wypes.H6(hostFramedataSetFunc(ctx)),
+			"[constructor]frame-store":         wypes.H2(hostFramedataOpenFunc(ctx)),
+			"[resource-drop]frame-store":       wypes.H2(hostFramedataDropFunc(ctx)),
+			"[method]frame-store.delete":       wypes.H5(hostFramedataDeleteFunc(ctx)),
+			"[method]frame-store.exists":       wypes.H4(hostFramedataExistsFunc(ctx)),
+			"[method]frame-store.get":          wypes.H5(hostFramedataGetFunc(ctx)),
+			"[method]frame-store.get-keys":     wypes.H4(hostFramedataGetKeysFunc(ctx)),
+			"[method]frame-store.set":          wypes.H6(hostFramedataSetFunc(ctx)),
+			"[constructor]processor-store":     wypes.H2(hostProcessorDataOpenFunc(ctx)),
+			"[resource-drop]processor-store":   wypes.H2(hostProcessorDataDropFunc(ctx)),
+			"[method]processor-store.delete":   wypes.H5(hostProcessorDataDeleteFunc(ctx)),
+			"[method]processor-store.exists":   wypes.H4(hostProcessorDataExistsFunc(ctx)),
+			"[method]processor-store.get":      wypes.H5(hostProcessorDataGetFunc(ctx)),
+			"[method]processor-store.get-keys": wypes.H4(hostProcessorDataGetKeysFunc(ctx)),
+			"[method]processor-store.set":      wypes.H6(hostProcessorDataSetFunc(ctx)),
 		},
 		"wasmvision:platform/http": wypes.Module{
 			"get":        wypes.H3(httpGetFunc(ctx)),
@@ -204,10 +211,11 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 			return wypes.Void{}
 		}
 
+		defer buffer.Close()
 		sEnc := base64.StdEncoding.EncodeToString(buffer.GetBytes())
 
 		tmpl := string(template.Raw)
-		tmpl = strings.Replace(tmpl, "%IMAGE%", sEnc, -1)
+		tmpl = strings.Replace(tmpl, "%IMAGE%", sEnc, 1)
 
 		reqBody := bytes.NewBuffer([]byte(tmpl))
 
@@ -227,6 +235,8 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 			return wypes.Void{}
 		}
 
+		slog.Error(fmt.Sprintf("httpPostImageFunc response: %s", body))
+
 		var payload interface{}
 		if err := json.Unmarshal(body, &payload); err != nil {
 			result.IsError = true
@@ -243,10 +253,15 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		}
 
 		val := v.(string)
-		if len(val) >= 172 {
-			val = val[:168] + "..."
+		l := len(val)
+		if l >= 172 {
+			val = val[:169] + "..."
+			l = 172
 		}
-		res := make([]byte, len(val))
+
+		val = strings.Replace(val, "\n", "", -1)
+
+		res := make([]byte, l)
 		copy(res, val)
 
 		result.IsError = false

@@ -12,6 +12,9 @@ blurrs:
 candy:
 	cd processors/candy; go mod tidy; tinygo build -o ../candy.wasm -target=wasm-unknown .
 
+captions:
+	cd processors/captions; go mod tidy; tinygo build -o ../captions.wasm -target=wasip1 -buildmode=c-shared .
+
 faceblur:
 	cd processors/faceblur; go mod tidy; tinygo build -o ../faceblur.wasm -target=wasm-unknown .
 
