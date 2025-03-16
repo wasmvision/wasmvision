@@ -109,8 +109,11 @@ func hostGetConfigFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.R
 			result.IsError = true
 			result.Error = wypes.UInt32(1) // no-such-key
 		} else {
+			v := make([]byte, len(val))
+			copy(v, val)
+			slog.Debug(fmt.Sprintf("config value: %s", string(v)))
 			result.IsError = false
-			result.OK = wypes.String{Raw: val}
+			result.OK = wypes.String{Raw: string(v)}
 		}
 
 		result.DataPtr = ctx.ReturnDataPtr
@@ -235,7 +238,7 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 			return wypes.Void{}
 		}
 
-		slog.Error(fmt.Sprintf("httpPostImageFunc response: %s", body))
+		slog.Debug(fmt.Sprintf("httpPostImageFunc body %s", body))
 
 		var payload interface{}
 		if err := json.Unmarshal(body, &payload); err != nil {
@@ -253,19 +256,17 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		}
 
 		val := v.(string)
-		l := len(val)
-		if l >= 172 {
-			val = val[:169] + "..."
-			l = 172
-		}
-
 		val = strings.Replace(val, "\n", "", -1)
+		val = strings.TrimSpace(val)
 
-		res := make([]byte, l)
-		copy(res, val)
+		l := len(val)
+		r := make([]byte, l)
+		copy(r, val[:l])
+
+		slog.Debug(fmt.Sprintf("httpPostImageFunc response: %s", r))
 
 		result.IsError = false
-		result.OK = wypes.Bytes{Raw: res}
+		result.OK = wypes.Bytes{Raw: r}
 		result.DataPtr = ctx.ReturnDataPtr
 
 		result.Lower(s)
