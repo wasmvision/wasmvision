@@ -13,7 +13,7 @@ candy:
 	cd processors/candy; go mod tidy; tinygo build -o ../candy.wasm -target=wasm-unknown .
 
 captions:
-	cd processors/captions; go mod tidy; tinygo build -o ../captions.wasm -target=wasip1 -buildmode=c-shared .
+	cd processors/captions; go mod tidy; tinygo build -o ../captions.wasm -target=wasip1 -buildmode=c-shared -scheduler=none .
 
 faceblur:
 	cd processors/faceblur; go mod tidy; tinygo build -o ../faceblur.wasm -target=wasm-unknown .
@@ -32,7 +32,7 @@ hello:
 	cd processors/hello; go mod tidy; tinygo build -o ../hello.wasm -target=wasm-unknown .
 
 ollama:
-	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared .
+	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared -scheduler=none .
 
 mosaic:
 	cd processors/mosaic; go mod tidy; tinygo build -o ../mosaic.wasm -target=wasm-unknown .
@@ -46,4 +46,4 @@ rain-princess:
 udnie:
 	cd processors/udnie; go mod tidy; tinygo build -o ../udnie.wasm -target=wasm-unknown .
 
-processors: asciify blur blurrs candy faceblur facedetectyn facedetectynrs gaussianblur hello ollama mosaic pointilism rain-princess udnie
+processors: asciify blur blurrs candy captions faceblur facedetectyn facedetectynrs gaussianblur hello ollama mosaic pointilism rain-princess udnie
