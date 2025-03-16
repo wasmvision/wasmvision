@@ -1,9 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 var logo = `
@@ -20,7 +21,7 @@ wasmVision - gets you up and running with computer vision using WebAssembly.
 https://wasmvision.com
 `
 
-func about(cCtx *cli.Context) error {
+func about(ctx context.Context, cmd *cli.Command) error {
 	fmt.Println(logo)
 	fmt.Println("Version:", Version())
 

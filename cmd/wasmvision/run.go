@@ -7,32 +7,32 @@ import (
 	"os"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"github.com/wasmvision/wasmvision/capture"
 	"github.com/wasmvision/wasmvision/engine"
 	"github.com/wasmvision/wasmvision/runtime"
 )
 
-func run(cCtx *cli.Context) error {
-	processors := cCtx.StringSlice("processor")
+func run(ctx context.Context, cmd *cli.Command) error {
+	processors := cmd.StringSlice("processor")
 	if len(processors) == 0 {
 		fmt.Println("No wasm processors specified")
 		os.Exit(1)
 	}
 
-	source := cCtx.String("source")
-	output := cCtx.String("output")
-	dest := cCtx.String("destination")
-	processorsDir := cCtx.String("processors-dir")
+	source := cmd.String("source")
+	output := cmd.String("output")
+	dest := cmd.String("destination")
+	processorsDir := cmd.String("processors-dir")
 	if processorsDir == "" {
 		processorsDir = DefaultProcessorsPath()
 	}
-	modelsDir := cCtx.String("models-dir")
+	modelsDir := cmd.String("models-dir")
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
 	}
 
-	logging := cCtx.String("logging")
+	logging := cmd.String("logging")
 	switch logging {
 	case "error":
 		slog.SetLogLoggerLevel(slog.LevelError)
@@ -47,7 +47,7 @@ func run(cCtx *cli.Context) error {
 	}
 
 	settings := map[string]string{}
-	config := cCtx.StringSlice("config")
+	config := cmd.StringSlice("config")
 	for _, c := range config {
 		parts := strings.Split(c, "=")
 		if len(parts) != 2 {
@@ -55,8 +55,6 @@ func run(cCtx *cli.Context) error {
 		}
 		settings[parts[0]] = parts[1]
 	}
-
-	ctx := context.Background()
 
 	// load wasm runtime
 	r := runtime.New(ctx, runtime.InterpreterConfig{
@@ -72,7 +70,7 @@ func run(cCtx *cli.Context) error {
 	}
 
 	// Open the capture device.
-	cap := cCtx.String("capture")
+	cap := cmd.String("capture")
 	var device capture.Capture
 
 	switch cap {

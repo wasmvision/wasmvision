@@ -1,14 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"gocv.io/x/gocv"
 )
 
-func info(cCtx *cli.Context) error {
+func info(ctx context.Context, cmd *cli.Command) error {
 	fmt.Printf("wasmVision version %s %s/%s\n", Version(), runtime.GOOS, runtime.GOARCH)
 
 	fmt.Print("Camera backends: ")
