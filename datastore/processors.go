@@ -1,21 +1,21 @@
 package datastore
 
 type Processors struct {
-	storeMap map[string]map[string][]byte
+	storeMap map[string]map[string]string
 }
 
 // NewProcessors creates a new Processors data store.
-func NewProcessors(s map[string]map[string][]byte) *Processors {
+func NewProcessors(s map[string]map[string]string) *Processors {
 	return &Processors{
 		storeMap: s,
 	}
 }
 
 // Get returns a data value from the store.
-func (s *Processors) Get(processor string, key string) ([]byte, bool) {
+func (s *Processors) Get(processor string, key string) (string, bool) {
 	col, ok := s.storeMap[processor]
 	if !ok {
-		return nil, false
+		return "", false
 	}
 
 	val, ok := col[key]
@@ -38,10 +38,10 @@ func (s *Processors) GetKeys(processor string) ([]string, bool) {
 }
 
 // Set sets a config value in the store.
-func (s *Processors) Set(processor string, key string, val []byte) error {
+func (s *Processors) Set(processor string, key string, val string) error {
 	col, ok := s.storeMap[processor]
 	if !ok {
-		s.storeMap[processor] = make(map[string][]byte)
+		s.storeMap[processor] = make(map[string]string)
 		col = s.storeMap[processor]
 	}
 

@@ -7,9 +7,9 @@ import (
 
 func TestProcessors(t *testing.T) {
 	t.Run("get", func(t *testing.T) {
-		s := NewProcessors(map[string]map[string][]byte{
-			"proc": map[string][]byte{
-				"key": []byte("value"),
+		s := NewProcessors(map[string]map[string]string{
+			"proc": map[string]string{
+				"key": "value",
 			},
 		})
 
@@ -24,9 +24,9 @@ func TestProcessors(t *testing.T) {
 	})
 
 	t.Run("exists", func(t *testing.T) {
-		s := NewProcessors(map[string]map[string][]byte{
-			"proc": map[string][]byte{
-				"key": []byte("value"),
+		s := NewProcessors(map[string]map[string]string{
+			"proc": map[string]string{
+				"key": "value",
 			},
 		})
 
@@ -37,11 +37,11 @@ func TestProcessors(t *testing.T) {
 	})
 
 	t.Run("getKeys", func(t *testing.T) {
-		s := NewProcessors(map[string]map[string][]byte{
-			"proc": map[string][]byte{
-				"key":  []byte("value"),
-				"key2": []byte("value2"),
-				"key3": []byte("value3"),
+		s := NewProcessors(map[string]map[string]string{
+			"proc": map[string]string{
+				"key":  "value",
+				"key2": "value2",
+				"key3": "value3",
 			},
 		})
 
@@ -60,9 +60,9 @@ func TestProcessors(t *testing.T) {
 	})
 
 	t.Run("set", func(t *testing.T) {
-		s := NewProcessors(map[string]map[string][]byte{})
+		s := NewProcessors(map[string]map[string]string{})
 
-		err := s.Set("proc", "key", []byte("value"))
+		err := s.Set("proc", "key", "value")
 		if err != nil {
 			t.Errorf("unexpected error: %v", err)
 		}
@@ -78,9 +78,9 @@ func TestProcessors(t *testing.T) {
 	})
 
 	t.Run("delete", func(t *testing.T) {
-		s := NewProcessors(map[string]map[string][]byte{
-			"proc": map[string][]byte{
-				"key": []byte("value"),
+		s := NewProcessors(map[string]map[string]string{
+			"proc": map[string]string{
+				"key": "value",
 			},
 		})
 

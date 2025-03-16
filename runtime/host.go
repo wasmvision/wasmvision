@@ -46,7 +46,7 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 		ModelsDir:      conf.ModelsDir,
 		Config:         configStore,
 		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
-		ProcessorStore: datastore.NewProcessors(map[string]map[string][]byte{}),
+		ProcessorStore: datastore.NewProcessors(map[string]map[string]string{}),
 	}
 
 	modules := hostModules(&cctx)
@@ -138,12 +138,12 @@ func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 	for _, mod := range intp.guestModules {
 		frames = append(frames, wypes.UInt32(in))
 
+		intp.ModuleContext.ReturnDataPtr = mod.ReturnDataPtr
+
 		fn := mod.ExportedFunction(process)
 		if fn == nil {
 			log.Panicf("failed to find function %s", process)
 		}
-
-		intp.ModuleContext.ReturnDataPtr = mod.ReturnDataPtr
 
 		out, err := fn.Call(ctx, api.EncodeU32(in.Unwrap()))
 		if err != nil {

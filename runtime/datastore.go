@@ -177,8 +177,12 @@ func hostProcessorDataGetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, 
 			result.IsError = true
 			result.Error = wypes.UInt32(2) // no-such-key
 		} else {
+			value := make([]byte, len(val))
+			copy(value, val)
 			result.IsError = false
-			result.OK = wypes.Bytes{Raw: val}
+			result.OK = wypes.Bytes{Raw: value}
+
+			slog.Info(fmt.Sprintf("hostProcessorDataGetFunc len %d value: %v", len(value), string(value)))
 		}
 
 		result.DataPtr = ctx.ReturnDataPtr
@@ -223,7 +227,7 @@ func hostProcessorDataSetFunc(ctx *cv.Context) func(*wypes.Store, wypes.UInt32, 
 	return func(s *wypes.Store, fs wypes.UInt32, processor wypes.String, key wypes.String, data wypes.Bytes, result wypes.Result[wypes.UInt32, wypes.Bool, wypes.UInt32]) wypes.Void {
 		value := make([]byte, 0, len(data.Raw))
 		value = append(value, data.Raw...)
-		err := ctx.ProcessorStore.Set(processor.Unwrap(), key.Unwrap(), value)
+		err := ctx.ProcessorStore.Set(processor.Unwrap(), key.Unwrap(), string(value))
 		if err != nil {
 			slog.Error(fmt.Sprintf("hostProcessorDataSetFunc error in store after set: %v", err))
 			result.IsError = true
