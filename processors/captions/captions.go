@@ -10,12 +10,6 @@ import (
 	"wasmcv.org/wasm/cv/types"
 )
 
-var captionText []byte
-
-func init() {
-	captionText = make([]byte, 0, 80)
-}
-
 //export process
 func process(image mat.Mat) mat.Mat {
 	if image.Empty() {
@@ -39,21 +33,30 @@ func process(image mat.Mat) mat.Mat {
 		return out
 	}
 
-	l := len(result.OK().Slice())
-	switch {
-	case l == 0:
+	formatCaption(*result.OK())
+
+	if caption == "" {
 		logging.Info("empty caption")
 		return out
-	case l > 80:
-		l = 80
 	}
 
-	captionText = append(captionText[:0], result.OK().Slice()[:l]...)
-
-	var msg string
-	msg = string(captionText)
-	logging.Info("caption: " + msg)
-	cv.PutText(out, msg, types.Point{X: 10, Y: 20}, types.HersheyFontTypeHersheyFontSimplex, 0.6, types.RGBA{R: 255, G: 255, B: 255, A: 0}, 2)
+	cv.PutText(out, caption, types.Point{X: 10, Y: 30}, types.HersheyFontTypeHersheyFontSimplex, 1.0, types.RGBA{R: 0, G: 0, B: 0, A: 0}, 2)
+	logging.Info("caption: " + caption)
 
 	return out
+}
+
+var (
+	caption string
+)
+
+func formatCaption(msg string) {
+	switch {
+	case len(msg) == 0:
+		caption = ""
+	case len(msg) < 32:
+		caption = string(msg)
+	default:
+		caption = string(msg[:32]) + "..."
+	}
 }
