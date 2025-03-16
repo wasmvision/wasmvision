@@ -1,22 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sort"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"github.com/wasmvision/wasmvision/guest"
 	"github.com/wasmvision/wasmvision/models"
 )
 
-func listallModels(cCtx *cli.Context) error {
+func listallModels(ctx context.Context, cmd *cli.Command) error {
 	printModels()
 	fmt.Println()
 
 	return nil
 }
 
-func listallProcessors(cCtx *cli.Context) error {
+func listallProcessors(ctx context.Context, cmd *cli.Command) error {
 	printProcessors()
 	fmt.Println()
 

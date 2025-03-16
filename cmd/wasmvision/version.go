@@ -1,18 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"runtime"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 var (
-	v   = "0.2.0"
+	v   = "0.3.0-dev"
 	sha string
 )
 
-func version(cCtx *cli.Context) error {
+func version(ctx context.Context, cmd *cli.Command) error {
 	fmt.Printf("wasmVision version %s %s/%s\n", Version(), runtime.GOOS, runtime.GOARCH)
 
 	return nil

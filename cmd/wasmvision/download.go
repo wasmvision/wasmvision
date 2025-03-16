@@ -1,25 +1,26 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	"github.com/wasmvision/wasmvision/guest"
 	"github.com/wasmvision/wasmvision/models"
 )
 
-func downloadModel(cCtx *cli.Context) error {
-	if cCtx.Args().Len() < 1 {
+func downloadModel(ctx context.Context, cmd *cli.Command) error {
+	if cmd.Args().Len() < 1 {
 		return fmt.Errorf("model name required")
 	}
-	name := cCtx.Args().Get(0)
+	name := cmd.Args().Get(0)
 
 	if !models.ModelWellKnown(name) {
 		return fmt.Errorf("unknown model %s", name)
 	}
 
-	modelsDir := cCtx.String("models-dir")
+	modelsDir := cmd.String("models-dir")
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
 	}
@@ -37,17 +38,17 @@ func downloadModel(cCtx *cli.Context) error {
 	return nil
 }
 
-func downloadProcessor(cCtx *cli.Context) error {
-	if cCtx.Args().Len() < 1 {
+func downloadProcessor(ctx context.Context, cmd *cli.Command) error {
+	if cmd.Args().Len() < 1 {
 		return fmt.Errorf("processor name required")
 	}
-	name := cCtx.Args().Get(0)
+	name := cmd.Args().Get(0)
 
 	if !guest.ProcessorWellKnown(name) {
 		return fmt.Errorf("unknown processor %s", name)
 	}
 
-	processorsDir := cCtx.String("processors-dir")
+	processorsDir := cmd.String("processors-dir")
 	if processorsDir == "" {
 		processorsDir = DefaultProcessorsPath()
 	}
