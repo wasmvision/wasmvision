@@ -39,7 +39,7 @@ func process(image mat.Mat) mat.Mat {
 			return out
 		}
 
-		rect := faceRect(val.OK().Slice())
+		rect := faceRect([]byte(*val.OK()))
 		if emptyRect(rect) {
 			logging.Error("empty rect for face")
 			continue

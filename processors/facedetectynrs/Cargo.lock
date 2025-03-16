@@ -638,9 +638,9 @@ dependencies = [
 
 [[package]]
 name = "wasmvision"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfc04c061c74f941399275fcfb7861e21772ac535c10b236082e5cc4b4dec631"
+checksum = "1e62d98181941be1210a4d02a9a2ebb584a68bc4b32d3bdf3bc8df0eff656ab0"
 dependencies = [
  "wit-bindgen",
 ]

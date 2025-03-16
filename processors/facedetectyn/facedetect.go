@@ -9,7 +9,6 @@ import (
 
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
-	"go.bytecodealliance.org/cm"
 	"wasmcv.org/wasm/cv/cv"
 	"wasmcv.org/wasm/cv/mat"
 	"wasmcv.org/wasm/cv/objdetect"
@@ -120,7 +119,7 @@ func storeFaceData(image mat.Mat, faceid int, faceRect types.Rect, rightEye, lef
 	binary.LittleEndian.PutUint32(facedata[52:56], uint32(leftMouthCorner.Y))
 
 	fid := "face-" + strconv.Itoa(faceid+1)
-	val := fs.Set(uint32(image), fid, cm.ToList(facedata[:]))
+	val := fs.Set(uint32(image), fid, string(facedata[:]))
 	if val.IsErr() {
 		logging.Error("Error setting value: " + val.Err().String())
 	}

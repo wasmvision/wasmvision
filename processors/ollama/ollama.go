@@ -16,17 +16,10 @@ import (
 
 var (
 	lastUpdate time.Time
-
-	ps       datastore.ProcessorStore
-	template string
-	caption  []byte
 )
 
 func init() {
 	lastUpdate = time.UnixMicro(int64(hosttime.Now(0)))
-
-	ps = datastore.NewProcessorStore(1)
-	caption = make([]byte, 0, 80)
 }
 
 //export process
@@ -34,7 +27,7 @@ func process(image mat.Mat) mat.Mat {
 	loadConfig()
 
 	now := time.UnixMicro(int64(hosttime.Now(0)))
-	if now.Sub(lastUpdate) > 10*time.Second {
+	if now.Sub(lastUpdate) > 5*time.Second {
 		logging.Info("Asking for image description...")
 
 		req := []byte(template)
@@ -44,10 +37,10 @@ func process(image mat.Mat) mat.Mat {
 		switch {
 		case data.IsErr():
 			logging.Error("HTTP error")
-		case len(data.OK().Slice()) > 0:
-			caption = append(caption[:0], data.OK().Slice()...)
-			ps.Set("captions", "caption", cm.ToList(caption))
-			logging.Println(string(data.OK().Slice()))
+		case len(*data.OK()) > 0:
+			ps := datastore.NewProcessorStore(1)
+			ps.Set("captions", "caption", *data.OK())
+			logging.Info(*data.OK())
 		default:
 			logging.Info("No result from ollama")
 		}
@@ -59,8 +52,9 @@ func process(image mat.Mat) mat.Mat {
 }
 
 var (
-	url   string
-	model string
+	url      string
+	model    string
+	template string
 )
 
 const defaultURL = "http://localhost:11434"
@@ -69,7 +63,7 @@ const defaultModel = "llava"
 func loadConfig() {
 	if url == "" {
 		conf := config.GetConfig("url")
-		if conf.IsErr() {
+		if conf.IsErr() || len(*conf.OK()) == 0 {
 			url = defaultURL
 		} else {
 			url = *conf.OK()
@@ -80,7 +74,7 @@ func loadConfig() {
 
 	if model == "" {
 		conf := config.GetConfig("model")
-		if conf.IsErr() {
+		if conf.IsErr() || len(*conf.OK()) == 0 {
 			model = defaultModel
 		} else {
 			model = *conf.OK()
@@ -92,7 +86,7 @@ func loadConfig() {
 	if template == "" {
 		template = `{
 			"model": "` + model + `",
-			"prompt":"Describe what is in this picture in 60 characters or less.",
+			"prompt":"Describe what is in this picture in highly complimentary terms using 6 words or less.",
 			"stream": false,
 			"images": ["%IMAGE%"]
 		  }`
