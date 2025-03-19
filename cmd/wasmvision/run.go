@@ -14,7 +14,6 @@ import (
 )
 
 func run(ctx context.Context, cmd *cli.Command) error {
-	processors := cmd.StringSlice("processor")
 	if len(pipeline) > 0 {
 		list := pipeline[0]
 		list = strings.TrimLeft(list, "[")
@@ -26,20 +25,15 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		os.Exit(1)
 	}
 
-	source := cmd.String("source")
-	output := cmd.String("output")
-	dest := cmd.String("destination")
-	processorsDir := cmd.String("processors-dir")
 	if processorsDir == "" {
 		processorsDir = DefaultProcessorsPath()
 	}
-	modelsDir := cmd.String("models-dir")
+
 	if modelsDir == "" {
 		modelsDir = DefaultModelPath()
 	}
 
-	logging := cmd.String("logging")
-	switch logging {
+	switch loggingLevel {
 	case "error":
 		slog.SetLogLoggerLevel(slog.LevelError)
 	case "warn":
@@ -49,10 +43,9 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	case "debug":
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 	default:
-		return fmt.Errorf("unknown log level %v", logging)
+		return fmt.Errorf("unknown log level %v", loggingLevel)
 	}
 
-	config := cmd.StringSlice("config")
 	if len(configuration) > 0 {
 		list := configuration[0]
 		list = strings.TrimLeft(list, "[")
@@ -82,10 +75,9 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Open the capture device.
-	cap := cmd.String("capture")
 	var device capture.Capture
 
-	switch cap {
+	switch captureDevice {
 	case "auto", "webcam":
 		device = capture.NewWebcam(source)
 		if err := device.Open(); err != nil {
@@ -102,7 +94,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 			return fmt.Errorf("failed opening video capture stream: %w", err)
 		}
 	default:
-		return fmt.Errorf("unknown capture type %v", cap)
+		return fmt.Errorf("unknown capture type %v", captureDevice)
 	}
 
 	defer device.Close()
@@ -114,10 +106,10 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	switch output {
 	case "mjpeg":
-		if dest == "" {
-			dest = ":8080"
+		if destination == "" {
+			destination = ":8080"
 		}
-		mjpegstream = engine.NewMJPEGStream(r.Refs, dest)
+		mjpegstream = engine.NewMJPEGStream(r.Refs, destination)
 
 		if err := mjpegstream.Start(); err != nil {
 			return fmt.Errorf("failed starting mjpeg stream: %w", err)
@@ -126,10 +118,10 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		defer mjpegstream.Close()
 
 	case "file":
-		if dest == "" {
+		if destination == "" {
 			return fmt.Errorf("you must profile a file destination for output=file")
 		}
-		videoWriter = engine.NewVideoWriter(r.Refs, dest)
+		videoWriter = engine.NewVideoWriter(r.Refs, destination)
 
 		if err := videoWriter.Start(device); err != nil {
 			return fmt.Errorf("failed starting video writer: %w", err)

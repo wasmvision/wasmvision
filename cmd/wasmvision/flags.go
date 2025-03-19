@@ -11,46 +11,65 @@ var (
 	configFile   string
 	configSource = altsrc.NewStringPtrSourcer(&configFile)
 
+	source        string
+	captureDevice string
+	output        string
+	destination   string
+	loggingLevel  string
+
+	processors    []string
 	pipeline      []string
 	configuration []string
+	config        []string
+	processorsDir string
+	modelsDir     string
+
+	downloadProcessors bool
+	downloadModels     bool
 
 	runFlags = []cli.Flag{
 		&cli.StringFlag{Name: "file",
 			Aliases:     []string{"f"},
-			Usage:       "TOML file with configuration",
+			Usage:       "TOML or YAML file with configuration",
 			Destination: &configFile,
 		},
 		&cli.StringFlag{Name: "source",
-			Aliases: []string{"s"},
-			Value:   "0",
-			Usage:   "video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems)",
-			Sources: cli.NewValueSourceChain(toml.TOML("main.source", configSource), yaml.YAML("main.source", configSource)),
+			Aliases:     []string{"s"},
+			Value:       "0",
+			Usage:       "video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.source", configSource), yaml.YAML("main.source", configSource)),
+			Destination: &source,
 		},
 		&cli.StringFlag{Name: "capture",
-			Value:   "auto",
-			Usage:   "video capture source type to use (auto, ffmpeg, gstreamer1, webcam)",
-			Sources: cli.NewValueSourceChain(toml.TOML("main.capture", configSource), yaml.YAML("main.capture", configSource)),
+			Value:       "auto",
+			Usage:       "video capture source type to use (auto, ffmpeg, gstreamer1, webcam)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.capture", configSource), yaml.YAML("main.capture", configSource)),
+			Destination: &captureDevice,
 		},
 		&cli.StringFlag{Name: "output",
-			Aliases: []string{"o"},
-			Value:   "mjpeg",
-			Usage:   "output type (mjpeg, file)",
-			Sources: cli.NewValueSourceChain(toml.TOML("main.output", configSource), yaml.YAML("main.output", configSource)),
+			Aliases:     []string{"o"},
+			Value:       "mjpeg",
+			Usage:       "output type (mjpeg, file)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.output", configSource), yaml.YAML("main.output", configSource)),
+			Destination: &output,
 		},
 		&cli.StringFlag{Name: "destination",
-			Aliases: []string{"d"},
-			Usage:   "output destination (port, file path)",
-			Sources: cli.NewValueSourceChain(toml.TOML("main.destination", configSource), yaml.YAML("main.destination", configSource)),
+			Aliases:     []string{"d"},
+			Usage:       "output destination (port, file path)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.destination", configSource), yaml.YAML("main.destination", configSource)),
+			Destination: &destination,
 		},
 		&cli.StringFlag{Name: "logging",
-			Usage:   "logging level to use (error, warn, info, debug)",
-			Value:   "warn",
-			Sources: cli.NewValueSourceChain(toml.TOML("main.logging", configSource), yaml.YAML("main.logging", configSource)),
+			Usage:       "logging level to use (error, warn, info, debug)",
+			Value:       "warn",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.logging", configSource), yaml.YAML("main.logging", configSource)),
+			Destination: &loggingLevel,
 		},
 		&cli.StringSliceFlag{
-			Name:    "processor",
-			Aliases: []string{"p"},
-			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
+			Name:        "processor",
+			Aliases:     []string{"p"},
+			Usage:       "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
+			Destination: &processors,
 		},
 		&cli.StringSliceFlag{
 			Name:        "pipeline",
@@ -59,19 +78,22 @@ var (
 			Hidden:      true,
 		},
 		&cli.StringFlag{Name: "processors-dir",
-			Usage:   "directory for processor loading (default to $home/processors)",
-			Sources: cli.NewValueSourceChain(toml.TOML("processing.directory", configSource), yaml.YAML("processing.directory", configSource), cli.EnvVar("WASMVISION_PROCESSORS_DIR")),
+			Usage:       "directory for processor loading (default to $home/processors)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("processing.directory", configSource), yaml.YAML("processing.directory", configSource), cli.EnvVar("WASMVISION_PROCESSORS_DIR")),
+			Destination: &processorsDir,
 		},
 		&cli.BoolFlag{Name: "processor-download",
-			Value:   true,
-			Usage:   "automatically download known processors (default: true)",
-			Sources: cli.NewValueSourceChain(toml.TOML("processing.download", configSource), yaml.YAML("processing.download", configSource)),
+			Value:       true,
+			Usage:       "automatically download known processors (default: true)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("processing.download", configSource), yaml.YAML("processing.download", configSource)),
+			Destination: &downloadProcessors,
 		},
 		&cli.StringSliceFlag{
-			Name:    "config",
-			Aliases: []string{"c"},
-			Usage:   "configuration for processors. Format: -config key1=val1 -config key2=val2",
-			Sources: cli.NewValueSourceChain(toml.TOML("config", configSource), yaml.YAML("config", configSource)),
+			Name:        "config",
+			Aliases:     []string{"c"},
+			Usage:       "configuration for processors. Format: -config key1=val1 -config key2=val2",
+			Sources:     cli.NewValueSourceChain(toml.TOML("config", configSource), yaml.YAML("config", configSource)),
+			Destination: &config,
 		},
 		&cli.StringSliceFlag{
 			Name:        "configuration",
@@ -80,14 +102,16 @@ var (
 			Hidden:      true,
 		},
 		&cli.StringFlag{Name: "models-dir",
-			Usage:   "directory for model loading (default to $home/models)",
-			Sources: cli.NewValueSourceChain(toml.TOML("models.directory", configSource), yaml.YAML("models.directory", configSource), cli.EnvVar("WASMVISION_MODELS_DIR")),
+			Usage:       "directory for model loading (default to $home/models)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("models.directory", configSource), yaml.YAML("models.directory", configSource), cli.EnvVar("WASMVISION_MODELS_DIR")),
+			Destination: &modelsDir,
 		},
 		&cli.BoolFlag{Name: "models-download",
-			Aliases: []string{"download"},
-			Value:   true,
-			Usage:   "automatically download known models (default: true)",
-			Sources: cli.NewValueSourceChain(toml.TOML("models.downloads", configSource), yaml.YAML("models.downloads", configSource)),
+			Aliases:     []string{"download"},
+			Value:       true,
+			Usage:       "automatically download known models (default: true)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("models.downloads", configSource), yaml.YAML("models.downloads", configSource)),
+			Destination: &downloadModels,
 		},
 	}
 

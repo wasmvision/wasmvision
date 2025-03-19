@@ -16,7 +16,7 @@ __  _  _______    ______ ____\   \ /   /|__| _____|__| ____   ____
   \/\_/  (____  /____  >__|_|  /\___/   |__/____  >__|\____/|___|  /
               \/     \/      \/                 \/               \/ 
 
-wasmVision - gets you up and running with computer vision using WebAssembly.
+wasmVision - get going with computer vision using WebAssembly.
 
 https://wasmvision.com
 `
