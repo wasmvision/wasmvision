@@ -182,3 +182,45 @@ wasmvision listall models
 ```shell
 wasmvision listall processors
 ```
+
+## Configuration files
+
+You can use an external TOML or YAML file to configure wasmVision. Here is an TOML example:
+
+```toml
+[main]
+logging = "warn"
+
+[processing]
+pipeline = [
+    "./processors/ollama.wasm",
+    "./processors/udnie.wasm",
+    "./processors/captions.wasm"
+]
+configuration = [
+    "model=llava"
+]
+download = true
+
+[models]
+download = true
+```
+
+Here is the same configuration in YAML format:
+
+```yaml
+main:
+  logging: "warn"
+
+processing:
+  pipeline:
+    - "./processors/ollama.wasm"
+    - "./processors/udnie.wasm"
+    - "./processors/captions.wasm"
+  configuration:
+    - "model=llava"
+  download: true
+
+models:
+  download: true
+```
