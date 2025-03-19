@@ -15,6 +15,12 @@ import (
 
 func run(ctx context.Context, cmd *cli.Command) error {
 	processors := cmd.StringSlice("processor")
+	if len(pipeline) > 0 {
+		list := pipeline[0]
+		list = strings.TrimLeft(list, "[")
+		list = strings.TrimRight(list, "]")
+		processors = strings.Split(list, " ")
+	}
 	if len(processors) == 0 {
 		fmt.Println("No wasm processors specified")
 		os.Exit(1)
@@ -46,8 +52,14 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("unknown log level %v", logging)
 	}
 
-	settings := map[string]string{}
 	config := cmd.StringSlice("config")
+	if len(configuration) > 0 {
+		list := configuration[0]
+		list = strings.TrimLeft(list, "[")
+		list = strings.TrimRight(list, "]")
+		config = strings.Split(list, " ")
+	}
+	settings := map[string]string{}
 	for _, c := range config {
 		parts := strings.Split(c, "=")
 		if len(parts) != 2 {
