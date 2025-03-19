@@ -1,0 +1,106 @@
+package main
+
+import (
+	altsrc "github.com/urfave/cli-altsrc/v3"
+	"github.com/urfave/cli-altsrc/v3/toml"
+	"github.com/urfave/cli-altsrc/v3/yaml"
+	"github.com/urfave/cli/v3"
+)
+
+var (
+	configFile   string
+	configSource = altsrc.NewStringPtrSourcer(&configFile)
+
+	pipeline      []string
+	configuration []string
+
+	runFlags = []cli.Flag{
+		&cli.StringFlag{Name: "file",
+			Aliases:     []string{"f"},
+			Usage:       "TOML file with configuration",
+			Destination: &configFile,
+		},
+		&cli.StringFlag{Name: "source",
+			Aliases: []string{"s"},
+			Value:   "0",
+			Usage:   "video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems)",
+			Sources: cli.NewValueSourceChain(toml.TOML("main.source", configSource), yaml.YAML("main.source", configSource)),
+		},
+		&cli.StringFlag{Name: "capture",
+			Value:   "auto",
+			Usage:   "video capture source type to use (auto, ffmpeg, gstreamer1, webcam)",
+			Sources: cli.NewValueSourceChain(toml.TOML("main.capture", configSource), yaml.YAML("main.capture", configSource)),
+		},
+		&cli.StringFlag{Name: "output",
+			Aliases: []string{"o"},
+			Value:   "mjpeg",
+			Usage:   "output type (mjpeg, file)",
+			Sources: cli.NewValueSourceChain(toml.TOML("main.output", configSource), yaml.YAML("main.output", configSource)),
+		},
+		&cli.StringFlag{Name: "destination",
+			Aliases: []string{"d"},
+			Usage:   "output destination (port, file path)",
+			Sources: cli.NewValueSourceChain(toml.TOML("main.destination", configSource), yaml.YAML("main.destination", configSource)),
+		},
+		&cli.StringFlag{Name: "logging",
+			Usage:   "logging level to use (error, warn, info, debug)",
+			Value:   "warn",
+			Sources: cli.NewValueSourceChain(toml.TOML("main.logging", configSource), yaml.YAML("main.logging", configSource)),
+		},
+		&cli.StringSliceFlag{
+			Name:    "processor",
+			Aliases: []string{"p"},
+			Usage:   "wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm",
+		},
+		&cli.StringSliceFlag{
+			Name:        "pipeline",
+			Sources:     cli.NewValueSourceChain(toml.TOML("processing.pipeline", configSource), yaml.YAML("processing.pipeline", configSource)),
+			Destination: &pipeline,
+			Hidden:      true,
+		},
+		&cli.StringFlag{Name: "processors-dir",
+			Usage:   "directory for processor loading (default to $home/processors)",
+			Sources: cli.NewValueSourceChain(toml.TOML("processing.directory", configSource), yaml.YAML("processing.directory", configSource), cli.EnvVar("WASMVISION_PROCESSORS_DIR")),
+		},
+		&cli.BoolFlag{Name: "processor-download",
+			Value:   true,
+			Usage:   "automatically download known processors (default: true)",
+			Sources: cli.NewValueSourceChain(toml.TOML("processing.download", configSource), yaml.YAML("processing.download", configSource)),
+		},
+		&cli.StringSliceFlag{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Usage:   "configuration for processors. Format: -config key1=val1 -config key2=val2",
+			Sources: cli.NewValueSourceChain(toml.TOML("config", configSource), yaml.YAML("config", configSource)),
+		},
+		&cli.StringSliceFlag{
+			Name:        "configuration",
+			Sources:     cli.NewValueSourceChain(toml.TOML("processing.configuration", configSource), yaml.YAML("processing.configuration", configSource)),
+			Destination: &configuration,
+			Hidden:      true,
+		},
+		&cli.StringFlag{Name: "models-dir",
+			Usage:   "directory for model loading (default to $home/models)",
+			Sources: cli.NewValueSourceChain(toml.TOML("models.directory", configSource), yaml.YAML("models.directory", configSource), cli.EnvVar("WASMVISION_MODELS_DIR")),
+		},
+		&cli.BoolFlag{Name: "models-download",
+			Aliases: []string{"download"},
+			Value:   true,
+			Usage:   "automatically download known models (default: true)",
+			Sources: cli.NewValueSourceChain(toml.TOML("models.downloads", configSource), yaml.YAML("models.downloads", configSource)),
+		},
+	}
+
+	downloadFlags = []cli.Flag{
+		&cli.StringFlag{Name: "models-dir",
+			Aliases: []string{"models"},
+			Usage:   "directory for model downloading (default to $home/models)",
+			Sources: cli.EnvVars("WASMVISION_MODELS_DIR"),
+		},
+		&cli.StringFlag{Name: "processors-dir",
+			Aliases: []string{"processors"},
+			Usage:   "directory for processor downloading (default to $home/processors)",
+			Sources: cli.EnvVars("WASMVISION_PROCESSORS_DIR"),
+		},
+	}
+)
