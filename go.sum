@@ -42,8 +42,8 @@ github.com/urfave/cli-altsrc/v3 v3.0.0-alpha2.0.20250228131929-8cc6e0481655 h1:h
 github.com/urfave/cli-altsrc/v3 v3.0.0-alpha2.0.20250228131929-8cc6e0481655/go.mod h1:xwYmypA98PqRCPRltmf6+BeYQ4+fq8s7Lai2u0x8qdo=
 github.com/urfave/cli/v3 v3.0.0-beta1.0.20250209232119-706f78edb6b4 h1:Y8+7IalO9ucv96kB0jGLN35ydjOIyb6UiqWTe8aROvQ=
 github.com/urfave/cli/v3 v3.0.0-beta1.0.20250209232119-706f78edb6b4/go.mod h1:FJSKtM/9AiiTOJL4fJ6TbMUkxBXn7GO9guZqoZtpYpo=
-gocv.io/x/gocv v0.40.0 h1:kGBu/UVj+dO6A9dhQmGOnCICSL7ke7b5YtX3R3azdXI=
-gocv.io/x/gocv v0.40.0/go.mod h1:zYdWMj29WAEznM3Y8NsU3A0TRq/wR/cy75jeUypThqU=
+gocv.io/x/gocv v0.41.0 h1:KM+zRXUP28b6dHfhy+4JxDODbCNQNtLg8kio+YE7TqA=
+gocv.io/x/gocv v0.41.0/go.mod h1:zYdWMj29WAEznM3Y8NsU3A0TRq/wR/cy75jeUypThqU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=

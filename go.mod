@@ -7,7 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/orsinium-labs/wypes v0.3.0
 	github.com/tetratelabs/wazero v1.9.0
-	gocv.io/x/gocv v0.40.0
+	gocv.io/x/gocv v0.41.0
 )
 
 require (
