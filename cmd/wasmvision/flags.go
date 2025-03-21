@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli-altsrc/v3/toml"
 	"github.com/urfave/cli-altsrc/v3/yaml"
@@ -36,13 +38,21 @@ var (
 		&cli.StringFlag{Name: "source",
 			Aliases:     []string{"s"},
 			Value:       "0",
-			Usage:       "video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems)",
+			Usage:       "video capture source to use. webcam id, file name, stream, testpattern (0 is the default webcam on most systems)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.source", configSource), yaml.YAML("main.source", configSource)),
 			Destination: &source,
+			Action: func(ctm context.Context, cmd *cli.Command, val string) error {
+				if val == "testpattern" {
+					// special case for testpattern, uses gstreamer to generate a test pattern
+					source = "videotestsrc ! videoconvert ! appsink"
+					captureDevice = "gstreamer"
+				}
+				return nil
+			},
 		},
 		&cli.StringFlag{Name: "capture",
 			Value:       "auto",
-			Usage:       "video capture source type to use (auto, ffmpeg, gstreamer1, webcam)",
+			Usage:       "video capture type to use (auto, ffmpeg, gstreamer, webcam)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.capture", configSource), yaml.YAML("main.capture", configSource)),
 			Destination: &captureDevice,
 		},
