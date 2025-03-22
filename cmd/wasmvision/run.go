@@ -132,6 +132,18 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("unknown output kind %v", output)
 	}
 
+	var (
+		mcpServer *engine.MCPServer
+	)
+	if mcpEnabled {
+		mcpServer = engine.NewMCPServer(mcpPort)
+		if err := mcpServer.Start(); err != nil {
+			return fmt.Errorf("failed starting MCP server: %w", err)
+		}
+
+		defer mcpServer.Close()
+	}
+
 	slog.Info(fmt.Sprintf("Reading video from source '%v", source))
 	i := 0
 
@@ -161,6 +173,12 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		slog.Info(fmt.Sprintf("Read frame %d", i))
 
 		frame = r.Process(ctx, frame)
+
+		if mcpEnabled {
+			if err := mcpServer.Publish(frame); err != nil {
+				slog.Error("failed to publish frame:" + err.Error())
+			}
+		}
 
 		switch output {
 		case "mjpeg":

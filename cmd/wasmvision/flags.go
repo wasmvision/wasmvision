@@ -27,6 +27,9 @@ var (
 	downloadProcessors bool
 	downloadModels     bool
 
+	mcpEnabled bool
+	mcpPort    string
+
 	runFlags = []cli.Flag{
 		&cli.StringFlag{Name: "file",
 			Aliases:     []string{"f"},
@@ -112,6 +115,18 @@ var (
 			Usage:       "automatically download known models (default: true)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("models.downloads", configSource), yaml.YAML("models.downloads", configSource)),
 			Destination: &downloadModels,
+		},
+		&cli.BoolFlag{Name: "mcp-server",
+			Value:       true,
+			Usage:       "enable MCP server (default: false)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("server.mcp-enable", configSource), yaml.YAML("server.mcp-enable", configSource)),
+			Destination: &mcpEnabled,
+		},
+		&cli.StringFlag{Name: "mcp-port",
+			Value:       ":5001",
+			Usage:       "port for MCP server (default: :5001)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("server.mcp-port", configSource), yaml.YAML("server.mcp-port", configSource)),
+			Destination: &mcpPort,
 		},
 	}
 
