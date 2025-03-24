@@ -9,7 +9,7 @@ The detection is first done using the `facedetectyn` processor. Then this proces
 ## How to build
 
 ```shell
-tinygo build -o ../faceblur.wasm -target=wasm-unknown .
+tinygo build -o ../faceblur.wasm -target=wasm-unknown --no-debug .
 ```
 
 ## How to run

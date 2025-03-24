@@ -7,7 +7,7 @@ wasmVision processor that renders images using fast neural style transfer.
 ## How to build
 
 ```shell
-tinygo build -o ../udnie.wasm -target=wasm-unknown .
+tinygo build -o ../udnie.wasm -target=wasm-unknown --no-debug .
 ```
 
 ## Downloading the model
