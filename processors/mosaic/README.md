@@ -7,7 +7,7 @@ wasmVision processor that renders images in a mosaic using fast neural style tra
 ## How to build
 
 ```shell
-tinygo build -o ../mosaic.wasm -target=wasm-unknown .
+tinygo build -o ../mosaic.wasm -target=wasm-unknown --no-debug .
 ```
 
 ## Downloading the model

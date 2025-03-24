@@ -7,5 +7,5 @@ wasmVision processor that performs a blur.
 ## How to build
 
 ```shell
-tinygo build -o ../blur.wasm -target=wasm-unknown .
+tinygo build -o ../blur.wasm -target=wasm-unknown --no-debug .
 ```

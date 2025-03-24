@@ -7,7 +7,7 @@ wasmVision processor that adds captions to the final output image.
 ## How to build
 
 ```shell
-tinygo build -o ../captions.wasm -target=wasm-unknown .
+tinygo build -o ../captions.wasm -target=wasm-unknown --no-debug .
 ```
 
 ## How to run

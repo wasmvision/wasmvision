@@ -9,7 +9,7 @@ LLaVA is a multimodal model that combines a vision encoder and Vicuna for genera
 ## How to build
 
 ```shell
-tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared .
+tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
 ```
 
 ## Running Ollama
@@ -57,3 +57,11 @@ https://ollama.com/library/llava
 moondream2 is a small vision language model designed to run efficiently on edge devices.
 
 https://ollama.com/library/moondream
+
+
+#### `nanollava`
+
+nanoLLaVA is a "small but mighty" 1B vision-language model designed to run efficiently on edge devices.
+
+https://ollama.com/qnguyen3/nanollava
+https://huggingface.co/qnguyen3/nanoLLaVA
