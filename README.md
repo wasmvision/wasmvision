@@ -63,6 +63,10 @@ Check out the [processors directory](./processors/) for the complete list.
 
 See the [PROCESSOR](./docs/processor.md) document for more information about how processors work and how to develop your own.
 
+### MCP Server
+
+wasmVision includes experimental support for the [Model Context Protocol (MCP)](https://modelcontextprotocol.info/) by providing a [(MCP) Server](https://modelcontextprotocol.info/specification/draft/server/). See [MCP](./docs/mcp.md) for more information.
+
 ## Quick start
 
 - [Linux](#linux)

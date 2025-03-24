@@ -20,6 +20,7 @@ flowchart TD
                 datastore
                 time
             end
+            Runtime<-->MCP[MCP Server]
         end
         subgraph processors
             Runtime--frame-->processor1.wasm
@@ -68,3 +69,7 @@ The wasmVision platform capabilities provide essential services for processing m
 - **HTTP**: Utilities for making HTTP requests to external servers, enabling communication and data exchange with other services.
 - **Datastore**: A simple key-value store for saving and retrieving data associated either with specific image frames, or else with specific processors.
 - **Time**: utilities for processors to fetch the current host time.
+
+### MCP Server
+
+wasmVision includes experimental support for the [Model Context Protocol (MCP)](https://modelcontextprotocol.info/) by providing a [(MCP) Server](https://modelcontextprotocol.info/specification/draft/server/). See [MCP](./mcp.md) for more information.
