@@ -10,9 +10,9 @@ It provides a high-performance computer vision processing engine that is designe
 
 ## How it works
 
-- [Capture video from a camera, video file, or stream](./CAPTURE.md)
-- [Process the video frames using WebAssembly](./PROCESSOR.md)
-- [Output the results to a stream or video file](./OUTPUT.md)
+- [Capture video from a camera, video file, or stream](./docs/capture.md)
+- [Process the video frames using WebAssembly](./docs/processor.md)
+- [Output the results to a stream or video file](./docs/output.md)
 
 ```mermaid
 flowchart LR
@@ -37,7 +37,7 @@ The wasmVision engine is a standalone binary application for Linux, macOS, or Wi
 
 It is written in the [Go programming language](https://go.dev/) using the [GoCV Go language wrappers](https://github.com/hybridgroup/gocv) for [OpenCV](https://github.com/opencv/opencv) and the [Wazero WASM runtime](https://github.com/tetratelabs/wazero).
 
-See the [ARCHITECTURE.md](ARCHITECTURE.md) document for more details.
+See the [ARCHITECTURE](./docs/architecture.md) document for more details.
 
 ### wasmVision Processors
 
@@ -61,7 +61,7 @@ Want some processors you can try out right away? Take a look at these:
 
 Check out the [processors directory](./processors/) for the complete list.
 
-See the [PROCESSOR.md](PROCESSOR.md) document for more information about how processors work and how to develop your own.
+See the [PROCESSOR](./docs/processor.md) document for more information about how processors work and how to develop your own.
 
 ## Quick start
 
@@ -99,7 +99,7 @@ Point your browser to `http://localhost:8080` and you can see the output.
 
 ![mjpeg-stream](./images/mjpeg-stream.png)
 
-Want to know more? Please see [USING.md](./USING.md)
+Want to know more? Please see [USING](./docs/using.md)
 
 ### macOS
 
@@ -128,7 +128,7 @@ wasmVision will automatically download the `blur.wasm` processor from our repo t
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
-Want to know more? Please see [USING.md](./USING.md)
+Want to know more? Please see [USING](./docs/using.md)
 
 ### Windows
 
@@ -159,7 +159,7 @@ You will probably need to configure Windows Firewall to allow the `wasmvision.ex
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
-Want to know more? Please see [USING.md](./USING.md)
+Want to know more? Please see [USING](./docs/using.md)
 
 ### Docker
 
@@ -187,8 +187,8 @@ docker run --privileged --network=host ghcr.io/wasmvision/wasmvision:main run -p
 
 Point your browser to `http://localhost:8080` and you can see the output.
 
-Want to know more? Please see [USING.md](./USING.md)
+Want to know more? Please see [USING](./docs/using.md)
 
 ## Development
 
-For information on how to obtain development builds, or work on development for wasmVision itself, please see [DEVELOPMENT.md](./DEVELOPMENT.md)
+For information on how to obtain development builds, or work on development for wasmVision itself, please see [DEVELOPMENT](./docs/development.md)

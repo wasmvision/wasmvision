@@ -6,7 +6,7 @@ Processors can filter images, analyze them, and modify them using traditional co
 
 Processors can also use deep neural networks and other machine learning algorithms, and can even download the models they need automatically.
 
-See the [processors directory](./processors/) for pre-compiled processors you can try out right away.
+See the [processors directory](../processors/) for pre-compiled processors you can try out right away.
 
 Processors can be written in [Go](#go), [Rust](#rust), or the [C programming language](#c).
 
@@ -37,7 +37,7 @@ wasmVision processors call OpenCV functions implemented by the wasmVision engine
 
 Full documentation of the computer vision functions supported by the wasmCV interface definitions is here:
 
-https://wasmcv.org/docs/0.6.0/
+https://wasmcv.org/docs/0.7.0/
 
 The repository with the wasmCV interface and bindings can be found here:
 

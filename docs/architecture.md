@@ -43,8 +43,8 @@ The wasmVision runtime consists of the WebAssembly runtime engine (currently Waz
 
 ### Processors
 
-The image processing modules that are used by wasmVision. These are modules written using Go, Rust, or C, and compiled into WebAssembly. They use the [wasmCV interface](https://github.com/wasmvision/wasmcv) and the [wasmVision platform interface](https://github.com/wasmvision/wasmvision-sdk). See [processors directory](./processors/) for several processors you can use, or use as examples.
+The image processing modules that are used by wasmVision. These are modules written using Go, Rust, or C, and compiled into WebAssembly. They use the [wasmCV interface](https://github.com/wasmvision/wasmcv) and the [wasmVision platform interface](https://github.com/wasmvision/wasmvision-sdk). See [processors directory](../processors/) for several processors you can use, or use as examples.
 
 ### OpenCV
 
-The computer vision processing capabilities implemented using OpenCV/GoCV. Take a look at the [`cv` directory](./cv/) for the code for this integration.
+The computer vision processing capabilities implemented using OpenCV/GoCV. Take a look at the [`cv` directory](../cv/) for the code for this integration.

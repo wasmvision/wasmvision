@@ -2,7 +2,7 @@
 
 Do you want to try out the latest development builds, or work on developing wasmVision itself? If so, this is the place for information.
 
-Do you want to develop a wasmVision processing module using WebAssembly? See the [PROCESSOR.md document](./PROCESSOR.md).
+Do you want to develop a wasmVision processing module using WebAssembly? See the [PROCESSOR document](./processor.md).
 
 Otherwise, read on!
 
