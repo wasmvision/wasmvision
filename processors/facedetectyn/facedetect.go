@@ -49,6 +49,14 @@ func process(image mat.Mat) mat.Mat {
 
 	out := image.Clone()
 
+	drawFaces(out, faces)
+
+	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
+
+	return out
+}
+
+func drawFaces(out mat.Mat, faces mat.Mat) {
 	for r := uint32(0); r < faces.Rows(); r++ {
 		x0 := int32(faces.GetFloatAt(r, 0))
 		y0 := int32(faces.GetFloatAt(r, 1))
@@ -82,19 +90,15 @@ func process(image mat.Mat) mat.Mat {
 			Y: int32(faces.GetFloatAt(r, 13)),
 		}
 
-		storeFaceData(out, int(r), faceRect, rightEye, leftEye, noseTip, rightMouthCorner, leftMouthCorner)
-
 		cv.Rectangle(out, faceRect, green, 1)
 		cv.Circle(out, rightEye, 1, blue, 1)
 		cv.Circle(out, leftEye, 1, red, 1)
 		cv.Circle(out, noseTip, 1, green, 1)
 		cv.Circle(out, rightMouthCorner, 1, pink, 1)
 		cv.Circle(out, leftMouthCorner, 1, yellow, 1)
+
+		storeFaceData(out, int(r), faceRect, rightEye, leftEye, noseTip, rightMouthCorner, leftMouthCorner)
 	}
-
-	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
-
-	return out
 }
 
 func storeFaceData(image mat.Mat, faceid int, faceRect types.Rect, rightEye, leftEye, noseTip, rightMouthCorner, leftMouthCorner types.Size) {
