@@ -5,10 +5,10 @@ NAME:
    wasmvision - wasmVision CLI
 
 USAGE:
-   wasmvision [global options] command [command options]
+   wasmvision [global options] [command [command options]]
 
 VERSION:
-   0.1.0
+   0.3.0
 
 DESCRIPTION:
    wasmVision gets you up and running with computer vision.
@@ -36,21 +36,24 @@ NAME:
    wasmvision run - Run wasmVision processors
 
 USAGE:
-   wasmvision run [command options]
+   wasmvision run
 
 OPTIONS:
-   --source value, -s value                                     video capture source to use. webcam id, file name, or stream (0 is the default webcam on most systems) (default: "0")
-   --capture value                                              video capture source type to use (auto, webcam, gstreamer) (default: "auto")
-   --output value, -o value                                     output type (mjpeg, file) (default: "mjpeg")
-   --destination value, -d value                                output destination (port, file path)
-   --processor value, -p value [ --processor value, -p value ]  wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm
-   --logging                                                    log detailed info to console (default: true) (default: true)
-   --models-dir value, --models value                           directory for model loading (default to $home/models) [$WASMVISION_MODELS_DIR]
-   --model-download, --download                                 automatically download known models (default: true) (default: true)
-   --processors-dir value, --processors value                   directory for processor loading (default to $home/processors) [$WASMVISION_PROCESSORS_DIR]
-   --processor-download                                         automatically download known processors (default: true) (default: true)
-   --config value, -c value [ --config value, -c value ]        configuration for processors. Format: -config key1=val1 -config key2=val2
-   --help, -h                                                   show help
+   --file string, -f string                                         TOML or YAML file with configuration
+   --source string, -s string                                       video capture source to use. webcam id, file name, stream, testpattern (0 is the default webcam on most systems) (default: "0")
+   --capture string                                                 video capture type to use (auto, ffmpeg, gstreamer, webcam) (default: "auto")
+   --output string, -o string                                       output type (mjpeg, file) (default: "mjpeg")
+   --destination string, -d string                                  output destination (port, file path)
+   --logging string                                                 logging level to use (error, warn, info, debug) (default: "warn")
+   --processor string, -p string [ --processor string, -p string ]  wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm
+   --processors-dir string                                          directory for processor loading (default to $home/processors) [$WASMVISION_PROCESSORS_DIR]
+   --processor-download                                             automatically download known processors (default: true)
+   --config string, -c string [ --config string, -c string ]        configuration for processors. Format: -config key1=val1 -config key2=val2
+   --models-dir string                                              directory for model loading (default to $home/models) [$WASMVISION_MODELS_DIR]
+   --models-download, --download                                    automatically download known models (default: true)
+   --mcp-server                                                     enable MCP server (default: false)
+   --mcp-port string                                                port for MCP server (default: ":5001")
+   --help, -h                                                       show help
 ```
 
 ### Automatically download the `blur` processor, capture from your webcam (default), process the video, and stream the output using MJPEG to port 8080 (default)
@@ -108,12 +111,11 @@ NAME:
    wasmvision download - Download computer vision models and processors
 
 USAGE:
-   wasmvision download command [command options]
+   wasmvision download [command [command options]] 
 
 COMMANDS:
    model      download a known computer vision model
    processor  download a known processor
-   help, h    Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
@@ -138,7 +140,7 @@ NAME:
    wasmvision info - Show installation info
 
 USAGE:
-   wasmvision info [command options]
+   wasmvision info
 
 OPTIONS:
    --help, -h  show help
@@ -147,7 +149,7 @@ OPTIONS:
 Run this to obtain information about the installed capabilities of wasmVision.
 
 ```shell
-wasmVision version 0.1.0 linux/amd64
+wasmVision version 0.3.0 linux/amd64
 Camera backends:  GSTREAMER V4L2 FIREWIRE UEYE OBSENSOR
 Stream backends:  FFMPEG GSTREAMER INTEL_MFX V4L2 CV_IMAGES CV_MJPEG
 Writer backends:  FFMPEG GSTREAMER INTEL_MFX CV_IMAGES CV_MJPEG
@@ -160,12 +162,11 @@ NAME:
    wasmvision listall - Lists all known models and processors
 
 USAGE:
-   wasmvision listall command [command options]
+   wasmvision listall [command [command options]] 
 
 COMMANDS:
    models      lists all known computer vision models
    processors  lists all known wasm processors
-   help, h     Shows a list of commands or help for one command
 
 OPTIONS:
    --help, -h  show help
