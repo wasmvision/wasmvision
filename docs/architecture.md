@@ -3,7 +3,7 @@
 ## Overview
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph wasmVision
         subgraph engine
             subgraph Capture
@@ -13,6 +13,13 @@ flowchart LR
             Capture--frame-->Runtime
             Capture<-->OpenCV
             Runtime<-->OpenCV
+            subgraph Platform
+                logging
+                config
+                http
+                datastore
+                time
+            end
         end
         subgraph processors
             Runtime--frame-->processor1.wasm
@@ -20,6 +27,9 @@ flowchart LR
             Runtime--frame-->processor3.wasm
             Runtime--frame-->processor4.wasm
         end
+        processor3.wasm-->logging
+        processor4.wasm-->logging
+        processor4.wasm-->datastore
     end
 ```
 
@@ -27,7 +37,7 @@ The pipeline of Processor modules are called in order, one after another. The ou
 
 ### Engine
 
-The wasmVision engine. Includes some platform capabilities such as MJPEG streaming and saving to files.
+The wasmVision engine. Includes platform capabilities such as MJPEG streaming and saving to files.
 
 ### Capture
 
@@ -48,3 +58,13 @@ The image processing modules that are used by wasmVision. These are modules writ
 ### OpenCV
 
 The computer vision processing capabilities implemented using OpenCV/GoCV. Take a look at the [`cv` directory](../cv/) for the code for this integration.
+
+### Platform
+
+The wasmVision platform capabilities provide essential services for processing modules.
+
+- **Logging**: logging system to track events, errors, and other significant activities within wasmVision processors.
+- **Configuration**: a way to pass configuration info into processors at runtime.
+- **HTTP**: Utilities for making HTTP requests to external servers, enabling communication and data exchange with other services.
+- **Datastore**: A simple key-value store for saving and retrieving data associated either with specific image frames, or else with specific processors.
+- **Time**: utilities for processors to fetch the current host time.
