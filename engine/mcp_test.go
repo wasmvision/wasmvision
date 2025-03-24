@@ -20,7 +20,7 @@ func TestMCPServer(t *testing.T) {
 			t.Errorf("unexpected port: %s", s.Port)
 		}
 
-		if s.frames == nil {
+		if s.outputFrames == nil {
 			t.Errorf("unexpected nil frames")
 		}
 	})
@@ -36,7 +36,7 @@ func TestMCPServerStart(t *testing.T) {
 		defer s.Close()
 		img := gocv.IMRead("../images/wasmvision-logo.png", gocv.IMReadColor)
 		frm := cv.NewFrame(img)
-		if err := s.Publish(frm); err != nil {
+		if err := s.PublishOutput(frm); err != nil {
 			t.Errorf("unexpected error: %v", err)
 		}
 	})

@@ -172,19 +172,26 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		i++
 		slog.Info(fmt.Sprintf("Read frame %d", i))
 
-		frame = r.Process(ctx, frame)
+		if mcpEnabled {
+			if err := mcpServer.PublishInput(frame); err != nil {
+				slog.Error("failed to publish input frame:" + err.Error())
+			}
+		}
+
+		outframe := r.Process(ctx, frame)
 
 		if mcpEnabled {
-			if err := mcpServer.Publish(frame); err != nil {
-				slog.Error("failed to publish frame:" + err.Error())
+			if err := mcpServer.PublishOutput(outframe); err != nil {
+				slog.Error("failed to publish output frame:" + err.Error())
 			}
 		}
 
 		switch output {
 		case "mjpeg":
-			mjpegstream.Publish(frame)
+			mjpegstream.Publish(outframe)
 		case "file":
-			videoWriter.Write(frame)
+			videoWriter.Write(outframe)
 		}
+		frame.Close()
 	}
 }
