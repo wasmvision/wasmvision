@@ -32,6 +32,10 @@ Processor written in Rust that performs a blur on the image frame.
 
 Processor written in Go that performs fast neural style transfer.
 
+## captions.wasm
+
+Processor written in Go that adds text captions to the final output image.
+
 ## gaussianblur.wasm
 
 ![gaussianblur](../images/gaussianblur-processor.png)

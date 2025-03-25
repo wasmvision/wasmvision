@@ -1,8 +1,6 @@
 # captions
 
-![captions](../../images/captions-processor.png)
-
-wasmVision processor that adds captions to the final output image. 
+wasmVision processor that adds text captions to the final output image.
 
 ## How to build
 
