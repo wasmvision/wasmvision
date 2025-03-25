@@ -18,6 +18,7 @@ var (
 	output        string
 	destination   string
 	loggingLevel  string
+	enableCUDA    bool
 
 	processors    []string
 	pipeline      []string
@@ -77,6 +78,12 @@ var (
 			Value:       "warn",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.logging", configSource), yaml.YAML("main.logging", configSource)),
 			Destination: &loggingLevel,
+		},
+		&cli.BoolFlag{Name: "cuda-enable",
+			Value:       false,
+			Usage:       "enable CUDA support (if available)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.cuda-enable", configSource), yaml.YAML("main.cuda-enable", configSource)),
+			Destination: &enableCUDA,
 		},
 		&cli.StringSliceFlag{
 			Name:        "processor",
