@@ -192,6 +192,10 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		case "file":
 			videoWriter.Write(outframe)
 		}
-		frame.Close()
+
+		// Close the original frame unless it was returned by the output
+		if frame.ID.Unwrap() != outframe.ID.Unwrap() {
+			frame.Close()
+		}
 	}
 }
