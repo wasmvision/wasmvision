@@ -69,6 +69,7 @@ func (s *MJPEGStream) publishFrames() {
 		buf, err := gocv.IMEncode(".jpg", frame.Image)
 		if err != nil {
 			slog.Error(fmt.Sprintf("error writing frame: %v", err))
+			continue
 		}
 
 		s.stream.UpdateJPEG(buf.GetBytes())
