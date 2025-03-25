@@ -19,9 +19,11 @@ flowchart LR
     subgraph engine
         Capture
         Runtime[WASM Runtime]
+        Runtime<-->MCP[MCP Server]
         Capture--frame-->Runtime
         Capture<-->OpenCV
         Runtime<-->OpenCV
+        OpenCV<-->CUDA
     end
     subgraph processors
         Runtime--frame-->processor1.wasm
