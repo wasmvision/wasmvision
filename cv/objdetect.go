@@ -122,7 +122,13 @@ func newFaceDetectorYNFunc[T *FaceDetectorYN](ctx *Context) func(*wypes.Store, w
 			return wypes.HostRef[T]{}
 		}
 
-		f := gocv.NewFaceDetectorYN(modelFile, "", sz.Unwrap())
+		backend, target := gocv.NetBackendDefault, gocv.NetTargetCPU
+		if ctx.EnableCUDA {
+			backend = gocv.NetBackendCUDA
+			target = gocv.NetTargetCUDA
+		}
+
+		f := gocv.NewFaceDetectorYNWithParams(modelFile, "", sz.Unwrap(), 0.9, 0.3, 5000, int(backend), int(target))
 
 		fd := NewFaceDetectorYN(modelFile)
 		fd.SetDetector(f)

@@ -13,4 +13,5 @@ type Context struct {
 	Config         *config.Store
 	FrameStore     *datastore.Frames
 	ProcessorStore *datastore.Processors
+	EnableCUDA     bool
 }

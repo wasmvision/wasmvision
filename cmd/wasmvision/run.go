@@ -66,6 +66,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
 		Settings:      settings,
+		EnableCUDA:    enableCUDA,
 	})
 	defer r.Close(ctx)
 

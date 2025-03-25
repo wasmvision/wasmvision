@@ -33,6 +33,7 @@ type InterpreterConfig struct {
 	ProcessorsDir string
 	ModelsDir     string
 	Settings      map[string]string
+	EnableCUDA    bool
 }
 
 // New creates a new Interpreter.
@@ -47,6 +48,7 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 		Config:         configStore,
 		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
 		ProcessorStore: datastore.NewProcessors(map[string]map[string]string{}),
+		EnableCUDA:     conf.EnableCUDA,
 	}
 
 	modules := hostModules(&cctx)

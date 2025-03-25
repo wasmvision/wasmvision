@@ -49,6 +49,14 @@ func netReadNetFunc[T *Net](ctx *Context) func(*wypes.Store, wypes.String, wypes
 			return wypes.HostRef[T]{}
 		}
 
+		backend, target := gocv.NetBackendDefault, gocv.NetTargetCPU
+		if ctx.EnableCUDA {
+			backend = gocv.NetBackendCUDA
+			target = gocv.NetTargetCUDA
+		}
+		n.SetPreferableBackend(backend)
+		n.SetPreferableTarget(target)
+
 		nt := NewNet(model.Unwrap())
 		nt.SetNet(n)
 
@@ -80,6 +88,14 @@ func netReadNetFromONNXFunc[T *Net](ctx *Context) func(*wypes.Store, wypes.Strin
 		if n.Empty() {
 			return wypes.HostRef[T]{}
 		}
+
+		backend, target := gocv.NetBackendDefault, gocv.NetTargetCPU
+		if ctx.EnableCUDA {
+			backend = gocv.NetBackendCUDA
+			target = gocv.NetTargetCUDA
+		}
+		n.SetPreferableBackend(backend)
+		n.SetPreferableTarget(target)
 
 		nt := NewNet(model.Unwrap())
 		nt.SetNet(n)

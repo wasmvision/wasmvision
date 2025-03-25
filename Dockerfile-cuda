@@ -1,0 +1,15 @@
+# docker build -f Dockerfile-cuda -t wasmvision-cuda-12:dev .
+
+FROM ghcr.io/hybridgroup/opencv:4.11.0-gpu-cuda-12 AS wasmvision-cuda-12
+
+ENV GOPATH /go
+ENV PATH="${PATH}:/go/bin"
+
+COPY . /src
+WORKDIR /src
+
+RUN go build -o /run/wasmvision ./cmd/wasmvision
+
+COPY ./processors/*.wasm /processors/
+
+ENTRYPOINT ["/run/wasmvision"]
