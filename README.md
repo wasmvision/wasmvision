@@ -67,6 +67,12 @@ See the [PROCESSOR](./docs/processor.md) document for more information about how
 
 wasmVision includes experimental support for the [Model Context Protocol (MCP)](https://modelcontextprotocol.info/) by providing a [(MCP) Server](https://modelcontextprotocol.info/specification/draft/server/). See [MCP](./docs/mcp.md) for more information.
 
+### GPU Acceleration using CUDA
+
+wasmVision includes experimental support for GPU acceleration using [CUDA](https://en.wikipedia.org/wiki/CUDA).
+
+For more information, see [using wasmVision with CUDA](./docs/cuda.md)
+
 ## Quick start
 
 - [Linux](#linux)
