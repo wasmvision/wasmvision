@@ -63,6 +63,7 @@ func (s *MCPServer) Start() error {
 		server.WithResourceCapabilities(false, false))
 	s.sseServer = server.NewSSEServer(s.mcpServer,
 		server.WithBaseURL(getURL(s.Port)),
+		server.WithMessageEndpoint("/messages"),
 	)
 
 	s.mcpServer.AddResource(imagesInputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
