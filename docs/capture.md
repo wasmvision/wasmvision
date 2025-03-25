@@ -1,18 +1,52 @@
 # wasmVision Capture Sources
 
-You can capture video data from a webcam, from data files, or from a stream. wasmVision has built-in support for [FFmpeg]](https://www.ffmpeg.org/) on Linux, macOS, and Windows operating systems. wasmVision also includes built-in support for [GStreamer](https://gstreamer.freedesktop.org/) on Linux systems.
+You can capture video data from a webcam, from data files, or from a stream. 
+
+wasmVision has built-in support for [FFmpeg](https://www.ffmpeg.org/) on Linux, macOS, and Windows operating systems.
+
+wasmVision also includes built-in support for [GStreamer](https://gstreamer.freedesktop.org/) on Linux systems.
 
 ## Webcam
 
 Your webcam will probably "just work" on Linux, macOS, or Windows. However, you might need to determine the correct identifier to use. Very typically the ID of "0" is the default camera.
 
+When using wasmVision, this is configured by using the `--capture webcam` flag. Note that this is the default value for `capture`.
+
+If you need to use a different webcam other than the default, you can use the `--source` (`-s` for short) flag like this:
+
+```shell
+wasmvision run --capture webcam -s 2 -p hello.wasm
+```
+
 ## FFMpeg
 
-FFMpeg is very useful to read data from files and streams of different formats. More info about the installed capabilities will go here soon.
+FFMpeg is very useful to read data from files and streams of different formats.
+
+When using wasmVision, this is configured by using the `--capture ffmpeg` flag.
+
+To capture from a file using FFMpeg, you can use the `--source` (`-s` for short) flag like this:
+
+```shell
+wasmvision run --capture ffmpeg -s /path/to/video.avi -p hello.wasm
+```
+
+To capture from a UDP stream using FFMpeg, you can use the `--source` (`-s` for short) flag like this:
+
+```shell
+wasmvision run --capture ffmpeg -s udp://127.0.0.1:6789 -p hello.wasm
+```
 
 ## GStreamer
 
-The following plugins are included with wasmVision on Linux systems:
+GStreamer is a multipurpose video processing tool that has its own pipeline to pre or post processing video streams.
+
+To capture from a test pattern created using GStreamer, you can use the `--source` (`-s` for short) flag like this:
+
+```shell
+wasmvision run --capture gstreamer -s "videotestsrc ! videoconvert ! appsink" -p hello.wasm
+```
+
+The following GStreamer plugins are included with wasmVision on Linux systems:
 
 - core (https://gstreamer.freedesktop.org/documentation/coreelements/index.html)
 
