@@ -1,11 +1,33 @@
 # wasmVision Output Destinations
 
-There are several different ways you can output the results of the video that you have processed. wasmVision has built-in support for [FFmpeg]](https://www.ffmpeg.org/) on Linux, macOS, and Windows operating systems. wasmVision also includes built-in support for [GStreamer](https://gstreamer.freedesktop.org/) on Linux systems.
+There are several different ways you can output the results of the video that you process.
 
-## FFMpeg
+This can be either via streaming, or by saving to a file.
 
-FFMpeg can write data to files in several different formats. More info about the installed capabilities will go here soon.
+## MPJEG Stream
 
-## GStreamer
+By default, wasmVision can stream the output in MJPEG format.
 
-You can output streams in a number of different formats using GStreamer. More info about this will go here soon.
+When using wasmVision, this is configured by using the `--output=mjpeg` flag.
+
+To control the stream destination port, you can use the `--destination` (`-d` for short) flag like this:
+
+```shell
+wasmvision run -p hello.wasm -o mjpeg -d :8081
+```
+
+## Save to File
+
+wasmVision can write data to video files in several different formats.
+
+When using wasmVision, this is configured by using the `--output=file` flag.
+
+To control the file type and destination, you can use the `--destination` (`-d` for short) flag like this:
+
+```shell
+wasmvision run -p hello.wasm -o file -d /path/to/video/filename.avi
+```
+
+## Other streaming formats
+
+You can also output streams in a number of different formats using GStreamer. More info about this will go here soon.

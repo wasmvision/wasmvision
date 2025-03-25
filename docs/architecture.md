@@ -13,6 +13,7 @@ flowchart TD
             Capture--frame-->Runtime
             Capture<-->OpenCV
             Runtime<-->OpenCV
+            OpenCV<-->CUDA
             subgraph Platform
                 logging
                 config
@@ -28,9 +29,9 @@ flowchart TD
             Runtime--frame-->processor3.wasm
             Runtime--frame-->processor4.wasm
         end
-        processor3.wasm-->logging
-        processor4.wasm-->logging
-        processor4.wasm-->datastore
+        processor1.wasm-->logging
+        processor2.wasm-->logging
+        processor2.wasm-->datastore
     end
 ```
 
@@ -73,3 +74,9 @@ The wasmVision platform capabilities provide essential services for processing m
 ### MCP Server
 
 wasmVision includes experimental support for the [Model Context Protocol (MCP)](https://modelcontextprotocol.info/) by providing a [(MCP) Server](https://modelcontextprotocol.info/specification/draft/server/). See [MCP](./mcp.md) for more information.
+
+### CUDA
+
+wasmVision includes experimental support for GPU acceleration using [CUDA](https://en.wikipedia.org/wiki/CUDA).
+
+For more information, see [using wasmVision with CUDA](./cuda.md)

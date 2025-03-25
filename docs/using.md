@@ -45,6 +45,7 @@ OPTIONS:
    --output string, -o string                                       output type (mjpeg, file) (default: "mjpeg")
    --destination string, -d string                                  output destination (port, file path)
    --logging string                                                 logging level to use (error, warn, info, debug) (default: "warn")
+   --cuda-enable                                                    enable CUDA support (if available) (default: false)
    --processor string, -p string [ --processor string, -p string ]  wasm module to use for processing frames. Format: -processor /path/processor1.wasm -processor /path2/processor2.wasm
    --processors-dir string                                          directory for processor loading (default to $home/processors) [$WASMVISION_PROCESSORS_DIR]
    --processor-download                                             automatically download known processors (default: true)
@@ -191,20 +192,25 @@ You can use an external TOML or YAML file to configure wasmVision. Here is an TO
 ```toml
 [main]
 logging = "warn"
+destination = ":8080"
 
 [processing]
 pipeline = [
     "./processors/ollama.wasm",
-    "./processors/udnie.wasm",
+    "./processors/mosaic.wasm",
     "./processors/captions.wasm"
 ]
 configuration = [
     "model=llava"
 ]
-download = true
+download = false
 
 [models]
 download = true
+
+[server]
+mcp-enable = true
+mcp-port = ":5001"
 ```
 
 Here is the same configuration in YAML format:
@@ -212,6 +218,7 @@ Here is the same configuration in YAML format:
 ```yaml
 main:
   logging: "warn"
+  destination: ":8080"
 
 processing:
   pipeline:
@@ -220,8 +227,12 @@ processing:
     - "./processors/captions.wasm"
   configuration:
     - "model=llava"
-  download: true
+  download: false
 
 models:
   download: true
+
+server:
+   mcp-enable: true
+   mcp-port: ":5001"
 ```
