@@ -41,6 +41,11 @@ var KnownProcessors = map[string]ProcessorFile{
 		Filename: "candy.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/candy.wasm",
 	},
+	"captions": {
+		Alias:    "captions",
+		Filename: "captions.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/captions.wasm",
+	},
 	"faceblur": {
 		Alias:    "faceblur",
 		Filename: "faceblur.wasm",
