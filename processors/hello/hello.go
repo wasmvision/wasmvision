@@ -4,26 +4,12 @@ import (
 	"strconv"
 	"unsafe"
 
-	"github.com/wasmvision/wasmvision-sdk-go/config"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/mat"
 )
 
-var configValue string
-
 //export process
 func process(image mat.Mat) mat.Mat {
-	if configValue == "" {
-		conf := config.GetConfig("default")
-		if conf.IsErr() {
-			configValue = conf.Err().String()
-			logging.Error("Config error: " + configValue)
-		} else {
-			configValue = *conf.OK()
-			logging.Info("Config: " + configValue)
-		}
-	}
-
 	logging.Info("Cols: " +
 		strconv.Itoa(int(image.Cols())) +
 		" Rows: " +
