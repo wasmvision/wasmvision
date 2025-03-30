@@ -8,7 +8,7 @@ USAGE:
    wasmvision [global options] [command [command options]]
 
 VERSION:
-   0.3.0
+   0.3.1
 
 DESCRIPTION:
    wasmVision gets you up and running with computer vision.
@@ -150,7 +150,7 @@ OPTIONS:
 Run this to obtain information about the installed capabilities of wasmVision.
 
 ```shell
-wasmVision version 0.3.0 linux/amd64
+wasmVision version 0.3.1 linux/amd64
 Camera backends:  GSTREAMER V4L2 FIREWIRE UEYE OBSENSOR
 Stream backends:  FFMPEG GSTREAMER INTEL_MFX V4L2 CV_IMAGES CV_MJPEG
 Writer backends:  FFMPEG GSTREAMER INTEL_MFX CV_IMAGES CV_MJPEG
