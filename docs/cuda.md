@@ -21,7 +21,7 @@ https://github.com/hybridgroup/gocv/blob/release/cuda/README.md#installing-cuda
 Once you have installed the needed versions of CUDA and OpenCV, actually building the executable is much easier.
 
 ```shell
-go install ./cmd/wasmvision
+go install -tags cuda ./cmd/wasmvision
 ```
 
 ### Running

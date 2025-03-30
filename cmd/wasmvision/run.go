@@ -61,6 +61,13 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		settings[parts[0]] = parts[1]
 	}
 
+	if enableCUDA {
+		if !runtime.CheckCUDA() {
+			return fmt.Errorf("CUDA not available on this system")
+		}
+		slog.Info("CUDA enabled")
+	}
+
 	// load wasm runtime
 	r := runtime.New(ctx, runtime.InterpreterConfig{
 		ProcessorsDir: processorsDir,
