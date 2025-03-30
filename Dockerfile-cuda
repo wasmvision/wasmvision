@@ -8,7 +8,7 @@ ENV PATH="${PATH}:/go/bin"
 COPY . /src
 WORKDIR /src
 
-RUN go build -o /run/wasmvision ./cmd/wasmvision
+RUN go build -tags cuda -o /run/wasmvision ./cmd/wasmvision
 
 COPY ./processors/*.wasm /processors/
 
