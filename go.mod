@@ -2,8 +2,6 @@ module github.com/wasmvision/wasmvision
 
 go 1.23.2
 
-toolchain go1.24.1
-
 require (
 	github.com/orsinium-labs/wypes v0.3.0
 	github.com/tetratelabs/wazero v1.9.0
@@ -12,7 +10,7 @@ require (
 
 require (
 	github.com/hashicorp/go-getter/v2 v2.2.3
-	github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e
+	github.com/hybridgroup/mjpeg v0.0.0-20250330094202-16d243df0e35
 	github.com/mark3labs/mcp-go v0.15.0
 	github.com/orsinium-labs/tinytest v1.0.0
 	github.com/urfave/cli-altsrc/v3 v3.0.0-alpha2.0.20250228131929-8cc6e0481655
