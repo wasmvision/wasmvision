@@ -1,5 +1,6 @@
 # docker build -f Dockerfile-cuda -t wasmvision-cuda-12:dev .
 
+# first stage: build the wasmvision binary
 FROM ghcr.io/hybridgroup/opencv:4.11.0-gpu-cuda-12 AS wasmvision-cuda-12
 
 ENV GOPATH /go
@@ -8,8 +9,25 @@ ENV PATH="${PATH}:/go/bin"
 COPY . /src
 WORKDIR /src
 
-RUN go build -tags cuda -o /run/wasmvision ./cmd/wasmvision
+RUN go build -tags cuda -o /build/wasmvision ./cmd/wasmvision
 
-COPY ./processors/*.wasm /processors/
+# final stage: create most minimal image possible with the wasmvision binary
+FROM nvidia/cuda:12.6.1-cudnn-runtime-ubuntu22.04 AS wasmvision-final
+
+ENV TZ=Europe/Madrid
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      tzdata libgtk2.0 \
+      curl ca-certificates libcurl4 \
+      libavcodec58 libavformat58 libswscale5 \
+      libtbb12 libtbb2 \
+      libfreetype6 \
+      libjpeg-turbo8 nasm && \
+      rm -rf /var/lib/apt/lists/*
+
+COPY --from=wasmvision-cuda-12 /usr/local/lib /usr/local/lib
+COPY --from=wasmvision-cuda-12 /build/wasmvision /run/wasmvision
+COPY --from=wasmvision-cuda-12 /src/processors/*.wasm /processors/
 
 ENTRYPOINT ["/run/wasmvision"]
