@@ -39,7 +39,7 @@ func (s *MJPEGStream) Start() error {
 	s.server = &http.Server{
 		Addr:         s.Port,
 		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		WriteTimeout: 0 * time.Second,
 	}
 
 	go s.publishFrames()
