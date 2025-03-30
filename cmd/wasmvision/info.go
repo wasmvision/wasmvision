@@ -24,6 +24,8 @@ func info(ctx context.Context, cmd *cli.Command) error {
 	printWriterBackends()
 	fmt.Println()
 
+	printDNNBackends()
+
 	return nil
 }
 
