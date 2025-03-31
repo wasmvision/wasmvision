@@ -46,8 +46,8 @@ func printModels() {
 }
 
 func printProcessors() {
-	s := make([]keyValue, 0, len(guest.KnownProcessors))
-	for k, v := range guest.KnownProcessors {
+	s := make([]keyValue, 0, len(guest.KnownProcessors()))
+	for k, v := range guest.KnownProcessors() {
 		s = append(s, keyValue{k, v.Alias})
 	}
 
