@@ -42,6 +42,7 @@ func process(image mat.Mat) mat.Mat {
 	pointilismNet.SetInput(blob, "")
 
 	probMat := pointilismNet.Forward("")
+	defer probMat.Close()
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 
