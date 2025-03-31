@@ -42,6 +42,7 @@ func process(image mat.Mat) mat.Mat {
 	mosaicNet.SetInput(blob, "")
 
 	probMat := mosaicNet.Forward("")
+	defer probMat.Close()
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 

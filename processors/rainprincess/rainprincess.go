@@ -42,6 +42,7 @@ func process(image mat.Mat) mat.Mat {
 	princessNet.SetInput(blob, "")
 
 	probMat := princessNet.Forward("")
+	defer probMat.Close()
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 

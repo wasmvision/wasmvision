@@ -42,6 +42,7 @@ func process(image mat.Mat) mat.Mat {
 	udnieNet.SetInput(blob, "")
 
 	probMat := udnieNet.Forward("")
+	defer probMat.Close()
 	sz := probMat.Size().Slice()
 	dims := sz[2] * sz[3]
 
