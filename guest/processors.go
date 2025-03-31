@@ -15,7 +15,7 @@ type ProcessorFile struct {
 	URL      string
 }
 
-var KnownProcessors = map[string]ProcessorFile{
+var knownProcessors = map[string]ProcessorFile{
 	"asciify": {
 		Alias:    "asciify",
 		Filename: "asciify.wasm",
@@ -93,8 +93,12 @@ var KnownProcessors = map[string]ProcessorFile{
 	},
 }
 
+func KnownProcessors() map[string]ProcessorFile {
+	return knownProcessors
+}
+
 func DownloadProcessor(processor string, processorDir string) error {
-	p, ok := KnownProcessors[processor]
+	p, ok := knownProcessors[stripWasmExtension(processor)]
 	if !ok {
 		return errors.New("not known processor")
 	}
@@ -113,23 +117,33 @@ func DownloadProcessor(processor string, processorDir string) error {
 	return nil
 }
 
-func ProcessorExists(processor string) bool {
-	if _, err := os.Stat(processor); errors.Is(err, os.ErrNotExist) {
+// ProcessorExists checks if the processor file name with full path exists.
+func ProcessorExists(processorFile string) bool {
+	if _, err := os.Stat(processorFile); errors.Is(err, os.ErrNotExist) {
 		return false
 	}
 	return true
 }
 
+// ProcessorWellKnown checks if the processor is a well-known processor.
+// A well-known processor is one that is listed in the knownProcessors map.
+// It returns true if the processor is well-known, false otherwise.
 func ProcessorWellKnown(processor string) bool {
-	if _, ok := KnownProcessors[processor]; ok {
+	processor = stripWasmExtension(processor)
+	if _, ok := knownProcessors[processor]; ok {
 		return true
 	}
 
 	return false
 }
 
+// ProcessorFilename returns the full path to the processor file.
+// It checks if the processor is a well-known processor or if it exists in the
+// specified processor directory. If it is a well-known processor, it returns
+// the path to the processor file in the processor directory. If it is not a
+// well-known processor, it returns the processor file name as is.
 func ProcessorFilename(processor, processorDir string) string {
-	p, known := KnownProcessors[processor]
+	p, known := knownProcessors[stripWasmExtension(processor)]
 	switch {
 	case known:
 		// processor name like `asciify` is a well-known processor
@@ -143,4 +157,11 @@ func ProcessorFilename(processor, processorDir string) string {
 		// processor name like `/path/to/asciify.wasm` is not a well-known processor and not a file in the processors directory
 		return processor
 	}
+}
+
+func stripWasmExtension(processor string) string {
+	if filepath.Ext(processor) == ".wasm" {
+		return processor[:len(processor)-len(".wasm")]
+	}
+	return processor
 }

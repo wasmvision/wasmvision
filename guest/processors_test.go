@@ -10,11 +10,19 @@ func TestWellKnownProcessor(t *testing.T) {
 		if !ProcessorWellKnown("candy") {
 			t.Errorf("processor candy not found")
 		}
+
+		if !ProcessorWellKnown("candy.wasm") {
+			t.Errorf("processor candy.wasm not found")
+		}
 	})
 
 	t.Run("unknown processor", func(t *testing.T) {
 		if ProcessorWellKnown("unknown") {
 			t.Errorf("processor unknown found")
+		}
+
+		if ProcessorWellKnown("unknown.wasm") {
+			t.Errorf("processor unknown.wasm found")
 		}
 	})
 }
