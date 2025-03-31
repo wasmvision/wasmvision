@@ -69,12 +69,15 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// load wasm runtime
-	r := runtime.New(ctx, runtime.InterpreterConfig{
+	r, err := runtime.New(ctx, runtime.InterpreterConfig{
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
 		Settings:      settings,
 		EnableCUDA:    enableCUDA,
 	})
+	if err != nil {
+		return fmt.Errorf("failed to create runtime: %w", err)
+	}
 	defer r.Close(ctx)
 
 	// load wasm processors
@@ -186,7 +189,13 @@ func run(ctx context.Context, cmd *cli.Command) error {
 			}
 		}
 
-		outframe := r.Process(ctx, frame)
+		outframe, err := r.Process(ctx, frame)
+		if err != nil {
+			slog.Error("failed to process frame: " + err.Error())
+			frame.Close()
+
+			continue
+		}
 
 		if mcpEnabled {
 			if err := mcpServer.PublishOutput(outframe); err != nil {
