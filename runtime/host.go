@@ -3,7 +3,6 @@ package runtime
 import (
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"maps"
 	"os"
@@ -37,7 +36,7 @@ type InterpreterConfig struct {
 }
 
 // New creates a new Interpreter.
-func New(ctx context.Context, conf InterpreterConfig) Interpreter {
+func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 	r := wazero.NewRuntime(ctx)
 	wasi_snapshot_preview1.MustInstantiate(ctx, r)
 
@@ -54,7 +53,7 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 	modules := hostModules(&cctx)
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {
-		log.Panicf("error define host functions: %v\n", err)
+		return Interpreter{}, fmt.Errorf("failed to define host modules: %v", err)
 	}
 
 	return Interpreter{
@@ -64,7 +63,7 @@ func New(ctx context.Context, conf InterpreterConfig) Interpreter {
 		Config:          conf,
 		ModuleContext:   &cctx,
 		ProcessorConfig: configStore,
-	}
+	}, nil
 }
 
 func hostModules(cctx *cv.Context) wypes.Modules {
@@ -133,7 +132,7 @@ func (intp *Interpreter) RegisterGuestModule(ctx context.Context, name string, m
 const process = "process"
 
 // Process performs processing on a frame.
-func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
+func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) (*cv.Frame, error) {
 	var frames []wypes.UInt32
 
 	in := frm.ID
@@ -144,15 +143,15 @@ func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 
 		fn := mod.ExportedFunction(process)
 		if fn == nil {
-			log.Panicf("failed to find function %s", process)
+			return nil, fmt.Errorf("failed to find function %s in module %s", process, mod.Name())
 		}
 
 		out, err := fn.Call(ctx, api.EncodeU32(in.Unwrap()))
 		if err != nil {
-			log.Panicf("failed to call function %s: %v", process, err)
+			return nil, fmt.Errorf("failed to call function %s in module %s: %v", process, mod.Name(), err)
 		}
 		if len(out) != 1 {
-			log.Panicf("expected 1 return value, got %d", len(out))
+			return nil, fmt.Errorf("expected 1 return value, got %d", len(out))
 		}
 
 		in = wypes.UInt32(api.DecodeU32(out[0]))
@@ -179,5 +178,5 @@ func (intp *Interpreter) Process(ctx context.Context, frm *cv.Frame) *cv.Frame {
 
 	last := f.(*cv.Frame)
 
-	return last
+	return last, nil
 }
