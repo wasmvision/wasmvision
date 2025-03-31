@@ -63,7 +63,7 @@ var (
 		&cli.StringFlag{Name: "output",
 			Aliases:     []string{"o"},
 			Value:       "mjpeg",
-			Usage:       "output type (mjpeg, file)",
+			Usage:       "output type (mjpeg, file, none)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.output", configSource), yaml.YAML("main.output", configSource)),
 			Destination: &output,
 		},
