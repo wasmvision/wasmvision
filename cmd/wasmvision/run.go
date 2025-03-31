@@ -136,6 +136,8 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		defer videoWriter.Close()
+	case "none":
+		// do nothing
 	default:
 		return fmt.Errorf("unknown output kind %v", output)
 	}
@@ -182,7 +184,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 		if mcpEnabled {
 			if err := mcpServer.PublishInput(frame); err != nil {
-				slog.Error("failed to publish input frame:" + err.Error())
+				slog.Error("failed to publish input frame to MCP server:" + err.Error())
 			}
 		}
 
@@ -190,7 +192,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 		if mcpEnabled {
 			if err := mcpServer.PublishOutput(outframe); err != nil {
-				slog.Error("failed to publish output frame:" + err.Error())
+				slog.Error("failed to publish output frame to MCP server:" + err.Error())
 			}
 		}
 
@@ -199,6 +201,8 @@ func run(ctx context.Context, cmd *cli.Command) error {
 			mjpegstream.Publish(outframe)
 		case "file":
 			videoWriter.Write(outframe)
+		case "none":
+			outframe.Close()
 		}
 
 		// Close the original frame unless it was returned by the output
