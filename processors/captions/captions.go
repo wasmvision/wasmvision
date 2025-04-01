@@ -3,6 +3,9 @@
 package main
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
@@ -12,6 +15,8 @@ import (
 
 //export process
 func process(image mat.Mat) mat.Mat {
+	loadConfig()
+
 	if image.Empty() {
 		logging.Warn("image was empty")
 		return image
@@ -27,36 +32,48 @@ func process(image mat.Mat) mat.Mat {
 		return out
 	}
 
-	result := ps.Get("captions", "caption")
-	if result.IsErr() {
-		logging.Info("no caption")
+	ok, err, isErr := ps.Get("captions", "caption").Result()
+	if isErr {
+		logging.Info("no caption found: " + strconv.Itoa(int(err)))
 		return out
 	}
 
-	formatCaption(*result.OK())
-
-	if caption == "" {
+	captions := wrapCaption(ok, int(captionWordsPerLine))
+	if len(captions) == 0 {
 		logging.Info("empty caption")
 		return out
 	}
 
-	cv.PutText(out, caption, types.Point{X: 10, Y: 30}, types.HersheyFontTypeHersheyFontSimplex, 1.0, types.RGBA{R: 0, G: 0, B: 0, A: 0}, 2)
-	logging.Info("caption: " + caption)
+	y := int32(captionLineHeight)
+	for _, caption := range captions {
+		cv.PutText(out, caption, types.Point{X: 10, Y: y}, types.HersheyFontTypeHersheyFontSimplex, captionSize, captionColor, 2)
+		logging.Info(caption)
+		y += int32(captionLineHeight)
+	}
 
 	return out
 }
 
-var (
-	caption string
-)
-
-func formatCaption(msg string) {
-	switch {
-	case len(msg) == 0:
-		caption = ""
-	case len(msg) < 32:
-		caption = string(msg)
-	default:
-		caption = string(msg[:32]) + "..."
+// wrapCaption splits a string into multiple lines with a specified word limit per line.
+// It returns a slice of strings, each representing a line of the caption.
+// If the input string is empty or contains only whitespace, it returns a slice with the original string.
+func wrapCaption(s string, limit int) []string {
+	if strings.TrimSpace(s) == "" {
+		return []string{s}
 	}
+
+	words := strings.Fields(strings.Clone(s))
+	var result []string
+	start := 0
+
+	for start < len(words) {
+		end := start + limit
+		if end > len(words) {
+			end = len(words)
+		}
+		result = append(result, strings.Join(words[start:end], " "))
+		start = end
+	}
+
+	return result
 }
