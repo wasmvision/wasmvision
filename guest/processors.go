@@ -36,11 +36,6 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename: "blurrs.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blurrs.wasm",
 	},
-	"candy": {
-		Alias:    "candy",
-		Filename: "candy.wasm",
-		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/candy.wasm",
-	},
 	"captions": {
 		Alias:    "captions",
 		Filename: "captions.wasm",
@@ -66,30 +61,15 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename: "hello.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/hello.wasm",
 	},
-	"mosaic": {
-		Alias:    "mosaic",
-		Filename: "mosaic.wasm",
-		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/mosaic.wasm",
-	},
 	"ollama": {
 		Alias:    "ollama",
 		Filename: "ollama.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/ollama.wasm",
 	},
-	"pointilism": {
-		Alias:    "pointilism",
-		Filename: "pointilism.wasm",
-		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/pointilism.wasm",
-	},
-	"rainprincess": {
-		Alias:    "rainprincess",
-		Filename: "rainprincess.wasm",
-		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/rainprincess.wasm",
-	},
-	"udnie": {
-		Alias:    "udnie",
-		Filename: "udnie.wasm",
-		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/udnie.wasm",
+	"style-transfer": {
+		Alias:    "style-transfer",
+		Filename: "style-transfer.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/style-transfer.wasm",
 	},
 }
 
