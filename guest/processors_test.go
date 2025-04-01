@@ -7,12 +7,12 @@ import (
 
 func TestWellKnownProcessor(t *testing.T) {
 	t.Run("well-known processor", func(t *testing.T) {
-		if !ProcessorWellKnown("candy") {
-			t.Errorf("processor candy not found")
+		if !ProcessorWellKnown("style-transfer") {
+			t.Errorf("processor style-transfer not found")
 		}
 
-		if !ProcessorWellKnown("candy.wasm") {
-			t.Errorf("processor candy.wasm not found")
+		if !ProcessorWellKnown("style-transfer.wasm") {
+			t.Errorf("processor style-transfer.wasm not found")
 		}
 	})
 
@@ -29,9 +29,9 @@ func TestWellKnownProcessor(t *testing.T) {
 
 func TestProcessorFilename(t *testing.T) {
 	t.Run("well-known processor", func(t *testing.T) {
-		path := filepath.Join("processors", "candy.wasm")
+		path := filepath.Join("processors", "style-transfer.wasm")
 
-		fn := ProcessorFilename("candy", "processors")
+		fn := ProcessorFilename("style-transfer", "processors")
 		if fn != path {
 			t.Errorf("unexpected filename %s", fn)
 		}
