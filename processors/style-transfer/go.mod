@@ -1,4 +1,4 @@
-module github.com/wasmvision/wasmvision/examples/processors/rainprincess
+module github.com/wasmvision/wasmvision/examples/processors/style-transfer
 
 go 1.23.0
 
