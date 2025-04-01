@@ -256,8 +256,9 @@ func httpPostImageFunc(ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.S
 		}
 
 		val := v.(string)
-		val = strings.Replace(val, "\n", "", -1)
 		val = strings.TrimSpace(val)
+		val = strings.Replace(val, "\r", "", -1)
+		val = strings.Replace(val, "\n", "", -1)
 
 		l := len(val)
 		r := make([]byte, l)
