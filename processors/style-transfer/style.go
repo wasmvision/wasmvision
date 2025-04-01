@@ -18,16 +18,19 @@ const (
 	blueAdjust  = 123.68
 )
 
-var mosaicNet dnn.Net
-
-func init() {
-	mosaicNet = dnn.NetRead("mosaic-9", "")
-}
+var styleNet dnn.Net
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	if image.Empty() || mosaicNet.Empty() {
+	loadConfig()
+
+	switch {
+	case image.Empty():
 		logging.Warn("image was empty")
+		return image
+
+	case styleNet.Empty():
+		logging.Warn("style DNN was empty")
 		return image
 	}
 
@@ -39,34 +42,40 @@ func process(image mat.Mat) mat.Mat {
 	defer blob.Close()
 
 	// feed the blob into the detector
-	mosaicNet.SetInput(blob, "")
+	styleNet.SetInput(blob, "")
 
-	probMat := mosaicNet.Forward("")
-	defer probMat.Close()
-	sz := probMat.Size().Slice()
+	// perform the style transfer
+	// and get the result
+	// the result is a blob with 3 channels
+	// and 240x320 size
+	results := styleNet.Forward("")
+	defer results.Close()
+
+	sz := results.Size().Slice()
 	dims := sz[2] * sz[3]
 
-	mosaiced := mat.MatNewWithSize(240, 320, 16)
-	defer mosaiced.Close()
+	styled := mat.MatNewWithSize(240, 320, 16)
+	defer styled.Close()
 
 	// take blob and obtain displayable Mat image from it
+	// by drawing the 3 channels on to the styled output
 	for i := uint32(0); i < dims; i++ {
-		r := probMat.GetFloatAt(0, i)
+		r := results.GetFloatAt(0, i)
 		r += redAdjust
 
-		g := probMat.GetFloatAt(0, i+dims)
+		g := results.GetFloatAt(0, i+dims)
 		g += greenAdjust
 
-		b := probMat.GetFloatAt(0, i+dims*2)
+		b := results.GetFloatAt(0, i+dims*2)
 		b += blueAdjust
 
-		mosaiced.SetUcharAt(0, i*3, uint8(r))
-		mosaiced.SetUcharAt(0, i*3+1, uint8(g))
-		mosaiced.SetUcharAt(0, i*3+2, uint8(b))
+		styled.SetUcharAt(0, i*3, uint8(r))
+		styled.SetUcharAt(0, i*3+1, uint8(g))
+		styled.SetUcharAt(0, i*3+2, uint8(b))
 	}
 
-	// resize back to original size
-	out := cv.Resize(mosaiced, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear)
+	// resize the styled output back to original size so it can be displayed
+	out := cv.Resize(styled, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear)
 
 	logging.Info("Performed neural style transfer on image")
 

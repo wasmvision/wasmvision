@@ -9,9 +9,6 @@ blurrs:
 	cd processors/blurrs; cargo build --target wasm32-unknown-unknown --release; \
 		cp ./target/wasm32-unknown-unknown/release/blurrs.wasm ../
 
-candy:
-	cd processors/candy; go mod tidy; tinygo build -o ../candy.wasm -target=wasm-unknown --no-debug .
-
 captions:
 	cd processors/captions; go mod tidy; tinygo build -o ../captions.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
 
@@ -34,16 +31,8 @@ hello:
 ollama:
 	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
 
-mosaic:
-	cd processors/mosaic; go mod tidy; tinygo build -o ../mosaic.wasm -target=wasm-unknown --no-debug .
+style-transfer:
+	cd processors/style-transfer; go mod tidy; tinygo build -o ../style-transfer.wasm -target=wasm-unknown .
 
-pointilism:
-	cd processors/pointilism; go mod tidy; tinygo build -o ../pointilism.wasm -target=wasm-unknown --no-debug .
-
-rain-princess:
-	cd processors/rainprincess; go mod tidy; tinygo build -o ../rainprincess.wasm -target=wasm-unknown --no-debug .
-
-udnie:
-	cd processors/udnie; go mod tidy; tinygo build -o ../udnie.wasm -target=wasm-unknown --no-debug .
-
-processors: asciify blur blurrs candy captions faceblur facedetectyn facedetectynrs gaussianblur hello ollama mosaic pointilism rain-princess udnie
+processors: asciify blur blurrs captions faceblur facedetectyn facedetectynrs gaussianblur hello ollama style-transfer
+	@echo "All processors built successfully!"

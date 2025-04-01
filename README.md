@@ -58,8 +58,8 @@ Want some processors you can try out right away? Take a look at these:
 - [`blurc.wasm`](./processors/blurc/) for image blurring using C
 - [`facedetectyn.wasm`](./processors/facedetectyn/) for face detection using a deep neural network using Go
 - [`facedetectynrs.wasm`](./processors/facedetectynrs/) for face detection using a deep neural network using Rust
-- [`mosaic.wasm`](./processors/mosaic/) for a cool effect using fast neural style transfer using Go
 - [`ollama.wasm`](./processors/ollama/) live image descriptions using integration with [Ollama](https://ollama.com/) using Go
+- [`style-transfer.wasm`](./processors/style-transfer/) for a cool effect using fast neural style transfer using Go
 
 Check out the [processors directory](./processors/) for the complete list.
 
