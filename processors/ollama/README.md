@@ -25,15 +25,50 @@ docker exec ollama ollama llava
 
 For more information see https://ollama.com/library/llava:13b
 
-### Ollama vision models
+## Configuration
 
+The following configuration settings are available for the `ollama.wasm` processor.
 
-You can use the `-c model=<name>` flag to specify which model the processor should use. The default is `llava`.
+### `ollama-url`
+
+Set the URL of the Ollama server to call like this:
+
+```shell
+-c ollama-url="http://localhost:11111"
+```
+
+Default value: "http://localhost:11434"
+
+### `ollama-prompt`
+
+Set the prompt for Ollama like this:
+
+```shell
+-c ollama-prompt="What is in this image?"
+```
+
+Default value: "Describe what is in this picture in highly complimentary terms using 6 words or less."
+
+### `ollama-model`
+
+Set the vision model for Ollama to use like this:
+
+```shell
+-c ollama-model=bakllava
+```
+
+Default value: "llava"
+
+For more information about Ollama vision models, see the next section.
+
+## Ollama vision models
+
+You can use the `-c ollama-model=<name>` flag to specify which model the processor should use. The default is `llava`.
 
 This command runs the `ollama.wasm` processor using the `bakllava` model:
 
 ```shell
-wasmvision run -p ollama -c model=bakllava
+wasmvision run -p ollama -c ollama-model=bakllava
 ```
 
 Ollama vision models that have been verified to work with wasmVision are:
