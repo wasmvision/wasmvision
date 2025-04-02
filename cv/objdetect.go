@@ -21,7 +21,7 @@ func ObjDetectModules(ctx *Context) wypes.Modules {
 			"[resource-drop]face-detector-YN":               wypes.H2(closeFaceDetectorYNFunc(ctx)),
 			"[method]face-detector-YN.close":                wypes.H2(closeFaceDetectorYNFunc(ctx)),
 			"[method]face-detector-YN.set-input-size":       wypes.H3(faceDetectorYNSetInputSizeFunc(ctx)),
-			"[method]face-detector-YN.detect":               wypes.H3(faceDetectorYNDetectFunc(ctx)),
+			"[method]face-detector-YN.detect":               wypes.H4(faceDetectorYNDetectFunc(ctx)),
 		},
 	}
 }
@@ -156,15 +156,14 @@ func faceDetectorYNSetInputSizeFunc(ctx *Context) func(*wypes.Store, wypes.HostR
 	}
 }
 
-func faceDetectorYNDetectFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*FaceDetectorYN], wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
-	return func(s *wypes.Store, ref wypes.HostRef[*FaceDetectorYN], mat wypes.HostRef[*Frame]) wypes.HostRef[*Frame] {
+func faceDetectorYNDetectFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*FaceDetectorYN], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*FaceDetectorYN], mat wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
 		f := ref.Raw
-
 		dst := NewEmptyFrame()
+
 		f.Detector.Detect(mat.Unwrap().Image, &dst.Image)
 
-		v := wypes.HostRef[*Frame]{Raw: dst}
-
-		return v
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
 	}
 }

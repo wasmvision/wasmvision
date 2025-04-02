@@ -257,3 +257,75 @@ func (v RGBA) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
 
 	return rSize + gSize + bSize + aSize
 }
+
+// MixMaxLocResult represents the record "wasm:cv/types#mix-max-loc-result".
+//
+//	record mix-max-loc-result {
+//		min-val: f32,
+//		max-val: f32,
+//		min-loc: size,
+//		max-loc: size,
+//	}
+type MixMaxLocResult struct {
+	MinVal wypes.Float32
+	MaxVal wypes.Float32
+	MinLoc Size
+	MaxLoc Size
+}
+
+func (v MixMaxLocResult) Unwrap() MixMaxLocResult {
+	return v
+}
+
+func (v MixMaxLocResult) ValueTypes() []wypes.ValueType {
+	types := make([]wypes.ValueType, 0, 4+2*4)
+	types = append(types, wypes.ValueTypeF32)
+	types = append(types, wypes.ValueTypeF32)
+	types = append(types, v.MinLoc.ValueTypes()...)
+	types = append(types, v.MaxLoc.ValueTypes()...)
+	return types
+}
+
+func (MixMaxLocResult) Lift(s *wypes.Store) MixMaxLocResult {
+	var (
+		T Size
+		V wypes.Float32
+	)
+	return MixMaxLocResult{
+		MaxLoc: T.Lift(s),
+		MinLoc: T.Lift(s),
+		MaxVal: V.Lift(s),
+		MinVal: V.Lift(s),
+	}
+}
+
+// Lower implements [Lower] interface.
+func (v MixMaxLocResult) Lower(s *wypes.Store) {
+	v.MaxLoc.Lower(s)
+	v.MinLoc.Lower(s)
+	v.MaxVal.Lower(s)
+	v.MinVal.Lower(s)
+}
+
+// MemoryLift implements [MemoryLift] interface.
+func (MixMaxLocResult) MemoryLift(s *wypes.Store, offset uint32) (MixMaxLocResult, uint32) {
+	var T Size
+
+	maxLoc, maxSize := T.MemoryLift(s, offset)
+	minLoc, minSize := T.MemoryLift(s, offset+maxSize)
+	var V wypes.Float32
+	maxVal, maxValSize := V.MemoryLift(s, offset+maxSize+minSize)
+	minVal, minValSize := V.MemoryLift(s, offset+maxSize+minSize+maxValSize)
+
+	return MixMaxLocResult{MinVal: minVal, MaxVal: maxVal, MinLoc: minLoc, MaxLoc: maxLoc}, minSize + maxSize + maxValSize + minValSize
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v MixMaxLocResult) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
+	maxSize := v.MaxLoc.MemoryLower(s, offset)
+	minSize := v.MinLoc.MemoryLower(s, offset+maxSize)
+	maxValSize := v.MaxVal.MemoryLower(s, offset+maxSize+minSize)
+	minValSize := v.MinVal.MemoryLower(s, offset+maxSize+minSize+maxValSize)
+
+	return minSize + maxSize + maxValSize + minValSize
+}
