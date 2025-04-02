@@ -48,8 +48,14 @@ pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
             let detector = detector.lock();
             detector.set_input_size(cv::types::Size { x: sz_i32[1], y: sz_i32[0] });
 
-            let faces = detector.detect(mat.clone());
-            draw_faces(&mut out, &faces);
+            let result = detector.detect(mat.clone());
+            match result { 
+                Ok(faces) => draw_faces(&mut out, &faces), 
+                Err(e) => {
+                    logging::error(&["Error: ", &e].concat());
+                    return mat;
+                },
+            }
         }
     }
 

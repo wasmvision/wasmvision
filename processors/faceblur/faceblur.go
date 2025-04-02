@@ -4,7 +4,6 @@ package main
 
 import (
 	"encoding/binary"
-	"unsafe"
 
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
@@ -33,20 +32,25 @@ func process(image mat.Mat) mat.Mat {
 	faces := fs.GetKeys(uint32(image)).Slice()
 
 	for _, face := range faces {
-		val := fs.Get(uint32(image), face)
-		if val.IsErr() {
-			logging.Error("Error getting value: " + face + " " + val.Err().String())
+		val, _, isErr := fs.Get(uint32(image), face).Result()
+		if isErr {
+			logging.Error("Error getting value: " + face)
 			return out
 		}
 
-		rect := faceRect([]byte(*val.OK()))
+		rect := faceRect([]byte(val))
 		if emptyRect(rect) {
 			logging.Error("empty rect for face")
 			continue
 		}
 
 		area := out.Region(rect)
-		blurred := cv.Blur(area, types.Size{X: 50, Y: 50})
+		blurred, _, isErr := cv.Blur(area, types.Size{X: 50, Y: 50}).Result()
+		if isErr {
+			logging.Error("Error applying blur")
+			return out
+		}
+
 		blurred.CopyTo(area)
 
 		blurred.Close()
@@ -75,16 +79,6 @@ func faceRect(data []byte) (faceRect types.Rect) {
 			Y: int32(binary.LittleEndian.Uint32(data[12:16])),
 		},
 	}
-}
-
-// malloc is needed for wasm-unknown-unknown target for functions that return a List.
-//
-//export malloc
-func malloc(size uint32) uint32 {
-	data := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(unsafe.SliceData(data)))
-
-	return uint32(ptr)
 }
 
 func emptyRect(r types.Rect) bool {
