@@ -1,6 +1,7 @@
 package cv
 
 import (
+	"log/slog"
 	"math/rand/v2"
 
 	"github.com/orsinium-labs/wypes"
@@ -41,4 +42,28 @@ func (f *Frame) Close() {
 
 func (f *Frame) Empty() bool {
 	return f.Image.Empty()
+}
+
+func handleFrameReturn(ctx *Context, s *wypes.Store, frame *Frame, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) {
+	result.IsError = false
+	result.OK = wypes.HostRef[*Frame]{Raw: frame}
+	result.DataPtr = ctx.ReturnDataPtr
+	result.Lower(s)
+}
+
+func handleFrameError(ctx *Context, s *wypes.Store, frame *Frame, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32], err error) {
+	if err == nil {
+		return
+	}
+
+	if frame != nil {
+		frame.Close()
+	}
+
+	slog.Error("cv frame error", "error", err)
+	s.Error = err
+	result.IsError = true
+	result.Error = 1
+	result.DataPtr = ctx.ReturnDataPtr
+	result.Lower(s)
 }

@@ -22,12 +22,15 @@ func MatModules(ctx *Context) wypes.Modules {
 			"[method]mat.empty":         wypes.H2(matEmptyFunc(ctx)),
 			"[method]mat.size":          wypes.H3(matSizeFunc(ctx)),
 			"[method]mat.region":        wypes.H3(matRegionFunc(ctx)),
-			"[method]mat.reshape":       wypes.H4(matReshapeFunc(ctx)),
+			"[method]mat.reshape":       wypes.H5(matReshapeFunc(ctx)),
 			"[method]mat.get-float-at":  wypes.H4(matGetFloatAtFunc(ctx)),
 			"[method]mat.set-float-at":  wypes.H5(matSetFloatAtFunc(ctx)),
 			"[method]mat.get-uchar-at":  wypes.H4(matGetUcharAtFunc(ctx)),
 			"[method]mat.set-uchar-at":  wypes.H5(matSetUcharAtFunc(ctx)),
 			"[method]mat.get-vecb-at":   wypes.H5(matGetVecbAtFunc(ctx)),
+			"[method]mat.col-range":     wypes.H5(matColRangeFunc(ctx)),
+			"[method]mat.row-range":     wypes.H5(matRowRangeFunc(ctx)),
+			"[method]mat.min-max-loc":   wypes.H3(matMinMaxLocFunc(ctx)),
 		},
 	}
 }
@@ -57,6 +60,17 @@ func matCloseFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame]) wypes.
 		f := ref.Raw
 		f.Close()
 
+		return wypes.Void{}
+	}
+}
+
+func matColRangeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], start wypes.UInt32, end wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+
+		frm := NewFrame(mat.ColRange(int(start.Unwrap()), int(end.Unwrap())))
+		handleFrameReturn(ctx, s, frm, result)
 		return wypes.Void{}
 	}
 }
@@ -102,6 +116,17 @@ func matRegionFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Rect)
 		r := rect.Unwrap()
 		v := wypes.HostRef[*Frame]{Raw: NewFrame(mat.Region(r))}
 		return v
+	}
+}
+
+func matRowRangeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], start wypes.UInt32, end wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+
+		frm := NewFrame(mat.RowRange(int(start.Unwrap()), int(end.Unwrap())))
+		handleFrameReturn(ctx, s, frm, result)
+		return wypes.Void{}
 	}
 }
 
@@ -151,17 +176,16 @@ func matSizeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.R
 	}
 }
 
-func matReshapeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
-	return func(s *wypes.Store, ref wypes.HostRef[*Frame], channels wypes.UInt32, rows wypes.UInt32) wypes.HostRef[*Frame] {
+func matReshapeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], channels wypes.UInt32, rows wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		mat := f.Image
 
 		d := mat.Reshape(int(channels), int(rows))
 		dst := NewFrame(d)
 
-		v := wypes.HostRef[*Frame]{Raw: dst}
-
-		return v
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
 	}
 }
 
@@ -217,6 +241,24 @@ func matGetVecbAtFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wy
 		v.Raw = result
 		v.DataPtr = ctx.ReturnDataPtr
 		v.Lower(s)
+
+		return wypes.Void{}
+	}
+}
+
+func matMinMaxLocFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Result[MixMaxLocResult, MixMaxLocResult, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], result wypes.Result[MixMaxLocResult, MixMaxLocResult, wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+
+		minVal, maxVal, minLoc, maxLoc := gocv.MinMaxLoc(mat)
+
+		r := result.OK
+		r.MinVal = wypes.Float32(minVal)
+		r.MaxVal = wypes.Float32(maxVal)
+		r.MinLoc = Size{X: wypes.Int32(minLoc.X), Y: wypes.Int32(minLoc.Y)}
+		r.MaxLoc = Size{X: wypes.Int32(maxLoc.X), Y: wypes.Int32(maxLoc.Y)}
+		r.Lower(s)
 
 		return wypes.Void{}
 	}
