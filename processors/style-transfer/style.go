@@ -3,8 +3,6 @@
 package main
 
 import (
-	"unsafe"
-
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
 	"wasmcv.org/wasm/cv/dnn"
@@ -35,10 +33,14 @@ func process(image mat.Mat) mat.Mat {
 	}
 
 	// convert image Mat to 320x240 blob that the style transfer can analyze
-	blob := dnn.BlobFromImage(image, 1.0,
+	blob, _, isErr := dnn.BlobFromImage(image, 1.0,
 		types.Size{X: 320, Y: 240},
 		types.Scalar{Val1: redAdjust, Val2: greenAdjust, Val3: blueAdjust, Val4: 0},
-		false, false)
+		false, false).Result()
+	if isErr {
+		logging.Error("Error creating blob from image")
+		return image
+	}
 	defer blob.Close()
 
 	// feed the blob into the detector
@@ -48,7 +50,11 @@ func process(image mat.Mat) mat.Mat {
 	// and get the result
 	// the result is a blob with 3 channels
 	// and 240x320 size
-	results := styleNet.Forward("")
+	results, _, isErr := styleNet.Forward("").Result()
+	if isErr {
+		logging.Error("Error performing style transfer")
+		return image
+	}
 	defer results.Close()
 
 	sz := results.Size().Slice()
@@ -75,19 +81,12 @@ func process(image mat.Mat) mat.Mat {
 	}
 
 	// resize the styled output back to original size so it can be displayed
-	out := cv.Resize(styled, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear)
+	out, _, isErr := cv.Resize(styled, types.Size{X: int32(image.Cols()), Y: int32(image.Rows())}, 0, 0, types.InterpolationTypeInterpolationLinear).Result()
+	if isErr {
+		logging.Error("Error resizing styled image")
+		return image
+	}
 
 	logging.Info("Performed neural style transfer on image")
-
 	return out
-}
-
-// malloc is needed for wasm-unknown-unknown target for functions that return a List.
-//
-//export malloc
-func malloc(size uint32) uint32 {
-	data := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(unsafe.SliceData(data)))
-
-	return uint32(ptr)
 }

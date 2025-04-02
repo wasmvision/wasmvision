@@ -35,7 +35,12 @@ func loadConfig() {
 
 	if !styleModelInit {
 		logging.Info("Loading style model " + styleModelName)
-		styleNet = dnn.NetRead(styleModelName, "")
+		net, _, isErr := dnn.NetRead(styleModelName, "").Result()
+		if isErr {
+			logging.Error("Error loading style model " + styleModelName)
+			return
+		}
+		styleNet = net
 		styleModelInit = true
 	}
 }

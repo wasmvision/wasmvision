@@ -14,7 +14,11 @@ func process(image mat.Mat) mat.Mat {
 	// start with a blank screen
 	logging.Println("\033[2J\033[3J\033[H")
 
-	resized := cv.Resize(image, types.Size{X: 80, Y: 60}, 0, 0, types.InterpolationTypeInterpolationNearest)
+	resized, _, isErr := cv.Resize(image, types.Size{X: 80, Y: 60}, 0, 0, types.InterpolationTypeInterpolationNearest).Result()
+	if isErr {
+		logging.Error("Error resizing image")
+		return image
+	}
 	defer resized.Close()
 
 	imageToAscii(resized)

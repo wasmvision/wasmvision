@@ -17,6 +17,7 @@ WASMVISION_C_COMPONENTS_PATH="../../../wasmvision-sdk/components/c"
         $WASMCV_C_COMPONENTS_PATH/wasmcv/imports.c $WASMCV_C_COMPONENTS_PATH/wasmcv/imports_component_type.o \
         $WASMVISION_C_COMPONENTS_PATH/wasmvision/platform.c $WASMVISION_C_COMPONENTS_PATH/wasmvision/platform_component_type.o \
         -Wl,--export=process \
+        -Wl,--export=malloc \
         -Wl,--export=__data_end -Wl,--export=__heap_base \
         -Wl,--strip-all,--no-entry \
         -Wl,--unresolved-symbols=ignore-all \

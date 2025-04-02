@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/binary"
 	"strconv"
-	"unsafe"
 
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
@@ -44,11 +43,15 @@ func process(image mat.Mat) mat.Mat {
 	sz := image.Size().Slice()
 	detector.SetInputSize(types.Size{X: int32(sz[1]), Y: int32(sz[0])})
 
-	faces := detector.Detect(image)
+	faces, _, isErr := detector.Detect(image).Result()
+	if isErr {
+		logging.Error("error detecting faces")
+		return image
+	}
+
 	defer faces.Close()
 
 	out := image.Clone()
-
 	drawFaces(out, faces)
 
 	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
@@ -123,18 +126,8 @@ func storeFaceData(image mat.Mat, faceid int, faceRect types.Rect, rightEye, lef
 	binary.LittleEndian.PutUint32(facedata[52:56], uint32(leftMouthCorner.Y))
 
 	fid := "face-" + strconv.Itoa(faceid+1)
-	val := fs.Set(uint32(image), fid, string(facedata[:]))
-	if val.IsErr() {
-		logging.Error("Error setting value: " + val.Err().String())
+	_, _, isErr := fs.Set(uint32(image), fid, string(facedata[:])).Result()
+	if isErr {
+		logging.Error("error setting value")
 	}
-}
-
-// malloc is needed for wasm-unknown-unknown target for functions that return a List.
-//
-//export malloc
-func malloc(size uint32) uint32 {
-	data := make([]byte, size)
-	ptr := uintptr(unsafe.Pointer(unsafe.SliceData(data)))
-
-	return uint32(ptr)
 }

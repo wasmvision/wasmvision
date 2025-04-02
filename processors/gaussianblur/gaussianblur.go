@@ -11,8 +11,12 @@ import (
 
 //export process
 func process(image mat.Mat) mat.Mat {
-	imageOut := cv.GaussianBlur(image, types.Size{X: 25, Y: 25}, 4.5, 4.5, types.BorderTypeBorderReflect101)
-	logging.Info("Performed GaussianBlur on image")
+	imageOut, _, isErr := cv.GaussianBlur(image, types.Size{X: 25, Y: 25}, 4.5, 4.5, types.BorderTypeBorderReflect101).Result()
+	if isErr {
+		logging.Error("Error applying GaussianBlur")
+		return image
+	}
 
+	logging.Info("Performed GaussianBlur on image")
 	return imageOut
 }
