@@ -161,7 +161,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 			slog.Error("failed to process frame: " + err.Error())
 			frame.Close()
 
-			continue
+			return err
 		}
 
 		if mcpEnabled {
