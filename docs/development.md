@@ -8,6 +8,10 @@ Otherwise, read on!
 
 ## Latest builds
 
+All of our active development is happening in the `dev` branch. The `main` branch will contain the latest release version.
+
+Please use the `dev` branch as the base for any pull requests. Thank you!
+
 ### Linux
 
 You can download the latest development builds for Linux by looking under [Linux workflows](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) then clicking on the latest one you want to test. 
