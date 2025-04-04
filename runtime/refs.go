@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-const maxIndex = 1048560
+const maxIndex = 404856732
 
 // MapRefs is a [Refs] implementation powered by a map protected by a mutex.
 // Indexes are generated randomly and checked for collisions.
