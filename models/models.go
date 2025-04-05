@@ -71,6 +71,36 @@ var KnownModels = map[string]ModelFile{
 		Filename: "face_detection_yunet_2023mar.onnx",
 		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
 	},
+	"yolov8n": {
+		Alias:    "yolov8n",
+		Filename: "yolov8n.onnx",
+		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8n.onnx",
+	},
+	"yolov8s": {
+		Alias:    "yolov8s",
+		Filename: "yolov8s.onnx",
+		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8s.onnx",
+	},
+	"yolov8m": {
+		Alias:    "yolov8m",
+		Filename: "yolov8m.onnx",
+		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8m.onnx",
+	},
+	"yolov8l": {
+		Alias:    "yolov8l",
+		Filename: "yolov8l.onnx",
+		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8l.onnx",
+	},
+	"yolov8x": {
+		Alias:    "yolov8x",
+		Filename: "yolov8x.onnx",
+		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8x.onnx",
+	},
+	"yolox": {
+		Alias:    "yolox",
+		Filename: "object_detection_yolox_2022nov.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
+	},
 }
 
 func Download(name string, modelsDir string) error {
