@@ -61,6 +61,11 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename: "hello.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/hello.wasm",
 	},
+	"object-detector": {
+		Alias:    "object-detector",
+		Filename: "object-detector.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/object-detector.wasm",
+	},
 	"ollama": {
 		Alias:    "ollama",
 		Filename: "ollama.wasm",

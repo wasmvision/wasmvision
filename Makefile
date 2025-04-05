@@ -28,6 +28,9 @@ gaussianblur:
 hello:
 	cd processors/hello; go mod tidy; tinygo build -o ../hello.wasm -target=wasm-unknown --no-debug .
 
+object-detector:
+	cd processors/object-detector; go mod tidy; tinygo build -o ../object-detector.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
+
 ollama:
 	cd processors/ollama; go mod tidy; tinygo build -o ../ollama.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
 
