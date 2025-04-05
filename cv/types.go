@@ -40,24 +40,24 @@ func (Size) Lift(s *wypes.Store) Size {
 
 // Lower implements [Lower] interface.
 func (v Size) Lower(s *wypes.Store) {
-	v.Y.Lower(s)
 	v.X.Lower(s)
+	v.Y.Lower(s)
 }
 
 // MemoryLift implements [MemoryLift] interface.
 func (Size) MemoryLift(s *wypes.Store, offset uint32) (Size, uint32) {
 	var T wypes.Int32
 
-	y, ySize := T.MemoryLift(s, offset)
-	x, xSize := T.MemoryLift(s, offset+ySize)
+	x, xSize := T.MemoryLift(s, offset)
+	y, ySize := T.MemoryLift(s, offset+xSize)
 
 	return Size{X: x, Y: y}, xSize + ySize
 }
 
 // MemoryLower implements [MemoryLower] interface.
 func (v Size) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
-	ySize := v.Y.MemoryLower(s, offset)
-	xSize := v.X.MemoryLower(s, offset+ySize)
+	xSize := v.X.MemoryLower(s, offset)
+	ySize := v.Y.MemoryLower(s, offset+xSize)
 
 	return xSize + ySize
 }
@@ -78,7 +78,7 @@ func (v Rect) Unwrap() image.Rectangle {
 }
 
 func (v Rect) ValueTypes() []wypes.ValueType {
-	types := make([]wypes.ValueType, 0, 4)
+	types := make([]wypes.ValueType, 0)
 	types = append(types, v.Min.ValueTypes()...)
 	types = append(types, v.Max.ValueTypes()...)
 	return types
@@ -87,8 +87,8 @@ func (v Rect) ValueTypes() []wypes.ValueType {
 func (Rect) Lift(s *wypes.Store) Rect {
 	var T Size
 	return Rect{
-		Max: T.Lift(s),
 		Min: T.Lift(s),
+		Max: T.Lift(s),
 	}
 }
 
@@ -102,16 +102,16 @@ func (v Rect) Lower(s *wypes.Store) {
 func (Rect) MemoryLift(s *wypes.Store, offset uint32) (Rect, uint32) {
 	var T Size
 
-	max, maxSize := T.MemoryLift(s, offset)
-	min, minSize := T.MemoryLift(s, offset+maxSize)
+	min, minSize := T.MemoryLift(s, offset)
+	max, maxSize := T.MemoryLift(s, offset+minSize)
 
 	return Rect{Min: min, Max: max}, minSize + maxSize
 }
 
 // MemoryLower implements [MemoryLower] interface.
 func (v Rect) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
-	maxSize := v.Max.MemoryLower(s, offset)
-	minSize := v.Min.MemoryLower(s, offset+maxSize)
+	minSize := v.Min.MemoryLower(s, offset)
+	maxSize := v.Max.MemoryLower(s, offset+minSize)
 
 	return minSize + maxSize
 }
@@ -145,10 +145,10 @@ func (Scalar) Lift(s *wypes.Store) Scalar {
 	var val3 wypes.Float32
 	var val4 wypes.Float32
 	return Scalar{
-		Val1: val1.Lift(s),
-		Val2: val2.Lift(s),
-		Val3: val3.Lift(s),
 		Val4: val4.Lift(s),
+		Val3: val3.Lift(s),
+		Val2: val2.Lift(s),
+		Val1: val1.Lift(s),
 	}
 }
 
@@ -165,9 +165,16 @@ func (Scalar) MemoryLift(s *wypes.Store, offset uint32) (Scalar, uint32) {
 	var T wypes.Float32
 
 	val1, v1Size := T.MemoryLift(s, offset)
-	val2, v2Size := T.MemoryLift(s, offset+v1Size)
-	val3, v3Size := T.MemoryLift(s, offset+v1Size+v2Size)
-	val4, v4Size := T.MemoryLift(s, offset+v1Size+v2Size+v3Size)
+	offset += v1Size
+
+	val2, v2Size := T.MemoryLift(s, offset)
+	offset += v2Size
+
+	val3, v3Size := T.MemoryLift(s, offset)
+	offset += v3Size
+
+	val4, v4Size := T.MemoryLift(s, offset)
+	offset += v4Size
 
 	return Scalar{
 		Val1: val1,
@@ -180,9 +187,16 @@ func (Scalar) MemoryLift(s *wypes.Store, offset uint32) (Scalar, uint32) {
 // MemoryLower implements [MemoryLower] interface.
 func (v Scalar) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
 	v1Size := v.Val1.MemoryLower(s, offset)
-	v2Size := v.Val2.MemoryLower(s, offset+v1Size)
-	v3Size := v.Val3.MemoryLower(s, offset+v1Size+v2Size)
-	v4Size := v.Val4.MemoryLower(s, offset+v1Size+v2Size+v3Size)
+	offset += v1Size
+
+	v2Size := v.Val2.MemoryLower(s, offset)
+	offset += v2Size
+
+	v3Size := v.Val3.MemoryLower(s, offset)
+	offset += v3Size
+
+	v4Size := v.Val4.MemoryLower(s, offset)
+	offset += v4Size
 
 	return v1Size + v2Size + v3Size + v4Size
 }
@@ -216,10 +230,10 @@ func (RGBA) Lift(s *wypes.Store) RGBA {
 	var b wypes.UInt8
 	var a wypes.UInt8
 	return RGBA{
-		R: r.Lift(s),
-		G: g.Lift(s),
-		B: b.Lift(s),
 		A: a.Lift(s),
+		B: b.Lift(s),
+		G: g.Lift(s),
+		R: r.Lift(s),
 	}
 }
 
@@ -278,9 +292,9 @@ func (v MixMaxLocResult) Unwrap() MixMaxLocResult {
 }
 
 func (v MixMaxLocResult) ValueTypes() []wypes.ValueType {
-	types := make([]wypes.ValueType, 0, 4+2*4)
-	types = append(types, wypes.ValueTypeF32)
-	types = append(types, wypes.ValueTypeF32)
+	types := make([]wypes.ValueType, 0)
+	types = append(types, v.MinVal.ValueTypes()...)
+	types = append(types, v.MaxVal.ValueTypes()...)
 	types = append(types, v.MinLoc.ValueTypes()...)
 	types = append(types, v.MaxLoc.ValueTypes()...)
 	return types
@@ -292,40 +306,295 @@ func (MixMaxLocResult) Lift(s *wypes.Store) MixMaxLocResult {
 		V wypes.Float32
 	)
 	return MixMaxLocResult{
-		MaxLoc: T.Lift(s),
-		MinLoc: T.Lift(s),
-		MaxVal: V.Lift(s),
 		MinVal: V.Lift(s),
+		MaxVal: V.Lift(s),
+		MinLoc: T.Lift(s),
+		MaxLoc: T.Lift(s),
 	}
 }
 
 // Lower implements [Lower] interface.
 func (v MixMaxLocResult) Lower(s *wypes.Store) {
-	v.MaxLoc.Lower(s)
-	v.MinLoc.Lower(s)
-	v.MaxVal.Lower(s)
 	v.MinVal.Lower(s)
+	v.MaxVal.Lower(s)
+	v.MinLoc.Lower(s)
+	v.MaxLoc.Lower(s)
 }
 
 // MemoryLift implements [MemoryLift] interface.
 func (MixMaxLocResult) MemoryLift(s *wypes.Store, offset uint32) (MixMaxLocResult, uint32) {
-	var T Size
+	var (
+		T Size
+		V wypes.Float32
+	)
+
+	minVal, minValSize := V.MemoryLift(s, offset)
+	offset += minValSize
+
+	maxVal, maxValSize := V.MemoryLift(s, offset)
+	offset += maxValSize
+
+	minLoc, minSize := T.MemoryLift(s, offset)
+	offset += minSize
 
 	maxLoc, maxSize := T.MemoryLift(s, offset)
-	minLoc, minSize := T.MemoryLift(s, offset+maxSize)
-	var V wypes.Float32
-	maxVal, maxValSize := V.MemoryLift(s, offset+maxSize+minSize)
-	minVal, minValSize := V.MemoryLift(s, offset+maxSize+minSize+maxValSize)
+	offset += maxSize
 
 	return MixMaxLocResult{MinVal: minVal, MaxVal: maxVal, MinLoc: minLoc, MaxLoc: maxLoc}, minSize + maxSize + maxValSize + minValSize
 }
 
 // MemoryLower implements [MemoryLower] interface.
 func (v MixMaxLocResult) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
+	minValSize := v.MinVal.MemoryLower(s, offset)
+	offset += minValSize
+
+	maxValSize := v.MaxVal.MemoryLower(s, offset)
+	offset += maxValSize
+
+	minSize := v.MinLoc.MemoryLower(s, offset)
+	offset += minSize
+
 	maxSize := v.MaxLoc.MemoryLower(s, offset)
-	minSize := v.MinLoc.MemoryLower(s, offset+maxSize)
-	maxValSize := v.MaxVal.MemoryLower(s, offset+maxSize+minSize)
-	minValSize := v.MinVal.MemoryLower(s, offset+maxSize+minSize+maxValSize)
+	offset += maxSize
 
 	return minSize + maxSize + maxValSize + minValSize
+}
+
+// BlobParams represents the record "wasm:cv/types#blob-params".
+//
+//	record blob-params {
+//		scale-factor: f32,
+//		size: size,
+//		mean: scalar,
+//		swap-RB: bool,
+//		ddepth: u8,
+//		data-layout: data-layout-type,
+//		padding-mode: padding-mode-type,
+//		border: scalar,
+//	}
+type BlobParams struct {
+	ScaleFactor wypes.Float32
+	Size        Size
+	Mean        Scalar
+	SwapRB      wypes.Bool
+	DDepth      wypes.UInt8
+	DataLayout  wypes.UInt8
+	PaddingMode wypes.UInt8
+	Border      Scalar
+}
+
+func (v BlobParams) Unwrap() gocv.ImageToBlobParams {
+	return gocv.ImageToBlobParams{
+		ScaleFactor: float64(v.ScaleFactor.Unwrap()),
+		Size:        v.Size.Unwrap(),
+		Mean:        v.Mean.Unwrap(),
+		SwapRB:      v.SwapRB.Unwrap(),
+		Ddepth:      gocv.MatType(v.DDepth.Unwrap()),
+		DataLayout:  gocv.DataLayoutType(v.DataLayout.Unwrap()),
+		PaddingMode: gocv.PaddingModeType(v.PaddingMode.Unwrap()),
+		BorderValue: v.Border.Unwrap(),
+	}
+}
+
+func (v BlobParams) ValueTypes() []wypes.ValueType {
+	types := make([]wypes.ValueType, 0)
+	types = append(types, wypes.ValueTypeF32)
+	types = append(types, v.Size.ValueTypes()...)
+	types = append(types, v.Mean.ValueTypes()...)
+	types = append(types, v.SwapRB.ValueTypes()...)
+	types = append(types, v.DDepth.ValueTypes()...)
+	types = append(types, v.DataLayout.ValueTypes()...)
+	types = append(types, v.PaddingMode.ValueTypes()...)
+	types = append(types, v.Border.ValueTypes()...)
+	return types
+}
+
+func (BlobParams) Lift(s *wypes.Store) BlobParams {
+	var (
+		T Size
+		S Scalar
+		V wypes.Float32
+		B wypes.Bool
+		U wypes.UInt8
+	)
+	return BlobParams{
+		Border:      S.Lift(s),
+		PaddingMode: U.Lift(s),
+		DataLayout:  U.Lift(s),
+		DDepth:      U.Lift(s),
+		SwapRB:      B.Lift(s),
+		Mean:        S.Lift(s),
+		Size:        T.Lift(s),
+		ScaleFactor: V.Lift(s),
+	}
+}
+
+// Lower implements [Lower] interface.
+func (v BlobParams) Lower(s *wypes.Store) {
+	v.Border.Lower(s)
+	v.PaddingMode.Lower(s)
+	v.DataLayout.Lower(s)
+	v.DDepth.Lower(s)
+	v.SwapRB.Lower(s)
+	v.Mean.Lower(s)
+	v.Size.Lower(s)
+	v.ScaleFactor.Lower(s)
+}
+
+// MemoryLift implements [MemoryLift] interface.
+func (BlobParams) MemoryLift(s *wypes.Store, offset uint32) (BlobParams, uint32) {
+	var (
+		T Size
+		S Scalar
+		V wypes.Float32
+		B wypes.Bool
+		U wypes.UInt8
+	)
+
+	start := offset
+	scaleFactor, scaleFactorSize := V.MemoryLift(s, offset)
+	offset += scaleFactorSize
+	size, sizeSize := T.MemoryLift(s, offset)
+	offset += sizeSize
+	mean, meanSize := S.MemoryLift(s, offset)
+	offset += meanSize
+	swapRB, swapRBSize := B.MemoryLift(s, offset)
+	offset += swapRBSize
+	ddepth, ddepthSize := U.MemoryLift(s, offset)
+	offset += ddepthSize
+	dataLayout, dataLayoutSize := U.MemoryLift(s, offset)
+	offset += dataLayoutSize
+	paddingMode, paddingModeSize := U.MemoryLift(s, offset)
+	offset += paddingModeSize
+	border, borderSize := S.MemoryLift(s, offset)
+	offset += borderSize
+
+	return BlobParams{
+		ScaleFactor: scaleFactor,
+		Size:        size,
+		Mean:        mean,
+		SwapRB:      swapRB,
+		DDepth:      ddepth,
+		DataLayout:  dataLayout,
+		PaddingMode: paddingMode,
+		Border:      border,
+	}, offset - start
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v BlobParams) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
+	start := offset
+	scaleFactorSize := v.ScaleFactor.MemoryLower(s, offset)
+	offset += scaleFactorSize
+	sizeSize := v.Size.MemoryLower(s, offset)
+	offset += sizeSize
+	meanSize := v.Mean.MemoryLower(s, offset)
+	offset += meanSize
+	swapRBSize := v.SwapRB.MemoryLower(s, offset)
+	offset += swapRBSize
+	ddepthSize := v.DDepth.MemoryLower(s, offset)
+	offset += ddepthSize
+	dataLayoutSize := v.DataLayout.MemoryLower(s, offset)
+	offset += dataLayoutSize
+	paddingModeSize := v.PaddingMode.MemoryLower(s, offset)
+	offset += paddingModeSize
+	borderSize := v.Border.MemoryLower(s, offset)
+	offset += borderSize
+
+	return offset - start
+}
+
+type BlobRectImageParams struct {
+	Offset uint32
+	Params BlobParams
+	Rects  wypes.List[Rect]
+	Size   Size
+}
+
+func (v BlobRectImageParams) Unwrap() BlobRectImageParams {
+	return BlobRectImageParams{
+		Params: v.Params,
+		Rects:  v.Rects,
+		Size:   v.Size,
+	}
+}
+
+func (v BlobRectImageParams) ValueTypes() []wypes.ValueType {
+	return []wypes.ValueType{wypes.ValueTypeI32}
+}
+
+func (BlobRectImageParams) Lift(s *wypes.Store) BlobRectImageParams {
+	start := uint32(s.Stack.Pop())
+
+	var (
+		B BlobParams
+		R wypes.List[Rect]
+		S Size
+	)
+	offset := start
+
+	params, paramsSize := B.MemoryLift(s, offset)
+	offset += paramsSize
+	list, _ := R.MemoryLift(s, offset)
+	offset += 8 // size of the list pointer + list size
+	size, sizeSize := S.MemoryLift(s, offset)
+	offset += sizeSize
+
+	return BlobRectImageParams{
+		Offset: start,
+		Params: params,
+		Rects:  list,
+		Size:   size,
+	}
+}
+
+// Lower implements [Lower] interface.
+func (v BlobRectImageParams) Lower(s *wypes.Store) {
+	offset := v.Offset
+
+	paramsSize := v.Params.MemoryLower(s, offset)
+	offset += paramsSize
+	listSize := v.Rects.MemoryLower(s, offset)
+	offset += listSize
+	sizeSize := v.Size.MemoryLower(s, offset)
+	offset += sizeSize
+
+	s.Stack.Push(wypes.Raw(v.Offset))
+}
+
+// MemoryLift implements [MemoryLift] interface.
+func (BlobRectImageParams) MemoryLift(s *wypes.Store, offset uint32) (BlobRectImageParams, uint32) {
+	var (
+		B BlobParams
+		R wypes.List[Rect]
+		S Size
+	)
+
+	start := offset
+
+	size, sizeSize := S.MemoryLift(s, offset)
+	offset += sizeSize
+	list, listSize := R.MemoryLift(s, offset)
+	offset += listSize
+	params, paramsSize := B.MemoryLift(s, offset)
+	offset += paramsSize
+
+	return BlobRectImageParams{
+		Offset: start,
+		Params: params,
+		Rects:  list,
+		Size:   size,
+	}, paramsSize + listSize + sizeSize
+}
+
+// MemoryLower implements [MemoryLower] interface.
+func (v BlobRectImageParams) MemoryLower(s *wypes.Store, offset uint32) (length uint32) {
+	sizeSize := v.Size.MemoryLower(s, offset)
+	offset += sizeSize
+	listSize := v.Rects.MemoryLower(s, offset)
+	offset += listSize
+	paramsSize := v.Params.MemoryLower(s, offset)
+	offset += paramsSize
+
+	return paramsSize + listSize + sizeSize
 }

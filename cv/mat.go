@@ -253,12 +253,15 @@ func matMinMaxLocFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wy
 
 		minVal, maxVal, minLoc, maxLoc := gocv.MinMaxLoc(mat)
 
-		r := result.OK
-		r.MinVal = wypes.Float32(minVal)
-		r.MaxVal = wypes.Float32(maxVal)
-		r.MinLoc = Size{X: wypes.Int32(minLoc.X), Y: wypes.Int32(minLoc.Y)}
-		r.MaxLoc = Size{X: wypes.Int32(maxLoc.X), Y: wypes.Int32(maxLoc.Y)}
-		r.Lower(s)
+		r := MixMaxLocResult{
+			MinVal: wypes.Float32(minVal),
+			MaxVal: wypes.Float32(maxVal),
+			MinLoc: Size{X: wypes.Int32(minLoc.X), Y: wypes.Int32(minLoc.Y)},
+			MaxLoc: Size{X: wypes.Int32(maxLoc.X), Y: wypes.Int32(maxLoc.Y)},
+		}
+		result.OK = r
+		result.DataPtr = ctx.ReturnDataPtr
+		result.Lower(s)
 
 		return wypes.Void{}
 	}
