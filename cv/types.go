@@ -87,15 +87,15 @@ func (v Rect) ValueTypes() []wypes.ValueType {
 func (Rect) Lift(s *wypes.Store) Rect {
 	var T Size
 	return Rect{
-		Min: T.Lift(s),
 		Max: T.Lift(s),
+		Min: T.Lift(s),
 	}
 }
 
 // Lower implements [Lower] interface.
 func (v Rect) Lower(s *wypes.Store) {
-	v.Max.Lower(s)
 	v.Min.Lower(s)
+	v.Max.Lower(s)
 }
 
 // MemoryLift implements [MemoryLift] interface.
