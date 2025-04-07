@@ -19,3 +19,19 @@ wasmvision download face_detection_yunet_2023mar
 ```
 
 For more information see https://github.com/opencv/opencv_zoo/blob/main/models/face_detection_yunet/README.md
+
+## Configuration
+
+The following configuration settings are available for the `facedetectyn.wasm` processor.
+
+### `detect-draw-faces`
+
+Turn on/off the drawing of face rects like this:
+
+```shell
+-c detect-draw-faces=false
+```
+
+Default value: "true"
+
+The data for detected faces will still be saved in the frame datastore. This setting is to make it possible to perform further processing in downstream processors based on the unmodified image data.

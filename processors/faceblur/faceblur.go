@@ -3,8 +3,7 @@
 package main
 
 import (
-	"encoding/binary"
-
+	"github.com/wasmvision/wasmvision-data/face"
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
@@ -31,20 +30,21 @@ func process(image mat.Mat) mat.Mat {
 
 	faces := fs.GetKeys(uint32(image)).Slice()
 
-	for _, face := range faces {
-		val, _, isErr := fs.Get(uint32(image), face).Result()
+	for _, f := range faces {
+		val, _, isErr := fs.Get(uint32(image), f).Result()
 		if isErr {
-			logging.Error("Error getting value: " + face)
+			logging.Error("Error getting value: " + f)
 			return out
 		}
 
-		rect := faceRect([]byte(val))
-		if emptyRect(rect) {
-			logging.Error("empty rect for face")
-			continue
+		data := face.Data{}
+		_, err := data.Read([]byte(val))
+		if err != nil {
+			logging.Error("Error reading face data: " + err.Error())
+			return out
 		}
 
-		area := out.Region(rect)
+		area := out.Region(data.Rect)
 		blurred, _, isErr := cv.Blur(area, types.Size{X: 50, Y: 50}).Result()
 		if isErr {
 			logging.Error("Error applying blur")
@@ -60,25 +60,6 @@ func process(image mat.Mat) mat.Mat {
 	logging.Info("Performed face blur on image")
 
 	return out
-}
-
-// faceRect returns a types.Rect from a byte slice of face data.
-func faceRect(data []byte) (faceRect types.Rect) {
-	if len(data) < 16 {
-		logging.Error("faceRect: invalid data length")
-		return
-	}
-
-	return types.Rect{
-		Min: types.Size{
-			X: int32(binary.LittleEndian.Uint32(data[0:4])),
-			Y: int32(binary.LittleEndian.Uint32(data[4:8])),
-		},
-		Max: types.Size{
-			X: int32(binary.LittleEndian.Uint32(data[8:12])),
-			Y: int32(binary.LittleEndian.Uint32(data[12:16])),
-		},
-	}
 }
 
 func emptyRect(r types.Rect) bool {

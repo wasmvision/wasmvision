@@ -16,7 +16,7 @@ func loadConfig() {
 		drawFaceBoxes = true
 		checkedDrawFaceBoxes = true
 
-		ok, _, isErr := config.GetConfig("draw-faces").Result()
+		ok, _, isErr := config.GetConfig("detect-draw-faces").Result()
 		if !isErr && ok == "false" {
 			drawFaceBoxes = false
 		}

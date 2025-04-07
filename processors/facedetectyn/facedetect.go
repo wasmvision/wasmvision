@@ -3,9 +3,9 @@
 package main
 
 import (
-	"encoding/binary"
 	"strconv"
 
+	"github.com/wasmvision/wasmvision-data/face"
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
@@ -23,7 +23,7 @@ var (
 	yellow = types.RGBA{R: 255, G: 255, B: 0, A: 1}
 	pink   = types.RGBA{R: 255, G: 105, B: 180, A: 0}
 
-	facedata [8 * 7]byte
+	facedata [60]byte
 	fs       datastore.FrameStore
 )
 
@@ -56,15 +56,15 @@ func process(image mat.Mat) mat.Mat {
 	out := image
 	if drawFaceBoxes {
 		out = image.Clone()
-		drawFaces(out, faces)
 	}
+	handleFaces(out, faces)
 
 	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
 
 	return out
 }
 
-func drawFaces(out mat.Mat, faces mat.Mat) {
+func handleFaces(out mat.Mat, faces mat.Mat) {
 	for r := uint32(0); r < faces.Rows(); r++ {
 		x0 := int32(faces.GetFloatAt(r, 0))
 		y0 := int32(faces.GetFloatAt(r, 1))
@@ -98,38 +98,34 @@ func drawFaces(out mat.Mat, faces mat.Mat) {
 			Y: int32(faces.GetFloatAt(r, 13)),
 		}
 
-		cv.Rectangle(out, faceRect, green, 1)
-		cv.Circle(out, rightEye, 1, blue, 1)
-		cv.Circle(out, leftEye, 1, red, 1)
-		cv.Circle(out, noseTip, 1, green, 1)
-		cv.Circle(out, rightMouthCorner, 1, pink, 1)
-		cv.Circle(out, leftMouthCorner, 1, yellow, 1)
-
 		storeFaceData(out, int(r), faceRect, rightEye, leftEye, noseTip, rightMouthCorner, leftMouthCorner)
+
+		if drawFaceBoxes {
+			cv.Rectangle(out, faceRect, green, 1)
+			cv.Circle(out, rightEye, 1, blue, 1)
+			cv.Circle(out, leftEye, 1, red, 1)
+			cv.Circle(out, noseTip, 1, green, 1)
+			cv.Circle(out, rightMouthCorner, 1, pink, 1)
+			cv.Circle(out, leftMouthCorner, 1, yellow, 1)
+		}
 	}
 }
 
 func storeFaceData(image mat.Mat, faceid int, faceRect types.Rect, rightEye, leftEye, noseTip, rightMouthCorner, leftMouthCorner types.Size) {
-	binary.LittleEndian.PutUint32(facedata[0:4], uint32(faceRect.Min.X))
-	binary.LittleEndian.PutUint32(facedata[4:8], uint32(faceRect.Min.Y))
-	binary.LittleEndian.PutUint32(facedata[8:12], uint32(faceRect.Max.X))
-	binary.LittleEndian.PutUint32(facedata[12:16], uint32(faceRect.Max.Y))
+	face := face.Data{
+		ID:               uint32(faceid),
+		Rect:             faceRect,
+		RightEye:         rightEye,
+		LeftEye:          leftEye,
+		NoseTip:          noseTip,
+		RightMouthCorner: rightMouthCorner,
+		LeftMouthCorner:  leftMouthCorner,
+	}
 
-	binary.LittleEndian.PutUint32(facedata[16:20], uint32(rightEye.X))
-	binary.LittleEndian.PutUint32(facedata[20:24], uint32(rightEye.Y))
-
-	binary.LittleEndian.PutUint32(facedata[24:28], uint32(leftEye.X))
-	binary.LittleEndian.PutUint32(facedata[28:32], uint32(leftEye.Y))
-
-	binary.LittleEndian.PutUint32(facedata[32:36], uint32(noseTip.X))
-	binary.LittleEndian.PutUint32(facedata[36:40], uint32(noseTip.Y))
-
-	binary.LittleEndian.PutUint32(facedata[40:44], uint32(rightMouthCorner.X))
-	binary.LittleEndian.PutUint32(facedata[44:48], uint32(rightMouthCorner.Y))
-
-	binary.LittleEndian.PutUint32(facedata[48:52], uint32(leftMouthCorner.X))
-	binary.LittleEndian.PutUint32(facedata[52:56], uint32(leftMouthCorner.Y))
-
+	if _, err := face.Write(facedata[:]); err != nil {
+		logging.Error("error writing face data: " + err.Error())
+		return
+	}
 	fid := "face-" + strconv.Itoa(faceid+1)
 	_, _, isErr := fs.Set(uint32(image), fid, string(facedata[:])).Result()
 	if isErr {
