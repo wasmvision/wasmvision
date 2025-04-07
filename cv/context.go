@@ -15,3 +15,13 @@ type Context struct {
 	ProcessorStore *datastore.Processors
 	EnableCUDA     bool
 }
+
+func NewContext(modelsDir string, conf *config.Store, enableCUDA bool) *Context {
+	return &Context{
+		ModelsDir:      modelsDir,
+		Config:         conf,
+		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
+		ProcessorStore: datastore.NewProcessors(map[string]map[string]string{}),
+		EnableCUDA:     enableCUDA,
+	}
+}
