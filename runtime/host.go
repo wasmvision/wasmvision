@@ -89,7 +89,7 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 				slog.Info(fmt.Sprintf("Downloading processor %s to %s...", p, intp.Config.ProcessorsDir))
 
 				if err := guest.DownloadProcessor(p, intp.Config.ProcessorsDir); err != nil {
-					return err
+					return fmt.Errorf("failed to download processor %s: %v", p, err)
 				}
 			}
 		}
@@ -104,7 +104,7 @@ func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string
 		slog.Info(fmt.Sprintf("Loading wasmCV guest module %s...", p))
 
 		if err := intp.RegisterGuestModule(ctx, p, module); err != nil {
-			return err
+			return fmt.Errorf("failed to register guest module %s: %v", p, err)
 		}
 	}
 
