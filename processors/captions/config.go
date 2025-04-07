@@ -4,6 +4,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/wasmvision/wasmvision-sdk-go/config"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
@@ -40,7 +41,13 @@ func loadConfig() {
 		if isErr {
 			captionWordsPerLine = captionWordsPerLineDefault
 		} else {
-			captionWordsPerLine, _ = strconv.ParseInt(ok, 10, 64)
+			wpl, err := strconv.Atoi(strings.Clone(ok))
+			if err != nil {
+				logging.Error("Error parsing words per line: " + err.Error())
+				captionWordsPerLine = captionWordsPerLineDefault
+			} else {
+				captionWordsPerLine = int64(wpl)
+			}
 		}
 		logging.Info("Using caption words per line " + strconv.Itoa(int(captionWordsPerLine)))
 	}
@@ -50,11 +57,12 @@ func loadConfig() {
 		if isErr {
 			captionLineHeight = captionLineHeightDefault
 		} else {
-			var err error
-			captionLineHeight, err = strconv.ParseInt(ok, 10, 64)
+			ht, err := strconv.Atoi(strings.Clone(ok))
 			if err != nil {
 				logging.Error("Error parsing line height: " + err.Error())
 				captionLineHeight = captionLineHeightDefault
+			} else {
+				captionLineHeight = int64(ht)
 			}
 		}
 
@@ -66,7 +74,7 @@ func loadConfig() {
 		if isErr {
 			captionSize = captionSizeDefault
 		} else {
-			captionSize, _ = strconv.ParseFloat(ok, 64)
+			captionSize, _ = strconv.ParseFloat(strings.Clone(ok), 64)
 		}
 
 		logging.Info("Using caption size " + strconv.FormatFloat(captionSize, 'f', -1, 64))

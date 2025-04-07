@@ -86,4 +86,10 @@ The first time you run the processor it will automatically download the selected
 wasmvision download candy-9
 ```
 
+To see a list of available models:
+
+```shell
+wasmvision listall models
+```
+
 For more information see https://github.com/onnx/models/blob/main/validated/vision/style_transfer/fast_neural_style/README.md

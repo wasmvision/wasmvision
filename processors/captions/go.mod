@@ -9,4 +9,4 @@ require (
 	wasmcv.org/wasm/cv v0.8.0
 )
 
-require go.bytecodealliance.org/cm v0.2.0 // indirect
+require go.bytecodealliance.org/cm v0.2.2 // indirect
