@@ -40,6 +40,8 @@ func process(image mat.Mat) mat.Mat {
 		return image
 	}
 
+	loadConfig()
+
 	sz := image.Size().Slice()
 	detector.SetInputSize(types.Size{X: int32(sz[1]), Y: int32(sz[0])})
 
@@ -51,8 +53,11 @@ func process(image mat.Mat) mat.Mat {
 
 	defer faces.Close()
 
-	out := image.Clone()
-	drawFaces(out, faces)
+	out := image
+	if drawFaceBoxes {
+		out = image.Clone()
+		drawFaces(out, faces)
+	}
 
 	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
 
