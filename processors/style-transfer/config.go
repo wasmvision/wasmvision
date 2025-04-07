@@ -8,12 +8,6 @@ import (
 	"wasmcv.org/wasm/cv/dnn"
 )
 
-const (
-	captionWordsPerLineDefault = 10
-	captionSizeDefault         = 0.6
-	captionLineHeightDefault   = 20
-)
-
 var (
 	styleModelName string
 	styleModelInit bool
