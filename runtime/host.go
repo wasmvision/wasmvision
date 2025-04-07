@@ -9,7 +9,6 @@ import (
 
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/cv"
-	"github.com/wasmvision/wasmvision/datastore"
 	"github.com/wasmvision/wasmvision/guest"
 
 	"github.com/orsinium-labs/wypes"
@@ -42,15 +41,8 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 
 	configStore := config.NewStore(conf.Settings)
 
-	cctx := cv.Context{
-		ModelsDir:      conf.ModelsDir,
-		Config:         configStore,
-		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
-		ProcessorStore: datastore.NewProcessors(map[string]map[string]string{}),
-		EnableCUDA:     conf.EnableCUDA,
-	}
-
-	modules := hostModules(&cctx)
+	cctx := cv.NewContext(conf.ModelsDir, configStore, conf.EnableCUDA)
+	modules := hostModules(cctx)
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {
 		return Interpreter{}, fmt.Errorf("failed to define host modules: %v", err)
@@ -61,7 +53,7 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 		Refs:            refs,
 		guestModules:    []guest.Module{},
 		Config:          conf,
-		ModuleContext:   &cctx,
+		ModuleContext:   cctx,
 		ProcessorConfig: configStore,
 	}, nil
 }
