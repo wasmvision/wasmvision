@@ -15,6 +15,8 @@ func ImgprocModules(ctx *Context) wypes.Modules {
 			"threshold":          wypes.H6(thresholdFunc(ctx)),
 			"resize":             wypes.H7(resizeFunc(ctx)),
 			"transpose-ND":       wypes.H4(transposeNDFunc(ctx)),
+			"estimate-affine2d":  wypes.H4(estimateAffine2dFunc(ctx)),
+			"warp-affine":        wypes.H5(warpAffineFunc(ctx)),
 			"put-text":           wypes.H9(putTextFunc(ctx)),
 			"rectangle":          wypes.H6(rectangleFunc(ctx)),
 			"circle":             wypes.H7(circleFunc(ctx)),
@@ -98,13 +100,23 @@ func thresholdFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes
 	}
 }
 
-func resizeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Size, wypes.Float32, wypes.Float32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
-	return func(s *wypes.Store, ref wypes.HostRef[*Frame], sz Size, fx0 wypes.Float32, fy0 wypes.Float32, interp0 wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+func estimateAffine2dFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, from wypes.HostRef[*Frame], to wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := gocv.NewPoint2fVectorFromMat(from.Raw.Image)
+		t := gocv.NewPoint2fVectorFromMat(to.Raw.Image)
+
+		handleFrameReturn(ctx, s, NewFrame(gocv.EstimateAffine2D(f, t)), result)
+		return wypes.Void{}
+	}
+}
+
+func warpAffineFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], Size, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], m wypes.HostRef[*Frame], sz Size, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
 		f := ref.Raw
 		src := f.Image
 		dst := NewEmptyFrame()
 
-		if err := gocv.Resize(src, &dst.Image, sz.Unwrap(), float64(fx0.Unwrap()), float64(fy0.Unwrap()), gocv.InterpolationFlags(interp0)); err != nil {
+		if err := gocv.WarpAffine(src, &dst.Image, m.Raw.Image, sz.Unwrap()); err != nil {
 			handleFrameError(ctx, s, dst, result, err)
 			return wypes.Void{}
 		}
@@ -126,6 +138,22 @@ func transposeNDFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wyp
 		}
 
 		if err := gocv.TransposeND(src, o, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func resizeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Size, wypes.Float32, wypes.Float32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], sz Size, fx0 wypes.Float32, fy0 wypes.Float32, interp0 wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		src := f.Image
+		dst := NewEmptyFrame()
+
+		if err := gocv.Resize(src, &dst.Image, sz.Unwrap(), float64(fx0.Unwrap()), float64(fy0.Unwrap()), gocv.InterpolationFlags(interp0)); err != nil {
 			handleFrameError(ctx, s, dst, result, err)
 			return wypes.Void{}
 		}

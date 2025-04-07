@@ -9,28 +9,35 @@ import (
 func MatModules(ctx *Context) wypes.Modules {
 	return wypes.Modules{
 		"wasm:cv/mat": wypes.Module{
-			"[constructor]mat":          wypes.H4(matNewWithSizeFunc(ctx)),
-			"[resource-drop]mat":        wypes.H2(matCloseFunc(ctx)),
-			"[static]mat.new-mat":       wypes.H1(matNewFunc(ctx)),
-			"[static]mat.new-with-size": wypes.H4(matNewWithSizeFunc(ctx)),
-			"[method]mat.close":         wypes.H2(matCloseFunc(ctx)),
-			"[method]mat.clone":         wypes.H2(matCloneFunc(ctx)),
-			"[method]mat.copy-to":       wypes.H3(matCopyToFunc(ctx)),
-			"[method]mat.cols":          wypes.H2(matColsFunc(ctx)),
-			"[method]mat.rows":          wypes.H2(matRowsFunc(ctx)),
-			"[method]mat.mattype":       wypes.H2(matTypeFunc(ctx)),
-			"[method]mat.empty":         wypes.H2(matEmptyFunc(ctx)),
-			"[method]mat.size":          wypes.H3(matSizeFunc(ctx)),
-			"[method]mat.region":        wypes.H3(matRegionFunc(ctx)),
-			"[method]mat.reshape":       wypes.H5(matReshapeFunc(ctx)),
-			"[method]mat.get-float-at":  wypes.H4(matGetFloatAtFunc(ctx)),
-			"[method]mat.set-float-at":  wypes.H5(matSetFloatAtFunc(ctx)),
-			"[method]mat.get-uchar-at":  wypes.H4(matGetUcharAtFunc(ctx)),
-			"[method]mat.set-uchar-at":  wypes.H5(matSetUcharAtFunc(ctx)),
-			"[method]mat.get-vecb-at":   wypes.H5(matGetVecbAtFunc(ctx)),
-			"[method]mat.col-range":     wypes.H5(matColRangeFunc(ctx)),
-			"[method]mat.row-range":     wypes.H5(matRowRangeFunc(ctx)),
-			"[method]mat.min-max-loc":   wypes.H3(matMinMaxLocFunc(ctx)),
+			"[constructor]mat":                   wypes.H4(matNewWithSizeFunc(ctx)),
+			"[resource-drop]mat":                 wypes.H2(matCloseFunc(ctx)),
+			"[static]mat.new-mat":                wypes.H1(matNewFunc(ctx)),
+			"[static]mat.new-with-size":          wypes.H4(matNewWithSizeFunc(ctx)),
+			"[method]mat.close":                  wypes.H2(matCloseFunc(ctx)),
+			"[method]mat.clone":                  wypes.H2(matCloneFunc(ctx)),
+			"[method]mat.copy-to":                wypes.H3(matCopyToFunc(ctx)),
+			"[method]mat.convert-to":             wypes.H4(matConvertToFunc(ctx)),
+			"[method]mat.convert-to-with-params": wypes.H6(matConvertToWithParamsFunc(ctx)),
+			"[method]mat.cols":                   wypes.H2(matColsFunc(ctx)),
+			"[method]mat.rows":                   wypes.H2(matRowsFunc(ctx)),
+			"[method]mat.mattype":                wypes.H2(matTypeFunc(ctx)),
+			"[method]mat.empty":                  wypes.H2(matEmptyFunc(ctx)),
+			"[method]mat.size":                   wypes.H3(matSizeFunc(ctx)),
+			"[method]mat.region":                 wypes.H3(matRegionFunc(ctx)),
+			"[method]mat.reshape":                wypes.H5(matReshapeFunc(ctx)),
+			"[method]mat.get-float-at":           wypes.H4(matGetFloatAtFunc(ctx)),
+			"[method]mat.set-float-at":           wypes.H5(matSetFloatAtFunc(ctx)),
+			"[method]mat.get-uchar-at":           wypes.H4(matGetUcharAtFunc(ctx)),
+			"[method]mat.set-uchar-at":           wypes.H5(matSetUcharAtFunc(ctx)),
+			"[method]mat.get-vecb-at":            wypes.H5(matGetVecbAtFunc(ctx)),
+			"[method]mat.add-float":              wypes.H3(matAddFloatFunc(ctx)),
+			"[method]mat.subtract-float":         wypes.H3(matSubtractFloatFunc(ctx)),
+			"[method]mat.multiply-float":         wypes.H3(matMultiplyFloatFunc(ctx)),
+			"[method]mat.divide-float":           wypes.H3(matDivideFloatFunc(ctx)),
+			"[method]mat.col-range":              wypes.H5(matColRangeFunc(ctx)),
+			"[method]mat.row-range":              wypes.H5(matRowRangeFunc(ctx)),
+			"[method]mat.min-max-loc":            wypes.H3(matMinMaxLocFunc(ctx)),
+			"[static]mat.zeros":                  wypes.H4(matZerosFunc(ctx)),
 		},
 	}
 }
@@ -104,6 +111,40 @@ func matCopyToFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes
 
 		srcMat.CopyTo(&dstMat)
 
+		return wypes.Void{}
+	}
+}
+
+func matConvertToFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], mattype wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+
+		dst := NewEmptyFrame()
+
+		if err := mat.ConvertTo(&dst.Image, gocv.MatType(mattype.Unwrap())); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func matConvertToWithParamsFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.UInt32, wypes.Float32, wypes.Float32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], mattype wypes.UInt32, alpha wypes.Float32, beta wypes.Float32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+
+		dst := NewEmptyFrame()
+
+		if err := mat.ConvertToWithParams(&dst.Image, gocv.MatType(mattype.Unwrap()), alpha.Unwrap(), beta.Unwrap()); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
 		return wypes.Void{}
 	}
 }
@@ -246,6 +287,46 @@ func matGetVecbAtFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
+func matAddFloatFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], v wypes.Float32) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+		mat.AddFloat(v.Unwrap())
+
+		return wypes.Void{}
+	}
+}
+
+func matSubtractFloatFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], v wypes.Float32) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+		mat.SubtractFloat(v.Unwrap())
+
+		return wypes.Void{}
+	}
+}
+
+func matMultiplyFloatFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], v wypes.Float32) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+		mat.MultiplyFloat(v.Unwrap())
+
+		return wypes.Void{}
+	}
+}
+
+func matDivideFloatFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], v wypes.Float32) wypes.Void {
+		f := ref.Raw
+		mat := f.Image
+		mat.DivideFloat(v.Unwrap())
+
+		return wypes.Void{}
+	}
+}
+
 func matMinMaxLocFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Result[MixMaxLocResult, MixMaxLocResult, wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, ref wypes.HostRef[*Frame], result wypes.Result[MixMaxLocResult, MixMaxLocResult, wypes.UInt32]) wypes.Void {
 		f := ref.Raw
@@ -264,5 +345,14 @@ func matMinMaxLocFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wy
 		result.Lower(s)
 
 		return wypes.Void{}
+	}
+}
+
+func matZerosFunc(ctx *Context) func(*wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
+	return func(s *wypes.Store, rows, cols, matType wypes.UInt32) wypes.HostRef[*Frame] {
+		f := NewFrame(gocv.Zeros(int(rows), int(cols), gocv.MatType(matType)))
+		v := wypes.HostRef[*Frame]{Raw: f}
+
+		return v
 	}
 }
