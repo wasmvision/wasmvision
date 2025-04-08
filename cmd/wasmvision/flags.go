@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	"strings"
 
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli-altsrc/v3/toml"
@@ -22,8 +25,8 @@ var (
 
 	processors    []string
 	pipeline      []string
-	configuration []string
-	config        []string
+	configuration map[string]string
+	config        map[string]string
 	processorsDir string
 	modelsDir     string
 
@@ -108,14 +111,14 @@ var (
 			Sources:     cli.NewValueSourceChain(toml.TOML("processing.download", configSource), yaml.YAML("processing.download", configSource)),
 			Destination: &downloadProcessors,
 		},
-		&cli.StringSliceFlag{
+		&cli.StringMapFlag{
 			Name:        "config",
 			Aliases:     []string{"c"},
 			Usage:       "configuration for processors. Format: -config key1=val1 -config key2=val2",
 			Sources:     cli.NewValueSourceChain(toml.TOML("config", configSource), yaml.YAML("config", configSource)),
 			Destination: &config,
 		},
-		&cli.StringSliceFlag{
+		&cli.StringMapFlag{
 			Name:        "configuration",
 			Sources:     cli.NewValueSourceChain(toml.TOML("processing.configuration", configSource), yaml.YAML("processing.configuration", configSource)),
 			Destination: &configuration,
@@ -160,3 +163,35 @@ var (
 		},
 	}
 )
+
+func handlePipelineParams() {
+	if len(pipeline) > 0 {
+		list := pipeline[0]
+		list = strings.TrimLeft(list, "[")
+		list = strings.TrimRight(list, "]")
+		processors = strings.Split(list, " ")
+	}
+}
+
+func setLoggingLevel() error {
+	switch loggingLevel {
+	case "error":
+		slog.SetLogLoggerLevel(slog.LevelError)
+	case "warn":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	case "info":
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	case "debug":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	default:
+		return fmt.Errorf("unknown log level %v", loggingLevel)
+	}
+
+	return nil
+}
+
+func handleConfigurationParams() {
+	if len(configuration) > 0 {
+		config = configuration
+	}
+}

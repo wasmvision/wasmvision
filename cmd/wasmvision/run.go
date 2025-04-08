@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/urfave/cli/v3"
 	"github.com/wasmvision/wasmvision/capture"
@@ -39,15 +38,6 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 	handleConfigurationParams()
 
-	settings := map[string]string{}
-	for _, c := range config {
-		parts := strings.Split(c, "=")
-		if len(parts) != 2 {
-			return fmt.Errorf("invalid config format: %v", c)
-		}
-		settings[parts[0]] = parts[1]
-	}
-
 	if enableCUDA {
 		if !runtime.CheckCUDA() {
 			return fmt.Errorf("CUDA not available on this system")
@@ -59,7 +49,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	r, err := runtime.New(ctx, runtime.InterpreterConfig{
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
-		Settings:      settings,
+		Settings:      config,
 		EnableCUDA:    enableCUDA,
 	})
 	if err != nil {
@@ -183,40 +173,5 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		if frame.ID.Unwrap() != outframe.ID.Unwrap() {
 			frame.Close()
 		}
-	}
-}
-
-func handlePipelineParams() {
-	if len(pipeline) > 0 {
-		list := pipeline[0]
-		list = strings.TrimLeft(list, "[")
-		list = strings.TrimRight(list, "]")
-		processors = strings.Split(list, " ")
-	}
-}
-
-func setLoggingLevel() error {
-	switch loggingLevel {
-	case "error":
-		slog.SetLogLoggerLevel(slog.LevelError)
-	case "warn":
-		slog.SetLogLoggerLevel(slog.LevelWarn)
-	case "info":
-		slog.SetLogLoggerLevel(slog.LevelInfo)
-	case "debug":
-		slog.SetLogLoggerLevel(slog.LevelDebug)
-	default:
-		return fmt.Errorf("unknown log level %v", loggingLevel)
-	}
-
-	return nil
-}
-
-func handleConfigurationParams() {
-	if len(configuration) > 0 {
-		list := configuration[0]
-		list = strings.TrimLeft(list, "[")
-		list = strings.TrimRight(list, "]")
-		config = strings.Split(list, " ")
 	}
 }
