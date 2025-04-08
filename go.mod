@@ -16,7 +16,7 @@ require (
 	github.com/mark3labs/mcp-go v0.15.0
 	github.com/orsinium-labs/tinytest v1.0.0
 	github.com/urfave/cli-altsrc/v3 v3.0.0-alpha2.0.20250228131929-8cc6e0481655
-	github.com/urfave/cli/v3 v3.0.0-beta1.0.20250209232119-706f78edb6b4
+	github.com/urfave/cli/v3 v3.1.1
 )
 
 require (
