@@ -191,25 +191,27 @@ You can use an external TOML or YAML file to configure wasmVision. Here is an TO
 
 ```toml
 [main]
-logging = "warn"
+logging = "info"
 destination = ":8080"
+cuda-enable = true
 
 [processing]
 pipeline = [
-    "./processors/ollama.wasm",
-    "./processors/mosaic.wasm",
-    "./processors/captions.wasm"
+    "ollama.wasm",
+    "style-transfer.wasm",
+    "captions.wasm"
 ]
-configuration = [
-    "model=llava"
-]
-download = false
+
+[configuration]
+ollama-model = "qnguyen3/nanollava"
+caption-line-height = "30"
+caption-size = "0.9"
 
 [models]
 download = true
 
 [server]
-mcp-enable = true
+mcp-enable = false
 mcp-port = ":5001"
 ```
 
@@ -217,22 +219,25 @@ Here is the same configuration in YAML format:
 
 ```yaml
 main:
-  logging: "warn"
+  logging: "info"
   destination: ":8080"
+  cuda-enable: true
 
 processing:
   pipeline:
-    - "./processors/ollama.wasm"
-    - "./processors/udnie.wasm"
-    - "./processors/captions.wasm"
-  configuration:
-    - "model=llava"
-  download: false
+    - "ollama.wasm"
+    - "style-transfer.wasm"
+    - "captions.wasm"
+
+configuration:
+  ollama-model: "qnguyen3/nanollava"
+  caption-line-height: "15"
+  caption-size: "0.9"
 
 models:
   download: true
 
 server:
-   mcp-enable: true
-   mcp-port: ":5001"
+  mcp-enable: false
+  mcp-port: ":5001"
 ```

@@ -2,11 +2,21 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"strings"
 
 	altsrc "github.com/urfave/cli-altsrc/v3"
 	"github.com/urfave/cli-altsrc/v3/toml"
 	"github.com/urfave/cli-altsrc/v3/yaml"
 	"github.com/urfave/cli/v3"
+
+	"maps"
+
+	tomldata "github.com/BurntSushi/toml"
+	yamldata "gopkg.in/yaml.v3"
 )
 
 var (
@@ -20,10 +30,10 @@ var (
 	loggingLevel  string
 	enableCUDA    bool
 
-	processors    []string
-	pipeline      []string
-	configuration []string
-	config        []string
+	processors []string
+	pipeline   []string
+
+	config        map[string]string
 	processorsDir string
 	modelsDir     string
 
@@ -108,18 +118,11 @@ var (
 			Sources:     cli.NewValueSourceChain(toml.TOML("processing.download", configSource), yaml.YAML("processing.download", configSource)),
 			Destination: &downloadProcessors,
 		},
-		&cli.StringSliceFlag{
+		&cli.StringMapFlag{
 			Name:        "config",
 			Aliases:     []string{"c"},
 			Usage:       "configuration for processors. Format: -config key1=val1 -config key2=val2",
-			Sources:     cli.NewValueSourceChain(toml.TOML("config", configSource), yaml.YAML("config", configSource)),
 			Destination: &config,
-		},
-		&cli.StringSliceFlag{
-			Name:        "configuration",
-			Sources:     cli.NewValueSourceChain(toml.TOML("processing.configuration", configSource), yaml.YAML("processing.configuration", configSource)),
-			Destination: &configuration,
-			Hidden:      true,
 		},
 		&cli.StringFlag{Name: "models-dir",
 			Usage:       "directory for model loading (default to $home/models)",
@@ -160,3 +163,81 @@ var (
 		},
 	}
 )
+
+func handlePipelineParams() {
+	if len(pipeline) > 0 {
+		list := pipeline[0]
+		list = strings.TrimLeft(list, "[")
+		list = strings.TrimRight(list, "]")
+		processors = strings.Split(list, " ")
+	}
+}
+
+func setLoggingLevel() error {
+	switch loggingLevel {
+	case "error":
+		slog.SetLogLoggerLevel(slog.LevelError)
+	case "warn":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	case "info":
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	case "debug":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	default:
+		return fmt.Errorf("unknown log level %v", loggingLevel)
+	}
+
+	return nil
+}
+
+type ConfigurationDataFile struct {
+	Configuration map[string]string `toml:"configuration" yaml:"configuration"`
+}
+
+// handleConfigurationParams loads configuration params from a file.
+// Needed due to issues trying to parse map types using urfave/cli-altsrc
+// and the toml and yaml parsers.
+func handleConfigurationParams() error {
+	if configFile != "" {
+		switch filepath.Ext(configFile) {
+		case ".toml":
+			var conf ConfigurationDataFile
+			tomlFile, err := os.ReadFile(configFile)
+			if err != nil {
+				slog.Error("failed to open toml config file", "file", configFile, "error", err)
+				return err
+			}
+
+			_, err = tomldata.Decode(string(tomlFile), &conf)
+			if err != nil {
+				slog.Error("failed to decode toml config file", "file", configFile, "error", err)
+				return err
+			}
+
+			maps.Copy(config, conf.Configuration)
+			return nil
+
+		case ".yaml", ".yml":
+			var conf ConfigurationDataFile
+			yamlFile, err := os.ReadFile(configFile)
+			if err != nil {
+				slog.Error("failed to open yaml config file", "file", configFile, "error", err)
+				return err
+			}
+			// decode yaml file
+			err = yamldata.Unmarshal(yamlFile, &conf)
+			if err != nil {
+				slog.Error("failed to decode yaml config file", "file", configFile, "error", err)
+				return err
+			}
+			maps.Copy(config, conf.Configuration)
+			return nil
+
+		default:
+			slog.Error("unknown config file type", "file", configFile)
+			return fmt.Errorf("unknown config file type %v", configFile)
+		}
+	}
+
+	return nil
+}
