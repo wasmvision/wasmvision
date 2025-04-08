@@ -30,17 +30,17 @@ Processor written in Rust that performs a blur on the image frame.
 
 Processor written in Go that adds text captions to the final output image.
 
-## gaussianblur.wasm
+## face-expression.wasm
 
-![gaussianblur](../images/gaussianblur-processor.png)
+![face-expression](../images/face-expression-processor.png)
 
-Processor written in Go that performs a gaussian blur on the image frame.
+wasmVision processor using Facial Expression Recognition (FER) featuring semi-supervised learning model with 88.27% accuracy.
 
 ## faceblur.wasm
 
 ![faceblur](../images/faceblur-processor.png)
 
-Processor that detects and then blurs faces using YuNet, a light-weight, fast and accurate face detection model.
+wasmVision processor that blurs previously detected faces before outputting the final image. 
 
 ## facedetectyn.wasm
 
@@ -54,9 +54,21 @@ Processor written using TinyGo that recognizes faces using YuNet, a light-weight
 
 Processor written using Rust that recognizes faces using YuNet, a light-weight, fast and accurate face detection model.
 
+## gaussianblur.wasm
+
+![gaussianblur](../images/gaussianblur-processor.png)
+
+Processor written in Go that performs a gaussian blur on the image frame.
+
 ## hello.wasm
 
 Processor written in Go that displays some information about the image frame.
+
+## object-detector.wasm
+
+![object-detector](../images/object-detector-processor.png)
+
+wasmVision processor that performs object detection using the YOLOv8 real-time object detection model.
 
 ## ollama.wasm
 

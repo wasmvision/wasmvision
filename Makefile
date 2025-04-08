@@ -22,6 +22,9 @@ facedetectynrs:
 	cd processors/facedetectynrs; cargo build --target wasm32-unknown-unknown --release; \
 		cp ./target/wasm32-unknown-unknown/release/facedetectynrs.wasm ../
 
+face-expression:
+	cd processors/face-expression; go mod tidy; tinygo build -o ../face-expression.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
+
 gaussianblur:
 	cd processors/gaussianblur; go mod tidy; tinygo build -o ../gaussianblur.wasm -target=wasm-unknown --no-debug .
 
@@ -37,5 +40,5 @@ ollama:
 style-transfer:
 	cd processors/style-transfer; go mod tidy; tinygo build -o ../style-transfer.wasm -target=wasm-unknown --no-debug .
 
-processors: asciify blur blurrs captions faceblur facedetectyn facedetectynrs gaussianblur hello ollama style-transfer
+processors: asciify blur blurrs captions faceblur facedetectyn facedetectynrs face-expression gaussianblur hello object-detector ollama style-transfer
 	@echo "All processors built successfully!"
