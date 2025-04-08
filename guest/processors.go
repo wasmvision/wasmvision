@@ -41,6 +41,11 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename: "captions.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/captions.wasm",
 	},
+	"face-expression": {
+		Alias:    "face-expression",
+		Filename: "face-expression.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/face-expression.wasm",
+	},
 	"faceblur": {
 		Alias:    "faceblur",
 		Filename: "faceblur.wasm",
