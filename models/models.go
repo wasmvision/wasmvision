@@ -101,6 +101,21 @@ var KnownModels = map[string]ModelFile{
 		Filename: "object_detection_yolox_2022nov.onnx",
 		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
 	},
+	"face_expression_recognition_mobilefacenet_2022july": {
+		Alias:    "face_expression_recognition_mobilefacenet_2022july",
+		Filename: "face_expression_recognition_mobilefacenet_2022july.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx",
+	},
+	"facial_expression_recognition_mobilefacenet_2022july_int8": {
+		Alias:    "facial_expression_recognition_mobilefacenet_2022july_int8",
+		Filename: "facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
+	},
+	"facial_expression_recognition_mobilefacenet_2022july_int8bq": {
+		Alias:    "facial_expression_recognition_mobilefacenet_2022july_int8bq",
+		Filename: "facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
+	},
 }
 
 func Download(name string, modelsDir string) error {
