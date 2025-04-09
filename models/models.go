@@ -116,6 +116,11 @@ var KnownModels = map[string]ModelFile{
 		Filename: "facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
 		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
 	},
+	"edge_detection_dexined_2024sep": {
+		Alias:    "edge_detection_dexined_2024sep",
+		Filename: "edge_detection_dexined_2024sep.onnx",
+		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/edge_detection_dexined/edge_detection_dexined_2024sep.onnx",
+	},
 }
 
 func Download(name string, modelsDir string) error {
