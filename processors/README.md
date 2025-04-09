@@ -30,6 +30,12 @@ Processor written in Rust that performs a blur on the image frame.
 
 Processor written in Go that adds text captions to the final output image.
 
+## edge-detect.wasm
+
+![edge-detect](../images/edge-detect-processor.png)
+
+wasmVision processor that detects edges using a model called Dense Extreme Inception Network for Edge Detection (DexiNed), a Convolutional Neural Network (CNN) architecture for edge detection.
+
 ## face-expression.wasm
 
 ![face-expression](../images/face-expression-processor.png)

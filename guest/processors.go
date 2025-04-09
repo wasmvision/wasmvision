@@ -41,6 +41,11 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename: "captions.wasm",
 		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/captions.wasm",
 	},
+	"edge-detect": {
+		Alias:    "edge-detect",
+		Filename: "edge-detect.wasm",
+		URL:      "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/edge-detect.wasm",
+	},
 	"face-expression": {
 		Alias:    "face-expression",
 		Filename: "face-expression.wasm",
