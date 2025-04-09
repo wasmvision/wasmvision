@@ -11,7 +11,13 @@ func ImgprocModules(ctx *Context) wypes.Modules {
 			"adaptive-threshold": wypes.H8(adaptiveThresholdFunc(ctx)),
 			"blur":               wypes.H4(blurFunc(ctx)),
 			"box-filter":         wypes.H5(boxFilterFunc(ctx)),
+			"add":                wypes.H4(addFunc(ctx)),
+			"subtract":           wypes.H4(subtractFunc(ctx)),
+			"multiply":           wypes.H4(multiplyFunc(ctx)),
+			"divide":             wypes.H4(divideFunc(ctx)),
+			"exp":                wypes.H3(expFunc(ctx)),
 			"gaussian-blur":      wypes.H7(gaussianBlurFunc(ctx)),
+			"normalize":          wypes.H6(normalizeFunc(ctx)),
 			"threshold":          wypes.H6(thresholdFunc(ctx)),
 			"resize":             wypes.H7(resizeFunc(ctx)),
 			"transpose-ND":       wypes.H4(transposeNDFunc(ctx)),
@@ -71,6 +77,78 @@ func boxFilterFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes
 	}
 }
 
+func addFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, src1 wypes.HostRef[*Frame], src2 wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		dst := NewEmptyFrame()
+
+		if err := gocv.Add(src1.Raw.Image, src2.Raw.Image, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func subtractFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, src1 wypes.HostRef[*Frame], src2 wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		dst := NewEmptyFrame()
+
+		if err := gocv.Subtract(src1.Raw.Image, src2.Raw.Image, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func multiplyFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, src1 wypes.HostRef[*Frame], src2 wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		dst := NewEmptyFrame()
+
+		if err := gocv.Multiply(src1.Raw.Image, src2.Raw.Image, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func divideFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, src1 wypes.HostRef[*Frame], src2 wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		dst := NewEmptyFrame()
+
+		if err := gocv.Divide(src1.Raw.Image, src2.Raw.Image, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func expFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		src := f.Image
+		dst := NewEmptyFrame()
+
+		if err := gocv.Exp(src, &dst.Image); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
 func gaussianBlurFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Size, wypes.Float32, wypes.Float32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
 	return func(s *wypes.Store, ref wypes.HostRef[*Frame], sz Size, sigmaX0 wypes.Float32, sigmaY0 wypes.Float32, border0 wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
 		f := ref.Raw
@@ -78,6 +156,22 @@ func gaussianBlurFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], Si
 		dst := NewEmptyFrame()
 
 		if err := gocv.GaussianBlur(src, &dst.Image, sz.Unwrap(), float64(sigmaX0), float64(sigmaY0), gocv.BorderType(border0)); err != nil {
+			handleFrameError(ctx, s, dst, result, err)
+			return wypes.Void{}
+		}
+
+		handleFrameReturn(ctx, s, dst, result)
+		return wypes.Void{}
+	}
+}
+
+func normalizeFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wypes.Float32, wypes.Float32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*Frame], alpha wypes.Float32, beta wypes.Float32, normtype wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		f := ref.Raw
+		src := f.Image
+		dst := NewEmptyFrame()
+
+		if err := gocv.Normalize(src, &dst.Image, float64(alpha), float64(beta), gocv.NormType(normtype)); err != nil {
 			handleFrameError(ctx, s, dst, result, err)
 			return wypes.Void{}
 		}

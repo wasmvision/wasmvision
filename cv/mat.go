@@ -37,7 +37,8 @@ func MatModules(ctx *Context) wypes.Modules {
 			"[method]mat.col-range":              wypes.H5(matColRangeFunc(ctx)),
 			"[method]mat.row-range":              wypes.H5(matRowRangeFunc(ctx)),
 			"[method]mat.min-max-loc":            wypes.H3(matMinMaxLocFunc(ctx)),
-			"[static]mat.zeros":                  wypes.H4(matZerosFunc(ctx)),
+			"[static]mat.ones":                   wypes.H5(matOnesFunc(ctx)),
+			"[static]mat.zeros":                  wypes.H5(matZerosFunc(ctx)),
 		},
 	}
 }
@@ -348,11 +349,20 @@ func matMinMaxLocFunc(ctx *Context) func(*wypes.Store, wypes.HostRef[*Frame], wy
 	}
 }
 
-func matZerosFunc(ctx *Context) func(*wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32) wypes.HostRef[*Frame] {
-	return func(s *wypes.Store, rows, cols, matType wypes.UInt32) wypes.HostRef[*Frame] {
-		f := NewFrame(gocv.Zeros(int(rows), int(cols), gocv.MatType(matType)))
-		v := wypes.HostRef[*Frame]{Raw: f}
+func matOnesFunc(ctx *Context) func(*wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, rows, cols, matType wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		frm := NewFrame(gocv.Ones(int(rows), int(cols), gocv.MatType(matType)))
+		handleFrameReturn(ctx, s, frm, result)
 
-		return v
+		return wypes.Void{}
+	}
+}
+
+func matZerosFunc(ctx *Context) func(*wypes.Store, wypes.UInt32, wypes.UInt32, wypes.UInt32, wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, rows, cols, matType wypes.UInt32, result wypes.Result[wypes.HostRef[*Frame], wypes.HostRef[*Frame], wypes.UInt32]) wypes.Void {
+		frm := NewFrame(gocv.Zeros(int(rows), int(cols), gocv.MatType(matType)))
+		handleFrameReturn(ctx, s, frm, result)
+
+		return wypes.Void{}
 	}
 }
