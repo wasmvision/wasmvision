@@ -2,8 +2,6 @@ module github.com/wasmvision/wasmvision
 
 go 1.23.2
 
-replace github.com/orsinium-labs/wypes => github.com/hybridgroup/wypes v0.0.0-20250404085835-9a762036569a
-
 require (
 	github.com/orsinium-labs/wypes v0.3.3
 	github.com/tetratelabs/wazero v1.9.0
@@ -16,7 +14,7 @@ require (
 	github.com/hybridgroup/mjpeg v0.0.0-20250330094202-16d243df0e35
 	github.com/mark3labs/mcp-go v0.15.0
 	github.com/orsinium-labs/tinytest v1.0.0
-	github.com/urfave/cli-altsrc/v3 v3.0.0-alpha2.0.20250228131929-8cc6e0481655
+	github.com/urfave/cli-altsrc/v3 v3.0.1
 	github.com/urfave/cli/v3 v3.1.1
 	gopkg.in/yaml.v3 v3.0.1
 )
