@@ -5,9 +5,15 @@ import (
 	"fmt"
 
 	"github.com/wasmvision/wasmvision/cv"
+	"gocv.io/x/gocv"
 )
 
-const defaultRetries = 3
+const (
+	defaultRetries          = 3
+	VideoCaptureFrameHeight = int32(gocv.VideoCaptureFrameHeight)
+	VideoCaptureFrameWidth  = int32(gocv.VideoCaptureFrameWidth)
+	VideoCaptureFPS         = int32(gocv.VideoCaptureFPS)
+)
 
 var ErrClosed = errors.New("capture device closed")
 
@@ -16,6 +22,8 @@ type Capture interface {
 	Open() error
 	Close() error
 	Read() (*cv.Frame, error)
+	Get(property int32) (value float32, err error)
+	Set(property int32, value float32) error
 }
 
 // OpenDevice opens a capture device based on the specified type and source.
