@@ -25,6 +25,8 @@ var (
 
 	source        string
 	captureDevice string
+	height        int64
+	width         int64
 	output        string
 	destination   string
 	loggingLevel  string
@@ -69,6 +71,18 @@ var (
 			Usage:       "video capture type to use (auto, ffmpeg, gstreamer, webcam)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.capture", configSource), yaml.YAML("main.capture", configSource)),
 			Destination: &captureDevice,
+		},
+		&cli.IntFlag{Name: "width",
+			Aliases:     []string{"w"},
+			Usage:       "width to use for capture of the video stream",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.width", configSource), yaml.YAML("main.width", configSource)),
+			Destination: &width,
+		},
+		&cli.IntFlag{Name: "height",
+			Aliases:     []string{"h"},
+			Usage:       "height to use for capture of the video stream",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.height", configSource), yaml.YAML("main.height", configSource)),
+			Destination: &height,
 		},
 		&cli.StringFlag{Name: "output",
 			Aliases:     []string{"o"},

@@ -52,3 +52,12 @@ func (g *GStreamer) Read() (*cv.Frame, error) {
 
 	return frame, nil
 }
+
+func (g *GStreamer) Get(property int32) (value float32, err error) {
+	return float32(g.stream.Get(gocv.VideoCaptureProperties(property))), nil
+}
+
+func (g *GStreamer) Set(property int32, value float32) error {
+	g.stream.Set(gocv.VideoCaptureProperties(property), float64(value))
+	return nil
+}

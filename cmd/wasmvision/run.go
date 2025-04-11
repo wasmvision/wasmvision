@@ -69,8 +69,18 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return fmt.Errorf("failed to open capture device: %w", err)
 	}
-
 	defer device.Close()
+
+	if height > 0 {
+		if err := device.Set(capture.VideoCaptureFrameHeight, float32(height)); err != nil {
+			return fmt.Errorf("failed to set height: %w", err)
+		}
+	}
+	if width > 0 {
+		if err := device.Set(capture.VideoCaptureFrameWidth, float32(width)); err != nil {
+			return fmt.Errorf("failed to set width: %w", err)
+		}
+	}
 
 	switch output {
 	case "mjpeg":

@@ -52,3 +52,12 @@ func (w *Webcam) Read() (*cv.Frame, error) {
 
 	return frame, nil
 }
+
+func (w *Webcam) Get(property int32) (value float32, err error) {
+	return float32(w.webcam.Get(gocv.VideoCaptureProperties(property))), nil
+}
+
+func (w *Webcam) Set(property int32, value float32) error {
+	w.webcam.Set(gocv.VideoCaptureProperties(property), float64(value))
+	return nil
+}
