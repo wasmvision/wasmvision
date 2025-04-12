@@ -12,6 +12,12 @@ func TestWellKnownModels(t *testing.T) {
 		}
 	})
 
+	t.Run("different well-known model", func(t *testing.T) {
+		if !ModelWellKnown("yunet_2023mar") {
+			t.Errorf("model yunet_2023mar not found")
+		}
+	})
+
 	t.Run("unknown model", func(t *testing.T) {
 		if ModelWellKnown("unknown") {
 			t.Errorf("model unknown found")

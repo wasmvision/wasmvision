@@ -11,52 +11,64 @@ import (
 )
 
 func listallModels(ctx context.Context, cmd *cli.Command) error {
-	printModels()
+	printModels(cmd.Bool("long"))
 	fmt.Println()
 
 	return nil
 }
 
 func listallProcessors(ctx context.Context, cmd *cli.Command) error {
-	printProcessors()
+	printProcessors(cmd.Bool("long"))
 	fmt.Println()
 
 	return nil
 }
 
-type keyValue struct {
+type modelValue struct {
 	key   string
-	value string
+	value models.ModelFile
 }
 
-func printModels() {
-	s := make([]keyValue, 0, len(models.KnownModels))
+func printModels(long bool) {
+	s := make([]modelValue, 0, len(models.KnownModels))
 	for k, v := range models.KnownModels {
-		s = append(s, keyValue{k, v.Alias})
+		s = append(s, modelValue{k, v})
 	}
 
 	sort.SliceStable(s, func(i, j int) bool {
-		return s[i].value < s[j].value
+		return s[i].value.Alias < s[j].value.Alias
 	})
 
-	// iterate over the slice to get the desired order
 	for _, v := range s {
-		fmt.Println(v.value)
+		if long {
+			fmt.Printf("%-30s  %s\n", v.value.Alias, v.value.Description)
+		} else {
+			fmt.Println(v.value.Alias)
+		}
 	}
 }
 
-func printProcessors() {
-	s := make([]keyValue, 0, len(guest.KnownProcessors()))
+type processorValue struct {
+	key   string
+	value guest.ProcessorFile
+}
+
+func printProcessors(long bool) {
+	s := make([]processorValue, 0, len(guest.KnownProcessors()))
 	for k, v := range guest.KnownProcessors() {
-		s = append(s, keyValue{k, v.Alias})
+		s = append(s, processorValue{k, v})
 	}
 
 	sort.SliceStable(s, func(i, j int) bool {
-		return s[i].value < s[j].value
+		return s[i].value.Alias < s[j].value.Alias
 	})
 
 	// iterate over the slice to get the desired order
 	for _, v := range s {
-		fmt.Println(v.value)
+		if long {
+			fmt.Printf("%-20s  %s\n", v.value.Alias, v.value.Description)
+		} else {
+			fmt.Println(v.value.Alias)
+		}
 	}
 }

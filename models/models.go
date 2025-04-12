@@ -10,116 +10,138 @@ import (
 )
 
 type ModelFile struct {
-	Alias    string
-	Filename string
-	URL      string
+	Alias       string
+	Filename    string
+	URL         string
+	Description string
 }
 
 var KnownModels = map[string]ModelFile{
 	"candy-9": {
-		Alias:    "candy-9",
-		Filename: "candy-9.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx",
+		Alias:       "candy-9",
+		Filename:    "candy-9.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx",
+		Description: "Candy model for fast neural style transfer (opset 8)",
 	},
 	"candy-8": {
-		Alias:    "candy-8",
-		Filename: "candy-8.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-8.onnx",
+		Alias:       "candy-8",
+		Filename:    "candy-8.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-8.onnx",
+		Description: "Candy model for fast neural style transfer (opset 8)",
 	},
 	"mosaic-9": {
-		Alias:    "mosaic-9",
-		Filename: "mosaic-9.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-9.onnx",
+		Alias:       "mosaic-9",
+		Filename:    "mosaic-9.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-9.onnx",
+		Description: "Mosaic model for fast neural style transfer (opset 9)",
 	},
 	"mosaic-8": {
-		Alias:    "mosaic-8",
-		Filename: "mosaic-8.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-8.onnx",
+		Alias:       "mosaic-8",
+		Filename:    "mosaic-8.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/mosaic-8.onnx",
+		Description: "Mosaic model for fast neural style transfer (opset 8)",
 	},
 	"pointilism-9": {
-		Alias:    "pointilism-9",
-		Filename: "pointilism-9.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-9.onnx",
+		Alias:       "pointilism-9",
+		Filename:    "pointilism-9.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-9.onnx",
+		Description: "Pointilism model for fast neural style transfer (opset 9)",
 	},
 	"pointilism-8": {
-		Alias:    "pointilism-8",
-		Filename: "pointilism-8.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-8.onnx",
+		Alias:       "pointilism-8",
+		Filename:    "pointilism-8.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/pointilism-8.onnx",
+		Description: "Pointilism model for fast neural style transfer (opset 8)",
 	},
 	"rain-princess-9": {
-		Alias:    "rain-princess-9",
-		Filename: "rain-princess-9.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-9.onnx",
+		Alias:       "rain-princess-9",
+		Filename:    "rain-princess-9.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-9.onnx",
+		Description: "Rain Princess model for fast neural style transfer (opset 9)",
 	},
 	"rain-princess-8": {
-		Alias:    "rain-princess-8",
-		Filename: "rain-princess-8.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-8.onnx",
+		Alias:       "rain-princess-8",
+		Filename:    "rain-princess-8.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/rain-princess-8.onnx",
+		Description: "Rain Princess model for fast neural style transfer (opset 8)",
 	},
 	"udnie-9": {
-		Alias:    "udnie-9",
-		Filename: "udnie-9.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-9.onnx",
+		Alias:       "udnie-9",
+		Filename:    "udnie-9.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-9.onnx",
+		Description: "Udnie model for fast neural style transfer (opset 9)",
 	},
 	"udnie-8": {
-		Alias:    "udnie-8",
-		Filename: "udnie-8.onnx",
-		URL:      "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-8.onnx",
+		Alias:       "udnie-8",
+		Filename:    "udnie-8.onnx",
+		URL:         "https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/udnie-8.onnx",
+		Description: "Udnie model for fast neural style transfer (opset 8)",
 	},
-	"face_detection_yunet_2023mar": {
-		Alias:    "face_detection_yunet_2023mar",
-		Filename: "face_detection_yunet_2023mar.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+	"yunet_2023mar": {
+		Alias:       "yunet_2023mar",
+		Filename:    "face_detection_yunet_2023mar.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx",
+		Description: "Yunet face detection model",
 	},
 	"yolov8n": {
-		Alias:    "yolov8n",
-		Filename: "yolov8n.onnx",
-		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8n.onnx",
+		Alias:       "yolov8n",
+		Filename:    "yolov8n.onnx",
+		URL:         "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8n.onnx",
+		Description: "YOLOv8n model for object detection",
 	},
 	"yolov8s": {
-		Alias:    "yolov8s",
-		Filename: "yolov8s.onnx",
-		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8s.onnx",
+		Alias:       "yolov8s",
+		Filename:    "yolov8s.onnx",
+		URL:         "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8s.onnx",
+		Description: "YOLOv8s model for object detection",
 	},
 	"yolov8m": {
-		Alias:    "yolov8m",
-		Filename: "yolov8m.onnx",
-		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8m.onnx",
+		Alias:       "yolov8m",
+		Filename:    "yolov8m.onnx",
+		URL:         "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8m.onnx",
+		Description: "YOLOv8m model for object detection",
 	},
 	"yolov8l": {
-		Alias:    "yolov8l",
-		Filename: "yolov8l.onnx",
-		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8l.onnx",
+		Alias:       "yolov8l",
+		Filename:    "yolov8l.onnx",
+		URL:         "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8l.onnx",
+		Description: "YOLOv8l model for object detection",
 	},
 	"yolov8x": {
-		Alias:    "yolov8x",
-		Filename: "yolov8x.onnx",
-		URL:      "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8x.onnx",
+		Alias:       "yolov8x",
+		Filename:    "yolov8x.onnx",
+		URL:         "https://huggingface.co/cabelo/yolov8/resolve/main/yolov8x.onnx",
+		Description: "YOLOv8x model for object detection",
 	},
 	"yolox": {
-		Alias:    "yolox",
-		Filename: "object_detection_yolox_2022nov.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
+		Alias:       "yolox",
+		Filename:    "object_detection_yolox_2022nov.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
+		Description: "YOLOX model for object detection",
 	},
-	"face_expression_recognition_mobilefacenet_2022july": {
-		Alias:    "face_expression_recognition_mobilefacenet_2022july",
-		Filename: "face_expression_recognition_mobilefacenet_2022july.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx",
+	"mobilefacenet_2022july": {
+		Alias:       "mobilefacenet_2022july",
+		Filename:    "face_expression_recognition_mobilefacenet_2022july.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx",
+		Description: "MobileFaceNet model for Facial Expression Recognition (FER)",
 	},
-	"facial_expression_recognition_mobilefacenet_2022july_int8": {
-		Alias:    "facial_expression_recognition_mobilefacenet_2022july_int8",
-		Filename: "facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
+	"mobilefacenet_2022july_int8": {
+		Alias:       "mobilefacenet_2022july_int8",
+		Filename:    "facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8.onnx",
+		Description: "MobileFaceNet model for Facial Expression Recognition (quantized)",
 	},
-	"facial_expression_recognition_mobilefacenet_2022july_int8bq": {
-		Alias:    "facial_expression_recognition_mobilefacenet_2022july_int8bq",
-		Filename: "facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
+	"mobilefacenet_2022july_int8bq": {
+		Alias:       "mobilefacenet_2022july_int8bq",
+		Filename:    "facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july_int8bq.onnx",
+		Description: "MobileFaceNet model for Facial Expression Recognition (quantized with bias)",
 	},
-	"edge_detection_dexined_2024sep": {
-		Alias:    "edge_detection_dexined_2024sep",
-		Filename: "edge_detection_dexined_2024sep.onnx",
-		URL:      "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/edge_detection_dexined/edge_detection_dexined_2024sep.onnx",
+	"dexined_2024sep": {
+		Alias:       "dexined_2024sep",
+		Filename:    "edge_detection_dexined_2024sep.onnx",
+		URL:         "https://github.com/opencv/opencv_zoo/raw/refs/heads/main/models/edge_detection_dexined/edge_detection_dexined_2024sep.onnx",
+		Description: "Dexined model for edge detection",
 	},
 }
 
