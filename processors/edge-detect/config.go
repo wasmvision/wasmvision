@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	edgeModelName = "edge_detection_dexined_2024sep"
+	edgeModelName = "dexined_2024sep"
 	edgeModelInit bool
 )
 
