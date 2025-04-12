@@ -176,6 +176,13 @@ var (
 			Sources: cli.EnvVars("WASMVISION_PROCESSORS_DIR"),
 		},
 	}
+
+	listAllFlags = []cli.Flag{
+		&cli.BoolFlag{Name: "long",
+			Aliases: []string{"l"},
+			Usage:   "show details for listall models and processors",
+		},
+	}
 )
 
 func handlePipelineParams() {

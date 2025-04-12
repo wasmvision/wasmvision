@@ -56,11 +56,13 @@ func main() {
 						Name:   "models",
 						Usage:  "lists all known computer vision models",
 						Action: listallModels,
+						Flags:  listAllFlags,
 					},
 					{
 						Name:   "processors",
 						Usage:  "lists all known wasm processors",
 						Action: listallProcessors,
+						Flags:  listAllFlags,
 					},
 				},
 			},
