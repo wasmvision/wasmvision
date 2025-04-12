@@ -28,7 +28,7 @@ var (
 )
 
 func init() {
-	detector = objdetect.NewFaceDetectorYN("face_detection_yunet_2023mar", "", types.Size{X: 200, Y: 200})
+	detector = objdetect.NewFaceDetectorYN("yunet_2023mar", "", types.Size{X: 200, Y: 200})
 
 	fs = datastore.NewFrameStore(1)
 }

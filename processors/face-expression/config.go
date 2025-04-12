@@ -9,7 +9,7 @@ import (
 
 var (
 	modelInit bool
-	modelName = "face_expression_recognition_mobilefacenet_2022july"
+	modelName = "mobilefacenet_2022july"
 )
 
 func loadConfig() {

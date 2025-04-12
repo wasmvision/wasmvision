@@ -21,7 +21,7 @@ fn init() {
     INIT.call_once(|| {
         unsafe {
             DETECTOR = Some(Mutex::new(cv::objdetect::FaceDetectorYn::new(
-                "face_detection_yunet_2023mar", "", cv::types::Size { x: 200, y: 200 }
+                "yunet_2023mar", "", cv::types::Size { x: 200, y: 200 }
             )));
         }
     });
