@@ -3,6 +3,7 @@ package cv
 import (
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/datastore"
+	"github.com/wasmvision/wasmvision/datastore/storage"
 )
 
 // Context is the configuration for the cv package used when each call is made
@@ -16,12 +17,20 @@ type Context struct {
 	EnableCUDA     bool
 }
 
-func NewContext(modelsDir string, conf *config.Store, enableCUDA bool) *Context {
+func NewContext(modelsDir string, conf *config.Store, datastorage string, enableCUDA bool) *Context {
+	var store datastore.DataStorage
+	switch datastorage {
+	case "memory":
+		store = storage.NewMemStorage[string]()
+	default:
+		store = storage.NewMemStorage[string]()
+	}
+
 	return &Context{
 		ModelsDir:      modelsDir,
 		Config:         conf,
-		FrameStore:     datastore.NewFrames(map[int]map[string]string{}),
-		ProcessorStore: datastore.NewProcessors(map[string]map[string]string{}),
+		FrameStore:     datastore.NewFrames(),
+		ProcessorStore: datastore.NewProcessors(store),
 		EnableCUDA:     enableCUDA,
 	}
 }

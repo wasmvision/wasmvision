@@ -16,7 +16,7 @@ func getTestStore() wypes.Store {
 
 func getTestCVContext() *Context {
 	configStore := config.NewStore(map[string]string{})
-	ctx := NewContext("test", configStore, false)
+	ctx := NewContext("test", configStore, "memory", false)
 	ctx.ReturnDataPtr = 512
 	return ctx
 }
