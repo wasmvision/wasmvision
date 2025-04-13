@@ -1,80 +1,48 @@
 package datastore
 
+import "github.com/wasmvision/wasmvision/datastore/storage"
+
+// Frames is the store for data that is specific to a single frame.
+// It is used to store data that is associated with a specific frame in a video or image sequence.
+// The data is stored in a map where the key is the frame number and the value is another map
+// that contains key-value pairs of data associated with that frame.
 type Frames struct {
-	storeMap map[int]map[string]string
+	store *storage.MemStorage[int]
 }
 
 // NewFrames creates a new Frames data store.
-func NewFrames(s map[int]map[string]string) *Frames {
+func NewFrames() *Frames {
 	return &Frames{
-		storeMap: s,
+		store: storage.NewMemStorage[int](),
 	}
 }
 
 // Get returns a data value for a specific frame from the store .
 func (s *Frames) Get(frame int, key string) (string, bool) {
-	col, ok := s.storeMap[frame]
-	if !ok {
-		return "", false
-	}
-
-	val, ok := col[key]
-	return val, ok
+	return s.store.Get(frame, key)
 }
 
 // GetKeys returns all the keys for a specific frame from the store.
 func (s *Frames) GetKeys(frame int) ([]string, bool) {
-	col, ok := s.storeMap[frame]
-	if !ok {
-		return nil, false
-	}
-
-	keys := make([]string, 0, len(col))
-	for k := range col {
-		keys = append(keys, k)
-	}
-
-	return keys, true
+	return s.store.GetKeys(frame)
 }
 
 // Set sets a key/value for a specific frame in the store.
 func (s *Frames) Set(frame int, key, val string) error {
-	col, ok := s.storeMap[frame]
-	if !ok {
-		s.storeMap[frame] = make(map[string]string)
-		col = s.storeMap[frame]
-	}
-
-	col[key] = val
-	return nil
+	return s.store.Set(frame, key, val)
 }
 
 // Delete deletes data for a specific frame from the store.
 func (s *Frames) Delete(frame int, key string) {
-	col, ok := s.storeMap[frame]
-	if !ok {
-		return
-	}
-
-	delete(col, key)
+	s.store.Delete(frame, key)
 }
 
 // DeleteAll deletes all data for a specific frame from the store.
 func (s *Frames) DeleteAll(frame int) {
-	col, ok := s.storeMap[frame]
-	if !ok {
-		return
-	}
-
-	for key := range col {
-		delete(col, key)
-	}
-
-	delete(s.storeMap, frame)
+	s.store.DeleteAll(frame)
 }
 
 // Exists returns true if there is any data for a specific frame in the store.
 func (s *Frames) Exists(frame int) bool {
-	_, ok := s.storeMap[frame]
-	return ok
+	return s.store.Exists(frame)
 }

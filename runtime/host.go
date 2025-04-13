@@ -32,6 +32,7 @@ type InterpreterConfig struct {
 	ModelsDir     string
 	Settings      map[string]string
 	EnableCUDA    bool
+	Datastorage   string
 }
 
 // New creates a new Interpreter.
@@ -41,7 +42,7 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 
 	configStore := config.NewStore(conf.Settings)
 
-	cctx := cv.NewContext(conf.ModelsDir, configStore, conf.EnableCUDA)
+	cctx := cv.NewContext(conf.ModelsDir, configStore, conf.Datastorage, conf.EnableCUDA)
 	modules := hostModules(cctx)
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {

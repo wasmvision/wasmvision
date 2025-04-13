@@ -31,6 +31,7 @@ var (
 	destination   string
 	loggingLevel  string
 	enableCUDA    bool
+	datastorage   string
 
 	processors []string
 	pipeline   []string
@@ -161,6 +162,12 @@ var (
 			Usage:       "port for MCP server",
 			Sources:     cli.NewValueSourceChain(toml.TOML("server.mcp-port", configSource), yaml.YAML("server.mcp-port", configSource)),
 			Destination: &mcpPort,
+		},
+		&cli.StringFlag{Name: "datastorage",
+			Value:       "memory",
+			Usage:       "datastorage backend to use for processor data (memory)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.datastorage", configSource), yaml.YAML("main.datastorage", configSource)),
+			Destination: &datastorage,
 		},
 	}
 
