@@ -22,6 +22,10 @@ func NewContext(modelsDir string, conf *config.Store, datastorage string, enable
 	switch datastorage {
 	case "memory":
 		store = storage.NewMemStorage[string]()
+
+	case "boltdb":
+		store = storage.NewBoltDBStorage()
+
 	default:
 		store = storage.NewMemStorage[string]()
 	}

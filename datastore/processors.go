@@ -41,3 +41,13 @@ func (s *Processors) DeleteAll(processor string) {
 func (s *Processors) Exists(processor string) bool {
 	return s.store.Exists(processor)
 }
+
+// Error returns last operational error if any. nil otherwise.
+func (s *Processors) Error() error {
+	return nil
+}
+
+// Close closes the underlying storage.
+func (s *Processors) Close() error {
+	return nil
+}

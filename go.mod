@@ -16,6 +16,7 @@ require (
 	github.com/orsinium-labs/tinytest v1.0.0
 	github.com/urfave/cli-altsrc/v3 v3.0.1
 	github.com/urfave/cli/v3 v3.1.1
+	go.etcd.io/bbolt v1.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -33,4 +34,5 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 )

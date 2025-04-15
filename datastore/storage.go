@@ -11,4 +11,6 @@ type DataStorage interface {
 	Delete(string, string)
 	DeleteAll(string)
 	Exists(string) bool
+	Error() error
+	Close() error
 }
