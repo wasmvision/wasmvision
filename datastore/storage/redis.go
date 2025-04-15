@@ -43,7 +43,7 @@ func (ds *RedisStorage) Error() error {
 // Get returns a data value from the store.
 func (ds *RedisStorage) Get(root string, key string) (string, bool) {
 
-	r := ds.db.HGet(context.TODO(), root, key)
+	r := ds.db.HGet(context.Background(), root, key)
 
 	ds.lastErr = r.Err()
 	return r.Val(), r.Val() != ""
@@ -52,7 +52,7 @@ func (ds *RedisStorage) Get(root string, key string) (string, bool) {
 // GetKeys returns all the keys for a specific id from the store.
 func (ds *RedisStorage) GetKeys(root string) ([]string, bool) {
 
-	r := ds.db.HKeys(context.TODO(), root)
+	r := ds.db.HKeys(context.Background(), root)
 
 	ds.lastErr = r.Err()
 
@@ -62,7 +62,7 @@ func (ds *RedisStorage) GetKeys(root string) ([]string, bool) {
 // Set sets a config value in the store.
 func (ds *RedisStorage) Set(root string, key string, val string) error {
 
-	r := ds.db.HSet(context.TODO(), root, key, val)
+	r := ds.db.HSet(context.Background(), root, key, val)
 
 	ds.lastErr = r.Err()
 
@@ -72,13 +72,13 @@ func (ds *RedisStorage) Set(root string, key string, val string) error {
 // Delete deletes data from the store.
 func (ds *RedisStorage) Delete(root string, key string) {
 
-	r := ds.db.HDel(context.TODO(), root, key)
+	r := ds.db.HDel(context.Background(), root, key)
 	ds.lastErr = r.Err()
 }
 
 // DeleteAll deletes all data for a specific id from the store.
 func (ds *RedisStorage) DeleteAll(root string) {
-	r1 := ds.db.HGetAll(context.TODO(), root)
+	r1 := ds.db.HGetAll(context.Background(), root)
 	ds.lastErr = r1.Err()
 
 	if ds.lastErr != nil {
@@ -91,14 +91,14 @@ func (ds *RedisStorage) DeleteAll(root string) {
 		keys = append(keys, k)
 	}
 
-	r2 := ds.db.HDel(context.TODO(), root, keys...)
+	r2 := ds.db.HDel(context.Background(), root, keys...)
 	ds.lastErr = r2.Err()
 }
 
 // Exists returns true if there is any data for a specific id in the store.
 func (ds *RedisStorage) Exists(root string) bool {
 
-	r := ds.db.HLen(context.TODO(), root)
+	r := ds.db.HLen(context.Background(), root)
 
 	return r.Val() > 0
 }
