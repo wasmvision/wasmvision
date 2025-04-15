@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.5.0
+	github.com/boltdb/bolt v1.3.1
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/hybridgroup/mjpeg v0.0.0-20250330094202-16d243df0e35
 	github.com/mark3labs/mcp-go v0.15.0
@@ -33,4 +34,5 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 )

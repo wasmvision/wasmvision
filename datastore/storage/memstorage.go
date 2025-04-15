@@ -71,3 +71,13 @@ func (s *MemStorage[T]) Exists(key T) bool {
 	_, ok := s.storeMap[key]
 	return ok
 }
+
+// Error returns last operational error if any. nil otherwise.
+func (s *MemStorage[T]) Error() error {
+	return nil
+}
+
+// Close closes the underlying storage.
+func (s *MemStorage[T]) Close() error {
+	return nil
+}
