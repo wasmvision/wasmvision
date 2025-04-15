@@ -5,18 +5,18 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/boltdb/bolt"
+	bolt "go.etcd.io/bbolt"
 )
 
-type DatastoreBoltDB struct {
+type BoltDBStorage struct {
 	db      *bolt.DB
 	lastErr error
 }
 
 // NewBoltDBStorage Creates a new BoltDB storage
-func NewBoltDBStorage() *DatastoreBoltDB {
+func NewBoltDBStorage() *BoltDBStorage {
 
-	ds := &DatastoreBoltDB{}
+	ds := &BoltDBStorage{}
 
 	fname := os.Getenv("WASMVISION_STORAGE_BOLTDB_FILENAME")
 	if fname == "" {
@@ -39,22 +39,22 @@ func NewBoltDBStorage() *DatastoreBoltDB {
 		return ds
 	}
 
-	return &DatastoreBoltDB{
+	return &BoltDBStorage{
 		db: db,
 	}
 }
 
 // Error returns last operational error
-func (ds *DatastoreBoltDB) Error() error {
+func (ds *BoltDBStorage) Error() error {
 	return ds.lastErr
 }
 
 // Get returns a data value from the store.
-func (ds *DatastoreBoltDB) Get(root string, key string) (string, bool) {
+func (ds *BoltDBStorage) Get(root string, key string) (string, bool) {
 
 	value := ""
 
-	err := ds.db.View(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(root))
 		if b == nil {
 			return errors.New("invalid bucket")
@@ -63,17 +63,15 @@ func (ds *DatastoreBoltDB) Get(root string, key string) (string, bool) {
 		return nil
 	})
 
-	ds.lastErr = err
-
 	return value, value != ""
 }
 
 // GetKeys returns all the keys for a specific id from the store.
-func (ds *DatastoreBoltDB) GetKeys(root string) ([]string, bool) {
+func (ds *BoltDBStorage) GetKeys(root string) ([]string, bool) {
 
 	var keys []string
 
-	err := ds.db.View(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(root))
 		if b == nil {
 			return errors.New("invalid bucket")
@@ -85,15 +83,13 @@ func (ds *DatastoreBoltDB) GetKeys(root string) ([]string, bool) {
 		return err
 	})
 
-	ds.lastErr = err
-
 	return keys, len(keys) > 0
 }
 
 // Set sets a config value in the store.
-func (ds *DatastoreBoltDB) Set(root string, key string, val string) error {
+func (ds *BoltDBStorage) Set(root string, key string, val string) error {
 
-	err := ds.db.Update(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(root))
 		if err != nil {
 			return err
@@ -101,51 +97,42 @@ func (ds *DatastoreBoltDB) Set(root string, key string, val string) error {
 		return b.Put([]byte(key), []byte(val))
 	})
 
-	ds.lastErr = err
-
-	return err
+	return ds.lastErr
 }
 
 // Delete deletes data from the store.
-func (ds *DatastoreBoltDB) Delete(root string, key string) {
+func (ds *BoltDBStorage) Delete(root string, key string) {
 
-	err := ds.db.Update(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.Update(func(tx *bolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists([]byte(root))
 		if err != nil {
 			return err
 		}
 		return b.Delete([]byte(key))
 	})
-
-	ds.lastErr = err
 }
 
 // DeleteAll deletes all data for a specific id from the store.
-func (ds *DatastoreBoltDB) DeleteAll(root string) {
+func (ds *BoltDBStorage) DeleteAll(root string) {
 
-	err := ds.db.Update(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.Update(func(tx *bolt.Tx) error {
 		return tx.DeleteBucket([]byte(root))
 	})
-
-	ds.lastErr = err
 }
 
 // Exists returns true if there is any data for a specific id in the store.
-func (ds *DatastoreBoltDB) Exists(root string) bool {
+func (ds *BoltDBStorage) Exists(root string) bool {
 	exists := false
 
-	err := ds.db.View(func(tx *bolt.Tx) error {
+	ds.lastErr = ds.db.View(func(tx *bolt.Tx) error {
 		exists = tx.Bucket([]byte(root)) != nil
 		return nil
 	})
 
-	ds.lastErr = err
-
 	return exists
-
 }
 
 // Close closes BoltDB Storage
-func (ds *DatastoreBoltDB) Close() error {
+func (ds *BoltDBStorage) Close() error {
 	return ds.db.Close()
 }

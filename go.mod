@@ -10,13 +10,13 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.5.0
-	github.com/boltdb/bolt v1.3.1
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/hybridgroup/mjpeg v0.0.0-20250330094202-16d243df0e35
 	github.com/mark3labs/mcp-go v0.15.0
 	github.com/orsinium-labs/tinytest v1.0.0
 	github.com/urfave/cli-altsrc/v3 v3.0.1
 	github.com/urfave/cli/v3 v3.1.1
+	go.etcd.io/bbolt v1.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
