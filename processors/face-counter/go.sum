@@ -1,0 +1,8 @@
+github.com/orsinium-labs/jsony v1.0.2 h1:XIGxtIFNClNIPlc0Mgqd+8KzHmWPw3rGvM3fL4lyh+4=
+github.com/orsinium-labs/jsony v1.0.2/go.mod h1:QWdjM0+NmiPsj6bxGZFpo2xaZMtDqh9rc5qSVGqwQaE=
+github.com/wasmvision/wasmvision-sdk-go v0.7.0 h1:anmRefjEDDaoYXNojFnCTsGD7leJwTPJ7ZjQ93n7U5I=
+github.com/wasmvision/wasmvision-sdk-go v0.7.0/go.mod h1:ar13Pq9mF+iel5voGv7hckoedginvIjo8yAWPcswVYA=
+go.bytecodealliance.org/cm v0.2.2 h1:M9iHS6qs884mbQbIjtLX1OifgyPG9DuMs2iwz8G4WQA=
+go.bytecodealliance.org/cm v0.2.2/go.mod h1:JD5vtVNZv7sBoQQkvBvAAVKJPhR/bqBH7yYXTItMfZI=
+wasmcv.org/wasm/cv v0.8.0 h1:z78cDASuUtVfPzSp5bCeUSo8nxx7fev+NmudHPzsukA=
+wasmcv.org/wasm/cv v0.8.0/go.mod h1:QfNrMT0PjVtm7hAZz+T3pZvyVsGlPt+O5p7s6UjxvK0=

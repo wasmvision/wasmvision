@@ -49,6 +49,11 @@ var knownProcessors = map[string]ProcessorFile{
 		Filename:    "edge-detect.wasm",
 		Description: "Edge-detect processor detects edges in frames using a computer vision model",
 	},
+	"face-counter": {
+		Alias:       "face-counter",
+		Filename:    "face-counter.wasm",
+		Description: "Counts the average number of faces previously detected using facedetectyn.wasm, and saves to Processor datastore.",
+	},
 	"face-expression": {
 		Alias:       "face-expression",
 		Filename:    "face-expression.wasm",
