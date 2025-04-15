@@ -18,6 +18,9 @@ edge-detect:
 faceblur:
 	cd processors/faceblur; go mod tidy; tinygo build -o ../faceblur.wasm -target=wasm-unknown --no-debug .
 
+face-counter:
+	cd processors/face-counter; go mod tidy; tinygo build -o ../face-counter.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
+
 facedetectyn:
 	cd processors/facedetectyn; go mod tidy; tinygo build -o ../facedetectyn.wasm -target=wasm-unknown --no-debug .
 
@@ -43,5 +46,5 @@ ollama:
 style-transfer:
 	cd processors/style-transfer; go mod tidy; tinygo build -o ../style-transfer.wasm -target=wasm-unknown --no-debug .
 
-processors: asciify blur blurrs captions edge-detect faceblur facedetectyn facedetectynrs face-expression gaussianblur hello object-detector ollama style-transfer
+processors: asciify blur blurrs captions edge-detect faceblur face-counter facedetectyn facedetectynrs face-expression gaussianblur hello object-detector ollama style-transfer
 	@echo "All processors built successfully!"
