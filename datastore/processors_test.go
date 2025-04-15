@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"os"
+	"path"
 	"testing"
 
 	"github.com/wasmvision/wasmvision/datastore/storage"
@@ -30,10 +31,12 @@ func TestProcessors(t *testing.T) {
 func TestProcessorsBoltDB(t *testing.T) {
 	t.Run("set/get", func(t *testing.T) {
 
-		os.Setenv("WASMVISION_STORAGE_BOLTDB_FILENAME", "test-bolt.db")
+		dbFilename := path.Join(os.TempDir(), "test-bolt.db")
+
+		os.Setenv("WASMVISION_STORAGE_BOLTDB_FILENAME", dbFilename)
 		defer func() {
 			os.Unsetenv("WASMVISION_STORAGE_BOLTDB_FILENAME")
-			os.Remove("test-bolt.db")
+			os.Remove(dbFilename)
 		}()
 
 		s := NewProcessors(storage.NewBoltDBStorage())
