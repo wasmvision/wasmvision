@@ -3,16 +3,18 @@ package guest
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	getter "github.com/hashicorp/go-getter/v2"
+	"github.com/wasmvision/wasmvision"
 )
 
 type ProcessorFile struct {
 	Alias       string
 	Filename    string
-	URL         string
 	Description string
 }
 
@@ -20,85 +22,71 @@ var knownProcessors = map[string]ProcessorFile{
 	"asciify": {
 		Alias:       "asciify",
 		Filename:    "asciify.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/asciify.wasm",
 		Description: "Asciify processor converts frames to ASCII art",
 	},
 	"blur": {
 		Alias:       "blur",
 		Filename:    "blur.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blur.wasm",
 		Description: "Blur processor applies a blur to frames (Go version)",
 	},
 	"blurc": {
 		Alias:       "blurc",
 		Filename:    "blurc.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blurc.wasm",
 		Description: "Blurc processor applies a blur to frames (C version)",
 	},
 	"blurrs": {
 		Alias:       "blurrs",
 		Filename:    "blurrs.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/blurrs.wasm",
 		Description: "Blurrs processor applies a blur to frames (Rust version)",
 	},
 	"captions": {
 		Alias:       "captions",
 		Filename:    "captions.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/captions.wasm",
 		Description: "Captions processor displays captions to frames",
 	},
 	"edge-detect": {
 		Alias:       "edge-detect",
 		Filename:    "edge-detect.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/edge-detect.wasm",
 		Description: "Edge-detect processor detects edges in frames using a computer vision model",
 	},
 	"face-expression": {
 		Alias:       "face-expression",
 		Filename:    "face-expression.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/face-expression.wasm",
 		Description: "Face-expression processor performs Facial Expression Recognition on faces that were previously detected using facedetectyn.wasm",
 	},
 	"faceblur": {
 		Alias:       "faceblur",
 		Filename:    "faceblur.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/faceblur.wasm",
 		Description: "Faceblur processor blurs faces that were previously detected using facedetectyn.wasm",
 	},
 	"facedetectyn": {
 		Alias:       "facedetectyn",
 		Filename:    "facedetectyn.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/facedetectyn.wasm",
 		Description: "Face detection processor using Yunet vision model",
 	},
 	"gaussianblur": {
 		Alias:       "gaussianblur",
 		Filename:    "gaussianblur.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/gaussianblur.wasm",
 		Description: "Gaussian blur processor applies a Gaussian blur to frames",
 	},
 	"hello": {
 		Alias:       "hello",
 		Filename:    "hello.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/hello.wasm",
 		Description: "Hello processor just prints some information about captures frames",
 	},
 	"object-detector": {
 		Alias:       "object-detector",
 		Filename:    "object-detector.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/object-detector.wasm",
 		Description: "Object detector processor detects objects in frames using YOLOv8 computer vision model",
 	},
 	"ollama": {
 		Alias:       "ollama",
 		Filename:    "ollama.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/ollama.wasm",
 		Description: "Ollama processor uses the Ollama API to process frames using Language Vision Models",
 	},
 	"style-transfer": {
 		Alias:       "style-transfer",
 		Filename:    "style-transfer.wasm",
-		URL:         "https://github.com/wasmvision/wasmvision/raw/refs/heads/main/processors/style-transfer.wasm",
 		Description: "Style transfer processor applies fast neural style transfer to frames using one of several models",
 	},
 }
@@ -114,7 +102,7 @@ func DownloadProcessor(processor string, processorDir string) error {
 	}
 
 	req := &getter.Request{
-		Src:     p.URL,
+		Src:     downloadLocation(p.Filename),
 		Dst:     filepath.Join(processorDir, filepath.Base(p.Filename)),
 		GetMode: getter.ModeFile,
 	}
@@ -125,6 +113,19 @@ func DownloadProcessor(processor string, processorDir string) error {
 	}
 
 	return nil
+}
+
+// downloadLocation returns the download location for the processor file.
+// It uses the version of the wasmvision package to determine the correct
+// branch to download from. If the version contains "dev", it downloads from
+// the current dev branch, otherwise it downloads from the tagged branch for that release.
+func downloadLocation(processor string) string {
+	version := wasmvision.Version()
+	if strings.Contains(version, "dev") {
+		return fmt.Sprintf("https://github.com/wasmvision/wasmvision/raw/refs/heads/dev/processors/%s", processor)
+	}
+
+	return fmt.Sprintf("https://github.com/wasmvision/wasmvision/raw/refs/tags/%s/processors/%s", version, processor)
 }
 
 // ProcessorExists checks if the processor file name with full path exists.
