@@ -26,6 +26,9 @@ func NewContext(modelsDir string, conf *config.Store, datastorage string, enable
 	case "boltdb":
 		store = storage.NewBoltDBStorage()
 
+	case "redis":
+		store = storage.NewRedisStorage()
+
 	default:
 		store = storage.NewMemStorage[string]()
 	}
