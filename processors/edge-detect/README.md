@@ -15,7 +15,7 @@ tinygo build -o ../edge-detect.wasm -target=wasm-unknown .
 The first time you run the processor it will automatically download the model, or you can download it by running the command:
 
 ```shell
-wasmvision download edge_detection_dexined_2024sep
+wasmvision download dexined_2024sep
 ```
 
 For more information see:

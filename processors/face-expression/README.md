@@ -25,7 +25,7 @@ wasmvision run -p facedetectyn.wasm -p face-expression.wasm -c detect-draw-faces
 The first time you run the processor it will automatically download the model, or you can download it by running the command:
 
 ```shell
-wasmvision download face_expression_recognition_mobilefacenet_2022july
+wasmvision download mobilefacenet_2022july
 ```
 
 For more information see https://github.com/opencv/opencv_zoo/blob/main/models/facial_expression_recognition/README.md
