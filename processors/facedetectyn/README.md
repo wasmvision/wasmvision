@@ -15,7 +15,7 @@ tinygo build -o ../facedetectyn.wasm -target=wasm-unknown .
 The first time you run the processor it will automatically download the model, or you can download it by running the command:
 
 ```shell
-wasmvision download face_detection_yunet_2023mar
+wasmvision download yunet_2023mar
 ```
 
 For more information see https://github.com/opencv/opencv_zoo/blob/main/models/face_detection_yunet/README.md
