@@ -24,7 +24,7 @@ func process(image mat.Mat) mat.Mat {
 	check := fs.Exists(uint32(image))
 
 	if check.IsErr() || !check.IsOK() {
-		logging.Info("no faces for frame")
+		logging.Warn("no faces for frame")
 		return out
 	}
 
@@ -57,7 +57,7 @@ func process(image mat.Mat) mat.Mat {
 		area.Close()
 	}
 
-	logging.Info("Performed face blur on image")
+	logging.Debug("Performed face blur on image")
 
 	return out
 }

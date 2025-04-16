@@ -59,7 +59,7 @@ pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
         }
     }
 
-    logging::info("Performed face detection on image");
+    logging::debug("Performed face detection on image");
 
     out
 }

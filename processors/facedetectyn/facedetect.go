@@ -53,13 +53,10 @@ func process(image mat.Mat) mat.Mat {
 
 	defer faces.Close()
 
-	out := image
-	if drawFaceBoxes {
-		out = image.Clone()
-	}
+	out := image.Clone()
 	handleFaces(out, faces)
 
-	logging.Info("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
+	logging.Debug("Performed face detection on image " + strconv.Itoa(int(uint32(out))))
 
 	return out
 }

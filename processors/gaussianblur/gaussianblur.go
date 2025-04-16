@@ -17,6 +17,6 @@ func process(image mat.Mat) mat.Mat {
 		return image
 	}
 
-	logging.Info("Performed GaussianBlur on image")
+	logging.Debug("Performed GaussianBlur on image")
 	return imageOut
 }

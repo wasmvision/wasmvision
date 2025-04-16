@@ -87,6 +87,6 @@ func process(image mat.Mat) mat.Mat {
 		return image
 	}
 
-	logging.Info("Performed neural style transfer on image")
+	logging.Debug("Performed neural style transfer on image")
 	return out
 }

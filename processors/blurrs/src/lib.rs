@@ -9,7 +9,7 @@ use wasmvision::wasmvision::platform::logging;
 
 #[no_mangle]
 pub extern fn process(mat: cv::mat::Mat) -> cv::mat::Mat {
-    logging::info(&["Performing blur on image with Cols: ", &mat.cols().to_string(), " Rows: ", &mat.rows().to_string()].concat());
+    logging::debug(&["Performing blur on image with Cols: ", &mat.cols().to_string(), " Rows: ", &mat.rows().to_string()].concat());
 
     if mat.empty() {
         logging::warn("image was empty");

@@ -3,8 +3,6 @@
 package main
 
 import (
-	"strconv"
-
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
 	"wasmcv.org/wasm/cv/mat"
@@ -18,9 +16,8 @@ func process(image mat.Mat) mat.Mat {
 		logging.Error("Error applying blur")
 		return image
 	}
-	logging.Info("Performed Blur on image")
+	logging.Debug("Performed Blur on image")
 
-	logging.Info("Blurred image: " + strconv.Itoa(int(image)) + " " + strconv.Itoa(int(out)))
 	if out.Empty() {
 		logging.Warn("Blurred image was empty")
 		return image
