@@ -52,6 +52,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		ProcessorsDir: processorsDir,
 		ModelsDir:     modelsDir,
 		Settings:      config,
+		Datastorage:   datastorage,
 		EnableCUDA:    enableCUDA,
 	})
 	if err != nil {
