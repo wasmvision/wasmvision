@@ -1,6 +1,8 @@
 package cv
 
 import (
+	"log/slog"
+
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/datastore"
 	"github.com/wasmvision/wasmvision/datastore/storage"
@@ -21,15 +23,19 @@ func NewContext(modelsDir string, conf *config.Store, datastorage string, enable
 	var store datastore.DataStorage
 	switch datastorage {
 	case "memory":
+		slog.Info("Using memory datastorage")
 		store = storage.NewMemStorage[string]()
 
 	case "boltdb":
+		slog.Info("Using BoltDB datastorage")
 		store = storage.NewBoltDBStorage()
 
 	case "redis":
+		slog.Info("Using Redis datastorage")
 		store = storage.NewRedisStorage()
 
 	default:
+		slog.Info("Using default datastorage (memory)")
 		store = storage.NewMemStorage[string]()
 	}
 
