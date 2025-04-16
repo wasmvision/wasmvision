@@ -8,6 +8,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 	"github.com/wasmvision/wasmvision/capture"
+	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/engine"
 	"github.com/wasmvision/wasmvision/runtime"
 )
@@ -154,7 +155,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		slog.Debug(fmt.Sprintf("Read frame %d", i))
 
 		if mcpEnabled {
-			if err := mcpServer.PublishInput(frame); err != nil {
+			if err := mcpServer.PublishInput(cv.NewFrame(frame.Image.Clone())); err != nil {
 				slog.Error("failed to publish input frame to MCP server:" + err.Error())
 			}
 		}
@@ -168,7 +169,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		}
 
 		if mcpEnabled {
-			if err := mcpServer.PublishOutput(outframe); err != nil {
+			if err := mcpServer.PublishOutput(cv.NewFrame(outframe.Image.Clone())); err != nil {
 				slog.Error("failed to publish output frame to MCP server:" + err.Error())
 			}
 		}

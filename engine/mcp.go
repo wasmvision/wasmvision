@@ -111,10 +111,15 @@ func (s *MCPServer) PublishInput(frm *cv.Frame) error {
 
 func (s *MCPServer) publishInputFrames() {
 	for frame := range s.inputFrames {
-		// if there is outstanding request for frame resource, update it
+		if frame == nil || frame.Empty() || frame.Image.Ptr() == nil || frame.Image.Empty() {
+			slog.Error("empty frame")
+			continue
+		}
+
 		s.inputFrameMut.Lock()
 		frame.Image.CopyTo(&s.currentInputFrame)
 		s.inputFrameMut.Unlock()
+		frame.Close()
 	}
 }
 
@@ -126,10 +131,15 @@ func (s *MCPServer) PublishOutput(frm *cv.Frame) error {
 
 func (s *MCPServer) publishOutputFrames() {
 	for frame := range s.outputFrames {
-		// if there is outstanding request for frame resource, update it
+		if frame == nil || frame.Empty() || frame.Image.Ptr() == nil || frame.Image.Empty() {
+			slog.Error("empty frame")
+			continue
+		}
+
 		s.outputFrameMut.Lock()
 		frame.Image.CopyTo(&s.currentOutputFrame)
 		s.outputFrameMut.Unlock()
+		frame.Close()
 	}
 }
 
@@ -137,12 +147,7 @@ func handleImageResource(mut *sync.Mutex, frame *gocv.Mat, uri string) (mcp.Blob
 	mut.Lock()
 	defer mut.Unlock()
 
-	// Create a copy of the current frame for encoding
-	frameCopy := gocv.NewMat()
-	defer frameCopy.Close()
-	frame.CopyTo(&frameCopy)
-
-	buf, err := gocv.IMEncode(".jpg", frameCopy)
+	buf, err := gocv.IMEncode(".jpg", *frame)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error encoding frame: %v", err))
 		return mcp.BlobResourceContents{}, err
