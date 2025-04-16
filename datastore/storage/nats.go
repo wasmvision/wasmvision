@@ -12,7 +12,7 @@ type NatsStorage struct {
 	lastErr error
 }
 
-// NewNatsStorage Creates a new Redis storage
+// NewNatsStorage Creates a new NATS storage
 func NewNatsStorage() *NatsStorage {
 
 	ds := &NatsStorage{}
