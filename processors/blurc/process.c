@@ -13,7 +13,7 @@ wasm_cv_mat_own_mat_t process(wasm_cv_mat_own_mat_t image) {
     }
 
     platform_string_t msg = {(unsigned char *)"Blurc processor called", 23};
-    wasmvision_platform_logging_info(&msg);
+    wasmvision_platform_logging_debug(&msg);
 
     return out_mat;
 }

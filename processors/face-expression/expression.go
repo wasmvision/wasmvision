@@ -57,7 +57,7 @@ func process(image mat.Mat) mat.Mat {
 		}
 		logging.Info("Face expression: " + desc)
 		if desc == "unknown" {
-			logging.Info("Unknown face expression")
+			logging.Warn("Unknown face expression")
 			continue
 		}
 
@@ -65,7 +65,7 @@ func process(image mat.Mat) mat.Mat {
 		cv.PutText(out, desc, types.Size{X: data.Rect.Min.X, Y: data.Rect.Min.Y - 10}, types.HersheyFontTypeHersheyFontComplex, 0.6, green, 2)
 	}
 
-	logging.Info("Performed face expression analysis on image")
+	logging.Debug("Performed face expression analysis on image")
 
 	return out
 }

@@ -23,7 +23,7 @@ func process(image mat.Mat) mat.Mat {
 
 	boxes, classIds, indices := detection(image)
 	if len(boxes) == 0 {
-		logging.Info("No classes detected")
+		logging.Debug("No classes detected")
 		return image
 	}
 
