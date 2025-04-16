@@ -41,8 +41,8 @@ func TestProcessorsBoltDB(t *testing.T) {
 
 		s := NewProcessors(storage.NewBoltDBStorage())
 
-		if s.Error() != nil {
-			t.Fatal(s.Error())
+		if s.Err() != nil {
+			t.Fatal(s.Err())
 		}
 
 		err := s.Set("proc", "key", "value")

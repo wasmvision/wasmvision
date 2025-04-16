@@ -61,7 +61,7 @@ func NewNatsStorage() *NatsStorage {
 	return ds
 }
 
-// Error returns last operational error
+// Err returns last operational error
 func (ds *NatsStorage) Err() error {
 	return ds.lastErr
 }

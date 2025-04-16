@@ -44,7 +44,7 @@ func NewBoltDBStorage() *BoltDBStorage {
 	}
 }
 
-// Error returns last operational error
+// Err returns last operational error
 func (ds *BoltDBStorage) Err() error {
 	return ds.lastErr
 }
