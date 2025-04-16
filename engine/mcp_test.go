@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/wasmvision/wasmvision/cv"
 	"gocv.io/x/gocv"
@@ -15,6 +16,10 @@ func TestMCPServer(t *testing.T) {
 		port := ":8081"
 
 		s := NewMCPServer(port)
+		defer func() {
+			s.Close()
+			time.Sleep(500 * time.Millisecond)
+		}()
 
 		if s.Port != port {
 			t.Errorf("unexpected port: %s", s.Port)
@@ -33,7 +38,11 @@ func TestMCPServerStart(t *testing.T) {
 		s := NewMCPServer(port)
 
 		s.Start()
-		defer s.Close()
+		defer func() {
+			s.Close()
+			time.Sleep(500 * time.Millisecond)
+		}()
+
 		img := gocv.IMRead("../images/wasmvision-logo.png", gocv.IMReadColor)
 		frm := cv.NewFrame(img)
 		if err := s.PublishOutput(frm); err != nil {
@@ -48,7 +57,10 @@ func TestMCPServerEndpoint(t *testing.T) {
 
 		s := NewMCPServer(port)
 		s.Start()
-		defer s.Close()
+		defer func() {
+			s.Close()
+			time.Sleep(500 * time.Millisecond)
+		}()
 
 		sseResp, err := http.Get(fmt.Sprintf("%s/sse", port))
 		if err != nil {
