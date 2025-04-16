@@ -16,7 +16,7 @@ type NatsStorage struct {
 func NewNatsStorage() *NatsStorage {
 
 	ds := &NatsStorage{}
-	opts := []nats.Option{nats.Name("wasmvision NATS storage")}
+	opts := []nats.Option{nats.Name("wasmVision NATS storage")}
 
 	natsURL := os.Getenv("WASMVISION_STORAGE_NATS_URL")
 	if natsURL == "" {
