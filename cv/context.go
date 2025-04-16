@@ -34,6 +34,9 @@ func NewContext(modelsDir string, conf *config.Store, datastorage string, enable
 		slog.Info("Using Redis datastorage")
 		store = storage.NewRedisStorage()
 
+	case "nats":
+		store = storage.NewNatsStorage()
+
 	default:
 		slog.Info("Using default datastorage (memory)")
 		store = storage.NewMemStorage[string]()
