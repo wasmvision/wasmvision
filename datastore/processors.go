@@ -42,8 +42,8 @@ func (s *Processors) Exists(processor string) bool {
 	return s.store.Exists(processor)
 }
 
-// Error returns last operational error if any. nil otherwise.
-func (s *Processors) Error() error {
+// Err returns last operational error if any. nil otherwise.
+func (s *Processors) Err() error {
 	return nil
 }
 

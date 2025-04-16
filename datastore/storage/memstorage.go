@@ -72,8 +72,8 @@ func (s *MemStorage[T]) Exists(key T) bool {
 	return ok
 }
 
-// Error returns last operational error if any. nil otherwise.
-func (s *MemStorage[T]) Error() error {
+// Err returns last operational error if any. nil otherwise.
+func (s *MemStorage[T]) Err() error {
 	return nil
 }
 

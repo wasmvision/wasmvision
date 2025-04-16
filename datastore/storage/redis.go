@@ -35,8 +35,8 @@ func NewRedisStorage() *RedisStorage {
 	return ds
 }
 
-// Error returns last operational error
-func (ds *RedisStorage) Error() error {
+// Err returns last operational error
+func (ds *RedisStorage) Err() error {
 	return ds.lastErr
 }
 
