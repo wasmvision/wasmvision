@@ -151,7 +151,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		r.Refs.Set(frame.ID.Unwrap(), frame)
 
 		i++
-		slog.Info(fmt.Sprintf("Read frame %d", i))
+		slog.Debug(fmt.Sprintf("Read frame %d", i))
 
 		if mcpEnabled {
 			if err := mcpServer.PublishInput(frame); err != nil {
