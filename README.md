@@ -6,28 +6,45 @@
 
 wasmVision is a high-performance computer vision processing engine with advanced algorithms and vision models, that is designed to be customized and extended using WebAssembly.
 
+It can run on embedded devices or run in the cloud, and can take advantage of hardware acceleration.
+
 ## How it works
 
-- [Capture video from a camera, video file, or stream](https://wasmvision.com/docs/concepts/capture/)
-- [Process the video frames using WebAssembly](https://wasmvision.com/docs/concepts/process/)
-- [Output the results to a stream or video file](https://wasmvision.com/docs/concepts/output/)
+- [Capture video from cameras, video files, or streams](https://wasmvision.com/docs/concepts/capture/)
+- [Process video using computer vision algorithms and machine learning models using WebAssembly](https://wasmvision.com/docs/concepts/process/)
+- [Output results to a stream, video file, or data store](https://wasmvision.com/docs/concepts/output/)
 
 ```mermaid
-flowchart LR
-    subgraph engine
-        Capture
-        Runtime[WASM Runtime]
-        Runtime<-->MCP[MCP Server]
-        Capture--frame-->Runtime
-        Capture<-->OpenCV
-        Runtime<-->OpenCV
-        OpenCV<-->CUDA
-    end
-    subgraph processors
-        Runtime--frame-->processor1.wasm
-        Runtime--frame-->processor2.wasm
-        Runtime--frame-->processor3.wasm
-        Runtime--frame-->processor4.wasm
+flowchart TD
+    subgraph wasmVision
+        subgraph engine
+            subgraph Capture
+                Devices
+            end
+            Runtime[WASM Runtime]
+            Capture--frame-->Runtime
+            Capture<-->OpenCV
+            Runtime<-->Models
+            OpenCV<-->Models
+            OpenCV<-->CUDA
+            subgraph Platform
+                logging
+                config
+                http
+                datastore
+                time
+            end
+            Runtime<-->MCP[MCP Server]
+        end
+        subgraph processors
+            Runtime--frame-->processor1.wasm
+            Runtime--frame-->processor2.wasm
+            Runtime--frame-->processor3.wasm
+            Runtime--frame-->processor4.wasm
+        end
+        processor1.wasm-->logging
+        processor2.wasm-->logging
+        processor2.wasm-->datastore
     end
 ```
 
@@ -45,9 +62,9 @@ wasmVision processing modules are WebAssembly guest modules that support the [wa
 
 Processors can filter images, analyze them, and modify them using traditional computer vision algorithms.
 
-Processors can also use deep neural networks and other machine learning algorithms, and can even download the models they need automatically.
+Processors can also use deep neural networks and machine learning models, and can even download the models they need automatically.
 
-You can use Go, Rust, or the C programming language to write the code for processors.
+You can use the Go, Rust, and C programming language to write the code for processors.
 
 Want some processors you can try out right away? Take a look at these:
 
