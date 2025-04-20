@@ -23,15 +23,16 @@ var (
 	configFile   string
 	configSource = altsrc.NewStringPtrSourcer(&configFile)
 
-	source        string
-	captureDevice string
-	height        int64
-	width         int64
-	output        string
-	destination   string
-	loggingLevel  string
-	enableCUDA    bool
-	datastorage   string
+	source          string
+	captureDevice   string
+	height          int64
+	width           int64
+	output          string
+	destination     string
+	loggingLevel    string
+	enableCUDA      bool
+	enableBenchmark bool
+	datastorage     string
 
 	processors []string
 	pipeline   []string
@@ -109,6 +110,12 @@ var (
 			Usage:       "enable CUDA support (if available)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.cuda-enable", configSource), yaml.YAML("main.cuda-enable", configSource)),
 			Destination: &enableCUDA,
+		},
+		&cli.BoolFlag{Name: "benchmark",
+			Value:       false,
+			Usage:       "enable output of benchmark data",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.benchmark", configSource), yaml.YAML("main.benchmark", configSource)),
+			Destination: &enableBenchmark,
 		},
 		&cli.StringSliceFlag{
 			Name:        "processor",

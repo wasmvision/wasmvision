@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/urfave/cli/v3"
 	"github.com/wasmvision/wasmvision/capture"
@@ -127,7 +128,8 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	slog.Info(fmt.Sprintf("Reading video from source '%v", source))
-	i := 0
+	i, seconds := 0, 0
+	benchTime := time.Now()
 
 	for {
 		frame, err := device.Read()
@@ -153,6 +155,11 @@ func run(ctx context.Context, cmd *cli.Command) error {
 
 		i++
 		slog.Debug(fmt.Sprintf("Read frame %d", i))
+		if enableBenchmark && time.Since(benchTime) > 1*time.Second {
+			seconds++
+			fmt.Printf("Benchmark: %d frames per second\n", i/seconds)
+			benchTime = time.Now()
+		}
 
 		if mcpEnabled {
 			if err := mcpServer.PublishInput(cv.NewFrame(frame.Image.Clone())); err != nil {
