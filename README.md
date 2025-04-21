@@ -4,9 +4,9 @@
 
 [![Linux](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml/badge.svg?branch=dev)](https://github.com/wasmvision/wasmvision/actions/workflows/linux.yml) [![macOS](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml/badge.svg?branch=dev)](https://github.com/wasmvision/wasmvision/actions/workflows/macos.yml) [![Windows](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml/badge.svg?branch=dev)](https://github.com/wasmvision/wasmvision/actions/workflows/windows.yml) [![Docker](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml/badge.svg?branch=dev)](https://github.com/wasmvision/wasmvision/actions/workflows/docker.yml)
 
-wasmVision is a high-performance computer vision processing engine with advanced algorithms and vision models, that is designed to be customized and extended using WebAssembly.
+wasmVision is a high-performance computer vision processing engine that includes advanced algorithms and vision models for machine learning.
 
-It can run on embedded devices or run in the cloud, and can take advantage of hardware acceleration.
+It is designed to be customized and extended using WebAssembly, can run on embedded devices or run in the cloud, and takes advantage of hardware acceleration.
 
 ## How it works
 
