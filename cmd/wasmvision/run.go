@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/urfave/cli/v3"
@@ -16,7 +17,7 @@ import (
 
 var (
 	mjpegstream *engine.MJPEGStream
-	videoWriter *engine.VideoWriter
+	fileWriter  engine.FileWriter
 )
 
 func run(ctx context.Context, cmd *cli.Command) error {
@@ -102,13 +103,23 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		if destination == "" {
 			return fmt.Errorf("you must profile a file destination for output=file")
 		}
-		videoWriter = engine.NewVideoWriter(r.Refs, destination)
 
-		if err := videoWriter.Start(device); err != nil {
-			return fmt.Errorf("failed starting video writer: %w", err)
+		// video or image writer
+		switch filepath.Ext(destination) {
+		case ".jpg", ".png":
+			// image writer
+			fileWriter = engine.NewImageWriter(r.Refs, destination)
+		default:
+			// video writer
+			fileWriter = engine.NewVideoWriter(r.Refs, destination)
 		}
 
-		defer videoWriter.Close()
+		if err := fileWriter.Start(device); err != nil {
+			return fmt.Errorf("failed starting file writer: %w", err)
+		}
+
+		defer fileWriter.Close()
+
 	case "none":
 		// do nothing
 	default:
@@ -185,7 +196,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		case "mjpeg":
 			mjpegstream.Publish(outframe)
 		case "file":
-			videoWriter.Write(outframe)
+			fileWriter.Write(outframe)
 		case "none":
 			outframe.Close()
 		}
