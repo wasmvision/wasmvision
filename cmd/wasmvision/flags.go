@@ -172,7 +172,7 @@ var (
 		},
 		&cli.StringFlag{Name: "datastorage",
 			Value:       "memory",
-			Usage:       "datastorage backend to use for processor data (memory)",
+			Usage:       "datastorage backend to use for processor data (memory, boltdb, redis, nats)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.datastorage", configSource), yaml.YAML("main.datastorage", configSource)),
 			Destination: &datastorage,
 		},
