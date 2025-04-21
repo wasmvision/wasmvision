@@ -44,7 +44,10 @@ func (s *MJPEGStream) Start() error {
 
 	go s.publishFrames()
 	go func() {
-		slog.Error(fmt.Sprintf("mjpeg streamer exited with result %v", s.server.ListenAndServe()))
+		err := s.server.ListenAndServe()
+		if err != http.ErrServerClosed {
+			slog.Error(fmt.Sprintf("mjpeg streamer exited with result %v", err))
+		}
 	}()
 
 	return nil
