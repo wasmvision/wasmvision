@@ -130,7 +130,7 @@ func downloadLocation(processor string) string {
 		return fmt.Sprintf("https://github.com/wasmvision/wasmvision/raw/refs/heads/dev/processors/%s", processor)
 	}
 
-	return fmt.Sprintf("https://github.com/wasmvision/wasmvision/raw/refs/tags/%s/processors/%s", version, processor)
+	return fmt.Sprintf("https://github.com/wasmvision/wasmvision/raw/refs/tags/v%s/processors/%s", version, processor)
 }
 
 // ProcessorExists checks if the processor file name with full path exists.
