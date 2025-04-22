@@ -6,11 +6,12 @@ import (
 	"runtime"
 
 	"github.com/urfave/cli/v3"
+	"github.com/wasmvision/wasmvision"
 	"gocv.io/x/gocv"
 )
 
 func info(ctx context.Context, cmd *cli.Command) error {
-	fmt.Printf("wasmVision version %s %s/%s\n", Version(), runtime.GOOS, runtime.GOARCH)
+	fmt.Printf("wasmVision version %s %s/%s\n", wasmvision.Version(), runtime.GOOS, runtime.GOARCH)
 
 	fmt.Print("Camera backends: ")
 	printCameraBackends()
