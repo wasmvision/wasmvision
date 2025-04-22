@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime"
 
 	"github.com/urfave/cli/v3"
+	"github.com/wasmvision/wasmvision"
 )
 
 var logo = `
@@ -23,7 +25,13 @@ https://wasmvision.com
 
 func about(ctx context.Context, cmd *cli.Command) error {
 	fmt.Println(logo)
-	fmt.Println("Version:", Version())
+	fmt.Println("Version:", wasmvision.Version())
+
+	return nil
+}
+
+func version(ctx context.Context, cmd *cli.Command) error {
+	fmt.Printf("wasmVision version %s %s/%s\n", wasmvision.Version(), runtime.GOOS, runtime.GOARCH)
 
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/urfave/cli/v3"
+	"github.com/wasmvision/wasmvision"
 )
 
 func main() {
@@ -15,7 +16,7 @@ func main() {
 		Name:        "wasmvision",
 		Usage:       "wasmVision CLI",
 		Description: "wasmVision gets you up and running with computer vision.",
-		Version:     Version(),
+		Version:     wasmvision.Version(),
 		Commands: []*cli.Command{
 			{
 				Name:   "run",
