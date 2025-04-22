@@ -28,7 +28,7 @@ func process(image mat.Mat) mat.Mat {
 	}
 
 	out := image.Clone()
-	drawRects(out, boxes, classIds, indices)
+	drawRects(out, boxes, classIds, filterRects(boxes, indices))
 
 	return out
 }
