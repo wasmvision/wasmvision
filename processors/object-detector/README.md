@@ -14,6 +14,12 @@ wasmVision currently only provides support for the YOLOv8 detection model.
 tinygo build -o ../object-detector.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
 ```
 
+## How to run
+
+```shell
+wasmvision run -p object-detector.wasm
+```
+
 ## Configuration
 
 The following configuration settings are available for the `object-detector.wasm` processor.

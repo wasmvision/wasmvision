@@ -3,6 +3,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
@@ -167,6 +168,26 @@ func analyze(outs []mat.Mat) ([]types.Rect, []float32, []int) {
 	}
 
 	return boxes, confidences, classIds
+}
+
+// filterRects filters the detected boxes based on the indices
+// and removes any invalid boxes (e.g., with negative width or height).
+// It returns a slice of valid indices.
+func filterRects(boxes []types.Rect, indices []uint32) []uint32 {
+	var filtered []uint32
+	for _, idx := range indices {
+		if idx == 0 {
+			continue
+		}
+		rect := types.Rect{Min: types.Size{X: boxes[idx].Min.X, Y: boxes[idx].Min.Y}, Max: types.Size{X: boxes[idx].Max.X, Y: boxes[idx].Max.Y}}
+		if rect.Min.X >= rect.Max.X || rect.Min.Y >= rect.Max.Y {
+			logging.Debug("Invalid box coordinates " + strconv.Itoa(int(rect.Min.X)) + " " + strconv.Itoa(int(rect.Min.Y)) + " " + strconv.Itoa(int(rect.Max.X)) + " " + strconv.Itoa(int(rect.Max.Y)))
+			continue
+		}
+		filtered = append(filtered, idx)
+	}
+
+	return filtered
 }
 
 func getOutputNames(net dnn.Net) []string {
