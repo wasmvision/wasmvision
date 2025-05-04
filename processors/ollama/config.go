@@ -3,6 +3,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/wasmvision/wasmvision-sdk-go/config"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 )
@@ -26,7 +28,7 @@ func loadConfig() {
 		if isErr {
 			url = defaultURL
 		} else {
-			url = ok
+			url = strings.Clone(ok)
 		}
 
 		logging.Info("Using Ollama server at " + url)
@@ -37,7 +39,7 @@ func loadConfig() {
 		if isErr {
 			model = defaultModel
 		} else {
-			model = ok
+			model = strings.Clone(ok)
 		}
 
 		logging.Info("Using Ollama model " + model)
@@ -48,7 +50,7 @@ func loadConfig() {
 		if isErr {
 			prompt = defaultPrompt
 		} else {
-			prompt = ok
+			prompt = strings.Clone(ok)
 		}
 
 		logging.Info("Using prompt " + prompt)
