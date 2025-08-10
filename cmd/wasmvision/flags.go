@@ -165,7 +165,7 @@ var (
 			Destination: &mcpEnabled,
 		},
 		&cli.StringFlag{Name: "mcp-port",
-			Value:       ":5001",
+			Value:       ":9090",
 			Usage:       "port for MCP server",
 			Sources:     cli.NewValueSourceChain(toml.TOML("server.mcp-port", configSource), yaml.YAML("server.mcp-port", configSource)),
 			Destination: &mcpPort,

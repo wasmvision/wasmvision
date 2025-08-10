@@ -20,7 +20,7 @@ import (
 // being processed by wasmVision.
 type MCPServer struct {
 	mcpServer          *server.MCPServer
-	sseServer          *server.SSEServer
+	httpServer         *server.StreamableHTTPServer
 	Port               string
 	inputFrames        chan *cv.Frame
 	currentInputFrame  gocv.Mat
@@ -41,45 +41,64 @@ func NewMCPServer(port string) *MCPServer {
 	}
 }
 
-var (
-	imagesInputResource = mcp.NewResource(
+// Init inits the NewMCPServer server.
+func (s *MCPServer) Init() error {
+	s.mcpServer = server.NewMCPServer("wasmvision", wasmvision.Version(), server.WithResourceCapabilities(false, false), server.WithLogging())
+	s.httpServer = server.NewStreamableHTTPServer(s.mcpServer)
+
+	s.AddImageInputResource()
+	s.AddImageOutputResource()
+
+	return nil
+}
+
+// Start starts the NewMCPServer server.
+func (s *MCPServer) Start() error {
+	slog.Warn("MCP server starting", "port", s.Port)
+
+	go s.httpServer.Start(getPort(s.Port))
+	s.StartPublishing()
+
+	return nil
+}
+
+// AddImageInputResource adds the image input resource.
+func (s *MCPServer) AddImageInputResource() error {
+	imagesInputResource := mcp.NewResource(
 		"images://input",
 		"input",
 		mcp.WithResourceDescription("Current input image frame"),
 		mcp.WithMIMEType("image/jpeg"),
 	)
 
-	imagesOutputResource = mcp.NewResource(
+	s.mcpServer.AddResource(imagesInputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+		resource, err := handleImageResource(&s.inputFrameMut, &s.currentInputFrame, imagesInputResource.URI)
+		if err != nil {
+			slog.Error("unable to handle MCP input resource", "error", err.Error())
+			return nil, err
+		}
+
+		return []mcp.ResourceContents{
+			resource,
+		}, nil
+	})
+
+	return nil
+}
+
+// AddImageOutputResource adds the image output resource.
+func (s *MCPServer) AddImageOutputResource() error {
+	imagesOutputResource := mcp.NewResource(
 		"images://output",
 		"output",
 		mcp.WithResourceDescription("Current output image frame"),
 		mcp.WithMIMEType("image/jpeg"),
 	)
-)
-
-// Start starts the NewMCPServer server.
-func (s *MCPServer) Start() error {
-	s.mcpServer = server.NewMCPServer("wasmvision", wasmvision.Version(),
-		server.WithResourceCapabilities(false, false))
-	s.sseServer = server.NewSSEServer(s.mcpServer,
-		server.WithBaseURL(getURL(s.Port)),
-		server.WithMessageEndpoint("/messages"),
-	)
-
-	s.mcpServer.AddResource(imagesInputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-		resource, err := handleImageResource(&s.inputFrameMut, &s.currentInputFrame, imagesInputResource.URI)
-		if err != nil {
-			return nil, err
-		}
-
-		return []mcp.ResourceContents{
-			resource,
-		}, nil
-	})
 
 	s.mcpServer.AddResource(imagesOutputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
 		resource, err := handleImageResource(&s.outputFrameMut, &s.currentOutputFrame, imagesOutputResource.URI)
 		if err != nil {
+			slog.Error("unable to handle MCP output resource", "error", err.Error())
 			return nil, err
 		}
 
@@ -88,7 +107,11 @@ func (s *MCPServer) Start() error {
 		}, nil
 	})
 
-	go s.sseServer.Start(getPort(s.Port))
+	return nil
+}
+
+// StartPublishing starts publishing frames.
+func (s *MCPServer) StartPublishing() error {
 	go s.publishInputFrames()
 	go s.publishOutputFrames()
 
@@ -98,8 +121,10 @@ func (s *MCPServer) Start() error {
 // Close closes the MCPServer server.
 func (s *MCPServer) Close() {
 	close(s.outputFrames)
-	if s.sseServer != nil {
-		s.sseServer.Shutdown(context.Background())
+	if s.httpServer != nil {
+		if err := s.httpServer.Shutdown(context.Background()); err != nil {
+			slog.Error("problem shutting down MCP server", "error", err)
+		}
 	}
 }
 
@@ -163,19 +188,9 @@ func handleImageResource(mut *sync.Mutex, frame *gocv.Mat, uri string) (mcp.Blob
 	}, nil
 }
 
-func getURL(port string) string {
-	if port == "" {
-		return "http://localhost:5001"
-	}
-	if port[0] == ':' {
-		return fmt.Sprintf("http://localhost%s", port)
-	}
-	return port
-}
-
 func getPort(port string) string {
 	if port == "" {
-		return ":5001"
+		return ":9090"
 	}
 	if port[0] == ':' {
 		return port
@@ -183,12 +198,12 @@ func getPort(port string) string {
 
 	u, err := url.Parse(port)
 	if err != nil {
-		return ":5001"
+		return ":9090"
 	}
 
 	_, p, _ := net.SplitHostPort(u.Host)
 	if p == "" {
-		return ":5001"
+		return ":9090"
 	}
 	return ":" + p
 }

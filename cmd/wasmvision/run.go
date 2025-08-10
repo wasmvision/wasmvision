@@ -131,6 +131,10 @@ func run(ctx context.Context, cmd *cli.Command) error {
 	)
 	if mcpEnabled {
 		mcpServer = engine.NewMCPServer(mcpPort)
+		if err := mcpServer.Init(); err != nil {
+			return fmt.Errorf("failed init MCP server: %w", err)
+		}
+
 		if err := mcpServer.Start(); err != nil {
 			return fmt.Errorf("failed starting MCP server: %w", err)
 		}
