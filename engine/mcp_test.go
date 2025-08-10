@@ -1,12 +1,13 @@
 package engine
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
+	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/mark3labs/mcp-go/server"
+	"github.com/wasmvision/wasmvision"
 	"github.com/wasmvision/wasmvision/cv"
 	"gocv.io/x/gocv"
 )
@@ -31,13 +32,20 @@ func TestMCPServer(t *testing.T) {
 	})
 }
 
-func TestMCPServerStart(t *testing.T) {
+func TestMCPServerPublishFrame(t *testing.T) {
 	t.Run("start MCP server start", func(t *testing.T) {
 		port := ":8081"
 
 		s := NewMCPServer(port)
 
-		s.Start()
+		s.mcpServer = server.NewMCPServer("wasmvision-test", wasmvision.Version())
+		s.AddImageInputResource()
+		s.AddImageOutputResource()
+
+		s.httpServer, _ = NewTestStreamableHTTPServer(s.mcpServer, server.WithEndpointPath("/mcp"))
+
+		s.StartPublishing()
+
 		defer func() {
 			s.Close()
 			time.Sleep(500 * time.Millisecond)
@@ -53,33 +61,37 @@ func TestMCPServerStart(t *testing.T) {
 
 func TestMCPServerEndpoint(t *testing.T) {
 	t.Run("start MCP server start", func(t *testing.T) {
-		port := "http://localhost:8081"
+		port := ":8081"
 
 		s := NewMCPServer(port)
-		s.Start()
+
+		s.mcpServer = server.NewMCPServer("wasmvision-test", wasmvision.Version())
+		s.AddImageInputResource()
+		s.AddImageOutputResource()
+
+		httpSrv, srv := NewTestStreamableHTTPServer(s.mcpServer, server.WithEndpointPath("/mcp"))
+		s.httpServer = httpSrv
+		s.Port = srv.URL
+
 		defer func() {
 			s.Close()
 			time.Sleep(500 * time.Millisecond)
 		}()
 
-		sseResp, err := http.Get(fmt.Sprintf("%s/sse", port))
+		httpResp, err := http.Get(srv.URL + "/mcp")
 		if err != nil {
-			t.Fatalf("Failed to connect to SSE endpoint: %v", err)
+			t.Fatalf("Failed to connect to MCP endpoint: %v", err)
 		}
-		defer sseResp.Body.Close()
-
-		buf := make([]byte, 1024)
-		n, err := sseResp.Body.Read(buf)
-		if err != nil {
-			t.Fatalf("Failed to read SSE response body: %v", err)
-		}
-
-		if n == 0 {
-			t.Fatalf("SSE response body is empty")
-		}
-
-		if !strings.Contains(string(buf[:n]), "event: endpoint") {
-			t.Fatalf("SSE response body does not contain event: endpoint")
+		defer httpResp.Body.Close()
+		if httpResp.StatusCode != http.StatusOK {
+			t.Fatalf("MCP response body is empty")
 		}
 	})
+}
+
+// NewTestStreamableHTTPServer creates a test server for testing purposes
+func NewTestStreamableHTTPServer(s *server.MCPServer, opts ...server.StreamableHTTPOption) (*server.StreamableHTTPServer, *httptest.Server) {
+	httpServer := server.NewStreamableHTTPServer(s, opts...)
+	testServer := httptest.NewServer(httpServer)
+	return httpServer, testServer
 }
