@@ -13,6 +13,7 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/wasmvision/wasmvision"
 	"github.com/wasmvision/wasmvision/cv"
+	"github.com/wasmvision/wasmvision/datastore"
 	"gocv.io/x/gocv"
 )
 
@@ -28,6 +29,7 @@ type MCPServer struct {
 	outputFrames       chan *cv.Frame
 	currentOutputFrame gocv.Mat
 	outputFrameMut     sync.Mutex
+	ProcessorStore     *datastore.Processors
 }
 
 // NewMCPServer creates a new MCPServer instance with the given port.
@@ -48,6 +50,7 @@ func (s *MCPServer) Init() error {
 
 	s.AddImageInputResource()
 	s.AddImageOutputResource()
+	s.AddProcessorDatastoreResource()
 
 	return nil
 }
@@ -100,6 +103,41 @@ func (s *MCPServer) AddImageOutputResource() error {
 		if err != nil {
 			slog.Error("unable to handle MCP output resource", "error", err.Error())
 			return nil, err
+		}
+
+		return []mcp.ResourceContents{
+			resource,
+		}, nil
+	})
+
+	return nil
+}
+
+// AddProcessorDatastoreResource adds the Processor datastore resource.
+func (s *MCPServer) AddProcessorDatastoreResource() error {
+	datastoreResource := mcp.NewResource(
+		"data://processor/{processor}/{key}",
+		"datastore data for processor",
+		mcp.WithResourceDescription("processor data from datastore for a specific processor and key"),
+		mcp.WithMIMEType("application/json"),
+	)
+
+	s.mcpServer.AddResource(datastoreResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+		var processor, key, content string
+		if _, err := fmt.Sscanf(datastoreResource.URI, "data://processor/%s/%s", &processor, &key); err != nil {
+			return nil, fmt.Errorf("invalid resource URI format: %w", err)
+		}
+
+		var ok bool
+		content, ok = s.ProcessorStore.Get(processor, key)
+		if !ok {
+			content = "{\"error\": \"could not find processor datastore information\"}"
+		}
+
+		resource := mcp.TextResourceContents{
+			URI:      datastoreResource.URI,
+			MIMEType: datastoreResource.MIMEType,
+			Text:     content,
 		}
 
 		return []mcp.ResourceContents{
