@@ -1,11 +1,11 @@
 [package]
 name = "facedetectynrs"
-version = "0.2.0"
+version = "0.9.0"
 edition = "2021"
 
 [dependencies]
 spin = "0.9.8"
-wasmcv = "0.8.0"
+wasmcv = "0.9.0"
 wasmvision = "0.7.0"
 wee_alloc = "0.4.5"
 
