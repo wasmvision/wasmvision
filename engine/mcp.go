@@ -8,9 +8,11 @@ import (
 	"net"
 	"net/url"
 	"sync"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
+	"github.com/orsinium-labs/jsony"
 	"github.com/wasmvision/wasmvision"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/datastore"
@@ -69,9 +71,9 @@ func (s *MCPServer) Start() error {
 func (s *MCPServer) AddImageInputResource() error {
 	imagesInputResource := mcp.NewResource(
 		"images://input",
-		"input",
-		mcp.WithResourceDescription("Current input image frame"),
-		mcp.WithMIMEType("image/jpeg"),
+		"input image frame",
+		mcp.WithResourceDescription("Returns the current input image frame before being processed in JSON format"),
+		mcp.WithMIMEType("application/json"),
 	)
 
 	s.mcpServer.AddResource(imagesInputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
@@ -93,9 +95,9 @@ func (s *MCPServer) AddImageInputResource() error {
 func (s *MCPServer) AddImageOutputResource() error {
 	imagesOutputResource := mcp.NewResource(
 		"images://output",
-		"output",
-		mcp.WithResourceDescription("Current output image frame"),
-		mcp.WithMIMEType("image/jpeg"),
+		"output image frame",
+		mcp.WithResourceDescription("Returns the current image frame after being processed in JSON format"),
+		mcp.WithMIMEType("application/json"),
 	)
 
 	s.mcpServer.AddResource(imagesOutputResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
@@ -206,23 +208,31 @@ func (s *MCPServer) publishOutputFrames() {
 	}
 }
 
-func handleImageResource(mut *sync.Mutex, frame *gocv.Mat, uri string) (mcp.BlobResourceContents, error) {
+func handleImageResource(mut *sync.Mutex, frame *gocv.Mat, uri string) (mcp.TextResourceContents, error) {
 	mut.Lock()
 	defer mut.Unlock()
 
 	buf, err := gocv.IMEncode(".jpg", *frame)
 	if err != nil {
 		slog.Error(fmt.Sprintf("error encoding frame: %v", err))
-		return mcp.BlobResourceContents{}, err
+		return mcp.TextResourceContents{}, err
 	}
 	defer buf.Close()
 
-	encodedImage := base64.StdEncoding.EncodeToString(buf.GetBytes())
+	tm := time.Now().Format(time.RFC3339Nano)
+	image := "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(buf.GetBytes())
 
-	return mcp.BlobResourceContents{
+	s := jsony.EncodeString(jsony.Object{
+		jsony.Field{"timestamp", jsony.String(tm)},
+		jsony.Field{"mimeType", jsony.String("image/jpeg")},
+		jsony.Field{"size", jsony.Int(buf.Len())},
+		jsony.Field{"image", jsony.String(image)},
+	})
+
+	return mcp.TextResourceContents{
 		URI:      uri,
-		MIMEType: "image/jpeg",
-		Blob:     encodedImage,
+		MIMEType: "application/json",
+		Text:     s,
 	}, nil
 }
 
