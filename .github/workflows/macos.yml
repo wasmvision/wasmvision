@@ -23,11 +23,11 @@ jobs:
           rm /usr/local/bin/python3*
           brew install opencv
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: '1.25.0'
+          go-version: '1.25.1'
           cache: true
       - name: Run tests
         run: go test -v ./...
