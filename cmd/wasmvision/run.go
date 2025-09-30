@@ -57,6 +57,7 @@ func run(ctx context.Context, cmd *cli.Command) error {
 		Settings:      config,
 		Datastorage:   datastorage,
 		EnableCUDA:    enableCUDA,
+		EnableLlama:   enableLlama,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create runtime: %w", err)

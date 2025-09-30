@@ -2,11 +2,15 @@ package runtime
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"maps"
 	"os"
 
+	"github.com/hybridgroup/yzma/pkg/llama"
+	"github.com/hybridgroup/yzma/pkg/loader"
+	"github.com/hybridgroup/yzma/pkg/mtmd"
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/guest"
@@ -32,6 +36,7 @@ type InterpreterConfig struct {
 	ModelsDir     string
 	Settings      map[string]string
 	EnableCUDA    bool
+	EnableLlama   bool
 	Datastorage   string
 }
 
@@ -44,6 +49,28 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 
 	cctx := cv.NewContext(conf.ModelsDir, configStore, conf.Datastorage, conf.EnableCUDA)
 	modules := hostModules(cctx)
+	if conf.EnableLlama {
+		if os.Getenv("YZMA_LIB") == "" {
+			return Interpreter{}, errors.New("YZMA_LIB not set")
+		}
+
+		slog.Info("Loading llama.cpp...")
+		lib, err := loader.LoadLibrary(os.Getenv("YZMA_LIB"))
+		if err != nil {
+			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
+		}
+		if err := llama.Load(lib); err != nil {
+			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
+		}
+		if err := mtmd.Load(lib); err != nil {
+			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
+		}
+
+		slog.Info("Initializing llama.cpp...")
+		llama.Init()
+		maps.Copy(modules, hostedVLMModules(cctx))
+	}
+
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {
 		return Interpreter{}, fmt.Errorf("failed to define host modules: %v", err)
@@ -73,6 +100,10 @@ func hostModules(cctx *cv.Context) wypes.Modules {
 // Close closes the interpreter.
 func (intp *Interpreter) Close(ctx context.Context) {
 	intp.r.Close(ctx)
+
+	if intp.Config.EnableLlama {
+		llama.BackendFree()
+	}
 }
 
 func (intp *Interpreter) LoadProcessors(ctx context.Context, processors []string) error {

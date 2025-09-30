@@ -31,6 +31,7 @@ var (
 	destination     string
 	loggingLevel    string
 	enableCUDA      bool
+	enableLlama     bool
 	enableBenchmark bool
 	datastorage     string
 
@@ -110,6 +111,12 @@ var (
 			Usage:       "enable CUDA support (if available)",
 			Sources:     cli.NewValueSourceChain(toml.TOML("main.cuda-enable", configSource), yaml.YAML("main.cuda-enable", configSource)),
 			Destination: &enableCUDA,
+		},
+		&cli.BoolFlag{Name: "llama-enable",
+			Value:       false,
+			Usage:       "enable llama.cpp support (if available)",
+			Sources:     cli.NewValueSourceChain(toml.TOML("main.llama-enable", configSource), yaml.YAML("main.llama-enable", configSource)),
+			Destination: &enableLlama,
 		},
 		&cli.BoolFlag{Name: "benchmark",
 			Value:       false,
