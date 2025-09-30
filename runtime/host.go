@@ -2,7 +2,6 @@ package runtime
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"maps"
@@ -46,17 +45,7 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 
 	cctx := cv.NewContext(conf.ModelsDir, configStore, conf.Datastorage, conf.EnableCUDA)
 	modules := hostModules(cctx)
-	if conf.EnableLlama {
-		if os.Getenv("YZMA_LIB") == "" {
-			return Interpreter{}, errors.New("YZMA_LIB not set")
-		}
-
-		err := llamaInit()
-		if err != nil {
-			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
-		}
-		maps.Copy(modules, hostedVLMModules(cctx))
-	}
+	handleLlama(modules, conf.EnableLlama, cctx)
 
 	refs := NewMapRefs()
 	if err := modules.DefineWazero(r, refs); err != nil {
