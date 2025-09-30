@@ -8,9 +8,6 @@ import (
 	"maps"
 	"os"
 
-	"github.com/hybridgroup/yzma/pkg/llama"
-	"github.com/hybridgroup/yzma/pkg/loader"
-	"github.com/hybridgroup/yzma/pkg/mtmd"
 	"github.com/wasmvision/wasmvision/config"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/guest"
@@ -54,20 +51,10 @@ func New(ctx context.Context, conf InterpreterConfig) (Interpreter, error) {
 			return Interpreter{}, errors.New("YZMA_LIB not set")
 		}
 
-		slog.Info("Loading llama.cpp...")
-		lib, err := loader.LoadLibrary(os.Getenv("YZMA_LIB"))
+		err := llamaInit()
 		if err != nil {
 			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
 		}
-		if err := llama.Load(lib); err != nil {
-			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
-		}
-		if err := mtmd.Load(lib); err != nil {
-			return Interpreter{}, fmt.Errorf("unable to load llama.cpp: %v", err)
-		}
-
-		slog.Info("Initializing llama.cpp...")
-		llama.Init()
 		maps.Copy(modules, hostedVLMModules(cctx))
 	}
 
@@ -102,7 +89,7 @@ func (intp *Interpreter) Close(ctx context.Context) {
 	intp.r.Close(ctx)
 
 	if intp.Config.EnableLlama {
-		llama.BackendFree()
+		llamaFree()
 	}
 }
 

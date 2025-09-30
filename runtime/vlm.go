@@ -3,12 +3,16 @@ package runtime
 import (
 	"fmt"
 	"log/slog"
+	"os"
+	"unsafe"
 
 	"github.com/hybridgroup/yzma/pkg/llama"
+	"github.com/hybridgroup/yzma/pkg/loader"
 	"github.com/hybridgroup/yzma/pkg/mtmd"
 	"github.com/orsinium-labs/wypes"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/models"
+	"gocv.io/x/gocv"
 )
 
 // hostedVLMModules returns the modules that the host provides to the guest
@@ -21,6 +25,7 @@ func hostedVLMModules(ctx *cv.Context) wypes.Modules {
 			"[static]model.init-from-file": wypes.H4(vlmInitFromFileFunc(ctx)),
 			"[resource-drop]model":         wypes.H2(vlmCloseFunc(ctx)),
 			"[method]model.close":          wypes.H2(vlmCloseFunc(ctx)),
+			"[method]model.prompt":         wypes.H5(vlmPromptFunc(ctx)),
 		},
 	}
 }
@@ -64,19 +69,7 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 		}
 
 		vlm := NewVLM(modelName, modelFile, projectorFile)
-
-		slog.Info(fmt.Sprintf("Loading vision language model %s...", modelName))
-		vlm.TextModel = llama.ModelLoadFromFile(modelFile, llama.ModelDefaultParams())
-
-		ctxParams := llama.ContextDefaultParams()
-		ctxParams.NCtx = 4096
-		ctxParams.NBatch = 2048
-
-		slog.Info(fmt.Sprintf("Loading vision language projector %s...", projectorName))
-		vlm.ModelContext = llama.InitFromModel(vlm.TextModel, ctxParams)
-
-		vlm.Sampler = llama.NewSampler(vlm.TextModel, llama.DefaultSamplers)
-		vlm.ProjectorContext = mtmd.InitFromFile(projectorFile, vlm.TextModel, mtmd.ContextParamsDefault())
+		vlm.Init()
 
 		handleVLMReturn(ctx, s, vlm, result)
 		return wypes.Void{}
@@ -92,6 +85,67 @@ func vlmCloseFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM]) wypes
 	}
 }
 
+func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wypes.String, wypes.HostRef[*cv.Frame], wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, v wypes.HostRef[*VLM], text wypes.String, mat wypes.HostRef[*cv.Frame], result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+		slog.Info(fmt.Sprintf("prompting vlm with: %s\n", text.Unwrap()))
+
+		vlm := v.Unwrap()
+		prompt := text.Unwrap()
+
+		vlm.AddMessage(llama.NewChatMessage("user", prompt+mtmd.DefaultMarker()))
+		input := mtmd.NewInputText(vlm.ChatTemplate(prompt, true), true, true)
+
+		dst := gocv.NewMat()
+		defer dst.Close()
+
+		gocv.CvtColor(mat.Raw.Image, &dst, gocv.ColorRGBAToRGB)
+
+		ptr, _ := dst.DataPtrUint8()
+		bitmap := mtmd.BitmapInit(uint32(mat.Raw.Image.Cols()), uint32(mat.Raw.Image.Rows()), uintptr(unsafe.Pointer(&ptr)))
+		defer mtmd.BitmapFree(bitmap)
+
+		output := mtmd.InputChunksInit()
+
+		vlm.Tokenize(input, bitmap, output)
+		results := vlm.Results(output)
+
+		result.IsError = false
+		result.OK = wypes.Bytes{Raw: []byte(results)}
+		result.DataPtr = ctx.ReturnDataPtr
+
+		result.Lower(s)
+		if s.Error != nil {
+			slog.Error(fmt.Sprintf("vlmPromptFunc error in store after lower: %v", s.Error))
+		}
+
+		return wypes.Void{}
+	}
+}
+
+func llamaInit() error {
+	slog.Info("Loading llama.cpp...")
+	lib, err := loader.LoadLibrary(os.Getenv("YZMA_LIB"))
+	if err != nil {
+		return err
+	}
+	if err := llama.Load(lib); err != nil {
+		return err
+	}
+	if err := mtmd.Load(lib); err != nil {
+		return err
+	}
+
+	slog.Info("Initializing llama.cpp...")
+	llama.Init()
+
+	return nil
+}
+
+func llamaFree() {
+	slog.Info("Unloading llama.cpp...")
+	llama.BackendFree()
+}
+
 // VLM is a Vision Language Model (VLM).
 type VLM struct {
 	ID                     wypes.UInt32
@@ -103,6 +157,8 @@ type VLM struct {
 	Sampler          llama.Sampler
 	ModelContext     llama.Context
 	ProjectorContext mtmd.Context
+
+	messages []llama.ChatMessage
 }
 
 // NewVLM creates a new VLM.
@@ -111,6 +167,7 @@ func NewVLM(name, model, projector string) *VLM {
 		Name:                   name,
 		TextModelFilename:      model,
 		ProjectorModelFilename: projector,
+		messages:               make([]llama.ChatMessage, 0),
 	}
 }
 
@@ -123,8 +180,77 @@ func (m *VLM) Close() {
 
 	if m.ModelContext != llama.Context(0) {
 		llama.Free(m.ModelContext)
-
 	}
+}
+
+func (m *VLM) Init() {
+	slog.Info(fmt.Sprintf("Loading vision language model %s...", m.TextModelFilename))
+	m.TextModel = llama.ModelLoadFromFile(m.TextModelFilename, llama.ModelDefaultParams())
+
+	ctxParams := llama.ContextDefaultParams()
+	ctxParams.NCtx = 4096
+	ctxParams.NBatch = 2048
+
+	slog.Info(fmt.Sprintf("Initialize vision language model %s...", m.TextModelFilename))
+	m.ModelContext = llama.InitFromModel(m.TextModel, ctxParams)
+
+	slog.Info("Loading samplers...")
+	m.Sampler = llama.NewSampler(m.TextModel, llama.DefaultSamplers)
+
+	slog.Info(fmt.Sprintf("Loading vision language projector %s...", m.ProjectorModelFilename))
+	m.ProjectorContext = mtmd.InitFromFile(m.ProjectorModelFilename, m.TextModel, mtmd.ContextParamsDefault())
+}
+
+func (m *VLM) ChatTemplate(template string, add bool) string {
+	buf := make([]byte, 1024)
+	len := llama.ChatApplyTemplate(template, m.messages, add, buf)
+	result := string(buf[:len])
+	return result
+}
+
+func (m *VLM) AddMessage(msg llama.ChatMessage) {
+	m.messages = append(m.messages, msg)
+}
+
+func (m *VLM) Tokenize(input *mtmd.InputText, bitmap mtmd.Bitmap, output mtmd.InputChunks) {
+	mtmd.Tokenize(m.ProjectorContext, output, input, []mtmd.Bitmap{bitmap})
+}
+
+func (m *VLM) Results(output mtmd.InputChunks) string {
+	var n llama.Pos
+	nBatch := 2048 // default value?
+
+	mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 0, 0, int32(nBatch), true, &n)
+
+	var sz int32 = 1
+	batch := llama.BatchInit(1, 0, 1)
+	batch.NSeqId = &sz
+	batch.NTokens = 1
+	seqs := unsafe.SliceData([]llama.SeqId{0})
+	batch.SeqId = &seqs
+
+	vocab := llama.ModelGetVocab(m.TextModel)
+	results := ""
+
+	for i := 0; i < llama.MaxToken; i++ {
+		token := llama.SamplerSample(m.Sampler, m.ModelContext, -1)
+
+		if llama.VocabIsEOG(vocab, token) {
+			break
+		}
+
+		buf := make([]byte, 128)
+		len := llama.TokenToPiece(vocab, token, buf, 0, true)
+		results += string(buf[:len])
+
+		batch.Token = &token
+		batch.Pos = &n
+
+		llama.Decode(m.ModelContext, batch)
+		n++
+	}
+
+	return results
 }
 
 func handleVLMReturn(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) {
