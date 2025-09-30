@@ -1,8 +1,12 @@
+//go:build llama
+
 package runtime
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
 	"os"
 	"unsafe"
 
@@ -14,6 +18,22 @@ import (
 	"github.com/wasmvision/wasmvision/models"
 	"gocv.io/x/gocv"
 )
+
+func handleLlama(modules wypes.Modules, enable bool, cctx *cv.Context) error {
+	if enable {
+		if os.Getenv("YZMA_LIB") == "" {
+			return errors.New("YZMA_LIB not set")
+		}
+
+		err := llamaInit()
+		if err != nil {
+			return err
+		}
+		maps.Copy(modules, hostedVLMModules(cctx))
+	}
+
+	return nil
+}
 
 // hostedVLMModules returns the modules that the host provides to the guest
 // for using Vision Language Models.
