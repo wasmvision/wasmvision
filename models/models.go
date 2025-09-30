@@ -143,6 +143,30 @@ var KnownModels = map[string]ModelFile{
 		URL:         "https://huggingface.co/opencv/edge_detection_dexined/resolve/main/edge_detection_dexined_2024sep.onnx",
 		Description: "Dexined model for edge detection",
 	},
+	"Qwen2.5-VL-3B-Instruct-Q8_0": {
+		Alias:       "Qwen2.5-VL-3B-Instruct-Q8_0",
+		Filename:    "Qwen2.5-VL-3B-Instruct-Q8_0.gguf",
+		URL:         "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/Qwen2.5-VL-3B-Instruct-Q8_0.gguf",
+		Description: "Qwen2.5-VL vision language text model",
+	},
+	"mmproj-Qwen2.5-VL-3B-Instruct-Q8_0": {
+		Alias:       "mmproj-Qwen2.5-VL-3B-Instruct-Q8_0",
+		Filename:    "mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf",
+		URL:         "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf",
+		Description: "Qwen2.5-VL vision language projector model",
+	},
+	"Qwen2.5-VL-3B-Instruct-f16": {
+		Alias:       "Qwen2.5-VL-3B-Instruct-f16",
+		Filename:    "Qwen2.5-VL-3B-Instruct-f16.gguf",
+		URL:         "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/Qwen2.5-VL-3B-Instruct-f16.gguf",
+		Description: "Qwen2.5-VL vision language text model",
+	},
+	"mmproj-Qwen2.5-VL-3B-Instruct-f16": {
+		Alias:       "mmproj-Qwen2.5-VL-3B-Instruct-f16",
+		Filename:    "mmproj-Qwen2.5-VL-3B-Instruct-f16.gguf",
+		URL:         "https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF/resolve/main/mmproj-Qwen2.5-VL-3B-Instruct-f16.gguf",
+		Description: "Qwen2.5-VL vision language projector model",
+	},
 }
 
 func Download(name string, modelsDir string) error {
