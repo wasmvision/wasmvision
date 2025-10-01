@@ -46,5 +46,8 @@ ollama:
 style-transfer:
 	cd processors/style-transfer; go mod tidy; tinygo build -o ../style-transfer.wasm -target=wasm-unknown --no-debug .
 
+vlm:
+	cd processors/vlm; go mod tidy; tinygo build -o ../vlm.wasm -target=wasip1 -buildmode=c-shared -scheduler=none --no-debug .
+
 processors: asciify blur blurrs captions edge-detect faceblur face-counter facedetectyn facedetectynrs face-expression gaussianblur hello object-detector ollama style-transfer
 	@echo "All processors built successfully!"
