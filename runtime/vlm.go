@@ -111,20 +111,26 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 
 		vlm := v.Unwrap()
 		prompt := text.Unwrap()
+		newPrompt := prompt + mtmd.DefaultMarker()
 
-		vlm.AddMessage(llama.NewChatMessage("user", prompt+mtmd.DefaultMarker()))
-		input := mtmd.NewInputText(vlm.ChatTemplate(prompt, true), true, true)
+		messages := []llama.ChatMessage{llama.NewChatMessage("user", newPrompt)}
+		input := mtmd.NewInputText(vlm.ChatTemplate(messages, true), true, true)
 
-		dst := gocv.NewMat()
-		defer dst.Close()
+		buffer, err := gocv.IMEncode(gocv.JPEGFileExt, mat.Raw.Image)
+		if err != nil {
+			slog.Error(fmt.Sprintf("error encoding image: %v", err))
+			result.IsError = true
+			result.Error = wypes.UInt32(2) // runtime-error
+			return wypes.Void{}
+		}
 
-		gocv.CvtColor(mat.Raw.Image, &dst, gocv.ColorRGBAToRGB)
+		defer buffer.Close()
 
-		ptr, _ := dst.DataPtrUint8()
-		bitmap := mtmd.BitmapInit(uint32(mat.Raw.Image.Cols()), uint32(mat.Raw.Image.Rows()), uintptr(unsafe.Pointer(&ptr)))
+		bitmap := mtmd.BitmapInitFromBuf(vlm.ProjectorContext, unsafe.SliceData(buffer.GetBytes()), uint64(buffer.Len()))
 		defer mtmd.BitmapFree(bitmap)
 
 		output := mtmd.InputChunksInit()
+		defer mtmd.InputChunksFree(output)
 
 		vlm.Tokenize(input, bitmap, output)
 		results := vlm.Results(output)
@@ -178,7 +184,7 @@ type VLM struct {
 	ModelContext     llama.Context
 	ProjectorContext mtmd.Context
 
-	messages []llama.ChatMessage
+	template string
 }
 
 // NewVLM creates a new VLM.
@@ -187,7 +193,6 @@ func NewVLM(name, model, projector string) *VLM {
 		Name:                   name,
 		TextModelFilename:      model,
 		ProjectorModelFilename: projector,
-		messages:               make([]llama.ChatMessage, 0),
 	}
 }
 
@@ -214,6 +219,8 @@ func (m *VLM) Init() {
 	slog.Info(fmt.Sprintf("Initialize vision language model %s...", m.TextModelFilename))
 	m.ModelContext = llama.InitFromModel(m.TextModel, ctxParams)
 
+	m.template = llama.ModelChatTemplate(m.TextModel, "")
+
 	slog.Info("Loading samplers...")
 	m.Sampler = llama.NewSampler(m.TextModel, llama.DefaultSamplers)
 
@@ -221,15 +228,12 @@ func (m *VLM) Init() {
 	m.ProjectorContext = mtmd.InitFromFile(m.ProjectorModelFilename, m.TextModel, mtmd.ContextParamsDefault())
 }
 
-func (m *VLM) ChatTemplate(template string, add bool) string {
+func (m *VLM) ChatTemplate(messages []llama.ChatMessage, add bool) string {
 	buf := make([]byte, 1024)
-	len := llama.ChatApplyTemplate(template, m.messages, add, buf)
+	len := llama.ChatApplyTemplate(m.template, messages, add, buf)
 	result := string(buf[:len])
-	return result
-}
 
-func (m *VLM) AddMessage(msg llama.ChatMessage) {
-	m.messages = append(m.messages, msg)
+	return result
 }
 
 func (m *VLM) Tokenize(input *mtmd.InputText, bitmap mtmd.Bitmap, output mtmd.InputChunks) {
@@ -240,7 +244,7 @@ func (m *VLM) Results(output mtmd.InputChunks) string {
 	var n llama.Pos
 	nBatch := 2048 // default value?
 
-	mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 0, 0, int32(nBatch), true, &n)
+	mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 1, 0, int32(nBatch), true, &n)
 
 	var sz int32 = 1
 	batch := llama.BatchInit(1, 0, 1)
@@ -270,7 +274,14 @@ func (m *VLM) Results(output mtmd.InputChunks) string {
 		n++
 	}
 
+	m.Clear()
+
 	return results
+}
+
+// Clear clears the context memory, except for the BOS.
+func (m *VLM) Clear() {
+	llama.MemorySeqRm(llama.GetMemory(m.ModelContext), 0, 1, -1)
 }
 
 func handleVLMReturn(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) {
