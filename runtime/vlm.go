@@ -89,7 +89,12 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 		}
 
 		vlm := NewVLM(modelName, modelFile, projectorFile)
-		vlm.Init()
+		if err := vlm.Init(); err != nil {
+			slog.Error(fmt.Sprintf("cannot init VLM: %v", err))
+			result.IsError = true
+			result.Error = wypes.UInt32(VlmErrorRuntimeError)
+			return wypes.Void{}
+		}
 
 		handleVLMReturn(ctx, s, vlm, result)
 		return wypes.Void{}
@@ -120,7 +125,7 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 		if err != nil {
 			slog.Error(fmt.Sprintf("error encoding image: %v", err))
 			result.IsError = true
-			result.Error = wypes.UInt32(2) // runtime-error
+			result.Error = wypes.UInt32(VlmErrorRuntimeError)
 			return wypes.Void{}
 		}
 
@@ -132,8 +137,20 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 		output := mtmd.InputChunksInit()
 		defer mtmd.InputChunksFree(output)
 
-		vlm.Tokenize(input, bitmap, output)
-		results := vlm.Results(output)
+		if err := vlm.Tokenize(input, bitmap, output); err != nil {
+			slog.Error(fmt.Sprintf("cannot obtain VLM results: %v", err))
+			result.IsError = true
+			result.Error = wypes.UInt32(VlmErrorRuntimeError)
+			return wypes.Void{}
+		}
+
+		results, err := vlm.Results(output)
+		if err != nil {
+			slog.Error(fmt.Sprintf("cannot obtain VLM results: %v", err))
+			result.IsError = true
+			result.Error = wypes.UInt32(VlmErrorRuntimeError)
+			return wypes.Void{}
+		}
 
 		result.IsError = false
 		result.OK = wypes.Bytes{Raw: []byte(results)}
@@ -172,6 +189,14 @@ func llamaFree() {
 	llama.BackendFree()
 }
 
+type VlmError uint32
+
+const (
+	VlmErrorSuccess VlmError = iota
+	VlmErrorRequestError
+	VlmErrorRuntimeError
+)
+
 // VLM is a Vision Language Model (VLM).
 type VLM struct {
 	ID                     wypes.UInt32
@@ -208,7 +233,7 @@ func (m *VLM) Close() {
 	}
 }
 
-func (m *VLM) Init() {
+func (m *VLM) Init() error {
 	slog.Info(fmt.Sprintf("Loading vision language model %s...", m.TextModelFilename))
 	m.TextModel = llama.ModelLoadFromFile(m.TextModelFilename, llama.ModelDefaultParams())
 
@@ -226,6 +251,8 @@ func (m *VLM) Init() {
 
 	slog.Info(fmt.Sprintf("Loading vision language projector %s...", m.ProjectorModelFilename))
 	m.ProjectorContext = mtmd.InitFromFile(m.ProjectorModelFilename, m.TextModel, mtmd.ContextParamsDefault())
+
+	return nil
 }
 
 func (m *VLM) ChatTemplate(messages []llama.ChatMessage, add bool) string {
@@ -236,15 +263,20 @@ func (m *VLM) ChatTemplate(messages []llama.ChatMessage, add bool) string {
 	return result
 }
 
-func (m *VLM) Tokenize(input *mtmd.InputText, bitmap mtmd.Bitmap, output mtmd.InputChunks) {
-	mtmd.Tokenize(m.ProjectorContext, output, input, []mtmd.Bitmap{bitmap})
+func (m *VLM) Tokenize(input *mtmd.InputText, bitmap mtmd.Bitmap, output mtmd.InputChunks) (err error) {
+	if res := mtmd.Tokenize(m.ProjectorContext, output, input, []mtmd.Bitmap{bitmap}); res != 0 {
+		err = fmt.Errorf("unable to tokenize: %d", res)
+	}
+	return
 }
 
-func (m *VLM) Results(output mtmd.InputChunks) string {
+func (m *VLM) Results(output mtmd.InputChunks) (string, error) {
 	var n llama.Pos
 	nBatch := 2048 // default value?
 
-	mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 1, 0, int32(nBatch), true, &n)
+	if res := mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 1, 0, int32(nBatch), true, &n); res != 0 {
+		return "", errors.New("unable to evaluate chunks")
+	}
 
 	var sz int32 = 1
 	batch := llama.BatchInit(1, 0, 1)
@@ -256,7 +288,7 @@ func (m *VLM) Results(output mtmd.InputChunks) string {
 	vocab := llama.ModelGetVocab(m.TextModel)
 	results := ""
 
-	for i := 0; i < llama.MaxToken; i++ {
+	for i := 0; i < nBatch; i++ {
 		token := llama.SamplerSample(m.Sampler, m.ModelContext, -1)
 
 		if llama.VocabIsEOG(vocab, token) {
@@ -276,7 +308,7 @@ func (m *VLM) Results(output mtmd.InputChunks) string {
 
 	m.Clear()
 
-	return results
+	return results, nil
 }
 
 // Clear clears the context memory, except for the BOS.
@@ -299,7 +331,7 @@ func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Re
 	slog.Error("VLM error", "error", err)
 	s.Error = err
 	result.IsError = true
-	result.Error = 1
+	result.Error = wypes.UInt32(VlmErrorRequestError)
 	result.DataPtr = ctx.ReturnDataPtr
 	result.Lower(s)
 }
