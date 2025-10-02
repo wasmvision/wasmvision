@@ -121,17 +121,19 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 		messages := []llama.ChatMessage{llama.NewChatMessage("user", newPrompt)}
 		input := mtmd.NewInputText(vlm.ChatTemplate(messages, true), true, true)
 
-		buffer, err := gocv.IMEncode(gocv.JPEGFileExt, mat.Raw.Image)
+		rgb := gocv.NewMatWithSize(mat.Raw.Image.Rows(), mat.Raw.Image.Cols(), gocv.MatTypeCV8U)
+		defer rgb.Close()
+
+		gocv.CvtColor(mat.Raw.Image, &rgb, gocv.ColorBGRToRGB)
+		ptr, err := rgb.DataPtrUint8()
 		if err != nil {
-			slog.Error(fmt.Sprintf("error encoding image: %v", err))
+			slog.Error(fmt.Sprintf("cannot convert image: %v", err))
 			result.IsError = true
 			result.Error = wypes.UInt32(VlmErrorRuntimeError)
 			return wypes.Void{}
 		}
 
-		defer buffer.Close()
-
-		bitmap := mtmd.BitmapInitFromBuf(vlm.ProjectorContext, unsafe.SliceData(buffer.GetBytes()), uint64(buffer.Len()))
+		bitmap := mtmd.BitmapInit(uint32(mat.Raw.Image.Cols()), uint32(mat.Raw.Image.Rows()), uintptr(unsafe.Pointer(&ptr[0])))
 		defer mtmd.BitmapFree(bitmap)
 
 		output := mtmd.InputChunksInit()
