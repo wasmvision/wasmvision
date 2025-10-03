@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
+	github.com/orsinium-labs/jsony v1.1.0
 	github.com/wasmvision/wasmvision-sdk-go v0.7.1-0.20250930151407-1cd8ef27210e
 	wasmcv.org/wasm/cv v0.9.0
 )

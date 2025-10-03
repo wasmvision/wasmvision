@@ -1,3 +1,5 @@
+github.com/orsinium-labs/jsony v1.1.0 h1:x9qRyy917qoqQ6/ZJpZ174SfQdiTVHHtQqDgfikIkGU=
+github.com/orsinium-labs/jsony v1.1.0/go.mod h1:QWdjM0+NmiPsj6bxGZFpo2xaZMtDqh9rc5qSVGqwQaE=
 github.com/wasmvision/wasmvision-sdk-go v0.7.1-0.20250930151407-1cd8ef27210e h1:FZ37FReRF7k+QczE0hXozP5h4o/rRvOVOJYdSNensP0=
 github.com/wasmvision/wasmvision-sdk-go v0.7.1-0.20250930151407-1cd8ef27210e/go.mod h1:ar13Pq9mF+iel5voGv7hckoedginvIjo8yAWPcswVYA=
 go.bytecodealliance.org/cm v0.3.0 h1:VhV+4vjZPUGCozCg9+up+FNL3YU6XR+XKghk7kQ0vFc=
