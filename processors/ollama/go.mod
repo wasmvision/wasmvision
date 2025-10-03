@@ -9,4 +9,7 @@ require (
 	wasmcv.org/wasm/cv v0.9.0
 )
 
-require go.bytecodealliance.org/cm v0.3.0
+require (
+	github.com/orsinium-labs/jsony v1.1.0
+	go.bytecodealliance.org/cm v0.3.0
+)

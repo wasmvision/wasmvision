@@ -3,6 +3,8 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -38,7 +40,12 @@ func process(image mat.Mat) mat.Mat {
 		return out
 	}
 
-	captions := wrapCaption(ok, int(captionWordsPerLine))
+	cap, e := parseCaption(ok)
+	if e != nil {
+		logging.Error(e.Error())
+	}
+
+	captions := wrapCaption(cap, int(captionWordsPerLine))
 	if len(captions) == 0 {
 		logging.Info("empty caption")
 		return out
@@ -76,4 +83,21 @@ func wrapCaption(s string, limit int) []string {
 	}
 
 	return result
+}
+
+var errNotFound = errors.New("not found")
+
+func parseCaption(data string) (string, error) {
+	var payload interface{}
+	if err := json.Unmarshal([]byte(data), &payload); err != nil {
+		return "", err
+	}
+
+	m := payload.(map[string]interface{})
+	v, ok := m["caption"]
+	if !ok {
+		return "", errNotFound
+	}
+
+	return v.(string), nil
 }
