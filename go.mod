@@ -14,7 +14,7 @@ require (
 	github.com/hashicorp/go-getter/v2 v2.2.3
 	github.com/hybridgroup/mjpeg v0.0.0-20250330094202-16d243df0e35
 	github.com/hybridgroup/yzma v0.0.0-20251002230532-f84cc3c4b133
-	github.com/mark3labs/mcp-go v0.37.0
+	github.com/mark3labs/mcp-go v0.41.1
 	github.com/nats-io/nats-server/v2 v2.11.1
 	github.com/nats-io/nats.go v1.41.1
 	github.com/orsinium-labs/jsony v1.1.0
