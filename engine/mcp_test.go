@@ -41,6 +41,7 @@ func TestMCPServerPublishFrame(t *testing.T) {
 		s.mcpServer = server.NewMCPServer("wasmvision-test", wasmvision.Version())
 		s.AddImageInputResource()
 		s.AddImageOutputResource()
+		s.AddProcessorDatastoreResource()
 
 		s.httpServer, _ = NewTestStreamableHTTPServer(s.mcpServer, server.WithEndpointPath("/mcp"))
 
@@ -68,6 +69,7 @@ func TestMCPServerEndpoint(t *testing.T) {
 		s.mcpServer = server.NewMCPServer("wasmvision-test", wasmvision.Version())
 		s.AddImageInputResource()
 		s.AddImageOutputResource()
+		s.AddProcessorDatastoreResource()
 
 		httpSrv, srv := NewTestStreamableHTTPServer(s.mcpServer, server.WithEndpointPath("/mcp"))
 		s.httpServer = httpSrv
