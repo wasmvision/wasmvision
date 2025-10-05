@@ -61,13 +61,11 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 			slog.Info(fmt.Sprintf("Downloading file for vision language model %s...", modelName))
 
 			if err := models.Download(modelName, ctx.ModelsDir); err != nil {
-				handleVLMError(ctx, s, nil, result, err)
-				return wypes.Void{}
+				return handleVLMError(ctx, s, nil, result, err)
 			}
 
 		case !models.ModelExists(modelFile):
-			handleVLMError(ctx, s, nil, result, fmt.Errorf("vision language model %s not found", modelName))
-			return wypes.Void{}
+			return handleVLMError(ctx, s, nil, result, fmt.Errorf("vision language model %s not found", modelName))
 		}
 
 		// now the projector
@@ -79,25 +77,19 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 			slog.Info(fmt.Sprintf("Downloading file for vision language projector %s...", projectorName))
 
 			if err := models.Download(projectorName, ctx.ModelsDir); err != nil {
-				handleVLMError(ctx, s, nil, result, err)
-				return wypes.Void{}
+				return handleVLMError(ctx, s, nil, result, err)
 			}
 
 		case !models.ModelExists(projectorFile):
-			handleVLMError(ctx, s, nil, result, fmt.Errorf("vision language projector %s not found", projectorName))
-			return wypes.Void{}
+			return handleVLMError(ctx, s, nil, result, fmt.Errorf("vision language projector %s not found", projectorName))
 		}
 
 		vlm := NewVLM(modelName, modelFile, projectorFile)
 		if err := vlm.Init(); err != nil {
-			slog.Error(fmt.Sprintf("cannot init VLM: %v", err))
-			result.IsError = true
-			result.Error = wypes.UInt32(VlmErrorRuntimeError)
-			return wypes.Void{}
+			return handleVLMError(ctx, s, nil, result, fmt.Errorf("cannot init VLM: %v", err))
 		}
 
-		handleVLMReturn(ctx, s, vlm, result)
-		return wypes.Void{}
+		return handleVLMSuccess(ctx, s, vlm, result)
 	}
 }
 
@@ -121,37 +113,22 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 		messages := []llama.ChatMessage{llama.NewChatMessage("user", newPrompt)}
 		input := mtmd.NewInputText(vlm.ChatTemplate(messages, true), true, true)
 
-		rgb := gocv.NewMatWithSize(mat.Raw.Image.Rows(), mat.Raw.Image.Cols(), gocv.MatTypeCV8U)
-		defer rgb.Close()
-
-		gocv.CvtColor(mat.Raw.Image, &rgb, gocv.ColorBGRToRGB)
-		ptr, err := rgb.DataPtrUint8()
+		bitmap, err := matToBitmap(mat.Raw.Image)
 		if err != nil {
-			slog.Error(fmt.Sprintf("cannot convert image: %v", err))
-			result.IsError = true
-			result.Error = wypes.UInt32(VlmErrorRuntimeError)
-			return wypes.Void{}
+			return handleVLMPromptError(ctx, s, nil, result, fmt.Errorf("cannot convert image: %v", err))
 		}
-
-		bitmap := mtmd.BitmapInit(uint32(mat.Raw.Image.Cols()), uint32(mat.Raw.Image.Rows()), uintptr(unsafe.Pointer(&ptr[0])))
 		defer mtmd.BitmapFree(bitmap)
 
 		output := mtmd.InputChunksInit()
 		defer mtmd.InputChunksFree(output)
 
 		if err := vlm.Tokenize(input, bitmap, output); err != nil {
-			slog.Error(fmt.Sprintf("cannot obtain VLM results: %v", err))
-			result.IsError = true
-			result.Error = wypes.UInt32(VlmErrorRuntimeError)
-			return wypes.Void{}
+			return handleVLMPromptError(ctx, s, nil, result, fmt.Errorf("cannot obtain VLM results: %v", err))
 		}
 
 		results, err := vlm.Results(output)
 		if err != nil {
-			slog.Error(fmt.Sprintf("cannot obtain VLM results: %v", err))
-			result.IsError = true
-			result.Error = wypes.UInt32(VlmErrorRuntimeError)
-			return wypes.Void{}
+			return handleVLMPromptError(ctx, s, nil, result, fmt.Errorf("cannot obtain VLM results: %v", err))
 		}
 
 		result.IsError = false
@@ -318,16 +295,32 @@ func (m *VLM) Clear() {
 	llama.MemorySeqRm(llama.GetMemory(m.ModelContext), 0, 1, -1)
 }
 
-func handleVLMReturn(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) {
+func matToBitmap(img gocv.Mat) (mtmd.Bitmap, error) {
+	rgb := gocv.NewMatWithSize(img.Rows(), img.Cols(), gocv.MatTypeCV8U)
+	defer rgb.Close()
+
+	gocv.CvtColor(img, &rgb, gocv.ColorBGRToRGB)
+	ptr, err := rgb.DataPtrUint8()
+	if err != nil {
+		return mtmd.Bitmap(0), err
+	}
+
+	bitmap := mtmd.BitmapInit(uint32(img.Cols()), uint32(img.Rows()), uintptr(unsafe.Pointer(&ptr[0])))
+	return bitmap, nil
+}
+
+func handleVLMSuccess(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) wypes.Void {
 	result.IsError = false
 	result.OK = wypes.HostRef[*VLM]{Raw: model}
 	result.DataPtr = ctx.ReturnDataPtr
 	result.Lower(s)
+
+	return wypes.Void{}
 }
 
-func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32], err error) {
+func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32], err error) wypes.Void {
 	if err == nil {
-		return
+		return wypes.Void{}
 	}
 
 	slog.Error("VLM error", "error", err)
@@ -336,4 +329,21 @@ func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Re
 	result.Error = wypes.UInt32(VlmErrorRequestError)
 	result.DataPtr = ctx.ReturnDataPtr
 	result.Lower(s)
+
+	return wypes.Void{}
+}
+
+func handleVLMPromptError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32], err error) wypes.Void {
+	if err == nil {
+		return wypes.Void{}
+	}
+
+	slog.Error("VLM error", "error", err)
+	s.Error = err
+	result.IsError = true
+	result.Error = wypes.UInt32(VlmErrorRequestError)
+	result.DataPtr = ctx.ReturnDataPtr
+	result.Lower(s)
+
+	return wypes.Void{}
 }
