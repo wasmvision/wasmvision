@@ -70,7 +70,7 @@ func (s *MCPServer) Start() error {
 // AddImageInputResource adds the image input resource.
 func (s *MCPServer) AddImageInputResource() error {
 	imagesInputResource := mcp.NewResource(
-		"images://input",
+		"image://input",
 		"input image frame",
 		mcp.WithResourceDescription("Returns the current input image frame before being processed in JSON format"),
 		mcp.WithMIMEType("application/json"),
@@ -94,7 +94,7 @@ func (s *MCPServer) AddImageInputResource() error {
 // AddImageOutputResource adds the image output resource.
 func (s *MCPServer) AddImageOutputResource() error {
 	imagesOutputResource := mcp.NewResource(
-		"images://output",
+		"image://output",
 		"output image frame",
 		mcp.WithResourceDescription("Returns the current image frame after being processed in JSON format"),
 		mcp.WithMIMEType("application/json"),
@@ -118,7 +118,7 @@ func (s *MCPServer) AddImageOutputResource() error {
 // AddProcessorDatastoreResource adds the Processor datastore resource.
 func (s *MCPServer) AddProcessorDatastoreResource() error {
 	datastoreResource := mcp.NewResource(
-		"data://processor/{processor}/{key}",
+		"datastore://processors/{processor}/{key}",
 		"datastore data for processor",
 		mcp.WithResourceDescription("processor data from datastore for a specific processor and key"),
 		mcp.WithMIMEType("application/json"),
@@ -126,7 +126,7 @@ func (s *MCPServer) AddProcessorDatastoreResource() error {
 
 	s.mcpServer.AddResource(datastoreResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
 		var processor, key, content string
-		if _, err := fmt.Sscanf(datastoreResource.URI, "data://processor/%s/%s", &processor, &key); err != nil {
+		if _, err := fmt.Sscanf(datastoreResource.URI, "datastore://processors/%s/%s", &processor, &key); err != nil {
 			return nil, fmt.Errorf("invalid resource URI format: %w", err)
 		}
 
