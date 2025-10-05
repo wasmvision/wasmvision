@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -117,28 +118,30 @@ func (s *MCPServer) AddImageOutputResource() error {
 
 // AddProcessorDatastoreResource adds the Processor datastore resource.
 func (s *MCPServer) AddProcessorDatastoreResource() error {
-	datastoreResource := mcp.NewResource(
+	datastoreResource := mcp.NewResourceTemplate(
 		"datastore://processors/{processor}/{key}",
 		"datastore data for processor",
-		mcp.WithResourceDescription("processor data from datastore for a specific processor and key"),
-		mcp.WithMIMEType("application/json"),
+		mcp.WithTemplateDescription("processor data from datastore for a specific processor and key"),
+		mcp.WithTemplateMIMEType("application/json"),
 	)
 
-	s.mcpServer.AddResource(datastoreResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-		var processor, key, content string
-		if _, err := fmt.Sscanf(datastoreResource.URI, "datastore://processors/%s/%s", &processor, &key); err != nil {
-			return nil, fmt.Errorf("invalid resource URI format: %w", err)
+	s.mcpServer.AddResourceTemplate(datastoreResource, func(ctx context.Context, request mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+		parts := strings.Split(request.Params.URI, "/")
+		if len(parts) < 5 || parts[0] != "datastore:" || parts[1] != "" || parts[2] != "processors" {
+			return nil, fmt.Errorf("invalid resource URI format: %s", request.Params.URI)
 		}
 
-		var ok bool
-		content, ok = s.ProcessorStore.Get(processor, key)
+		processor := parts[3]
+		key := parts[4]
+
+		content, ok := s.ProcessorStore.Get(processor, key)
 		if !ok {
 			content = "{\"error\": \"could not find processor datastore information\"}"
 		}
 
 		resource := mcp.TextResourceContents{
-			URI:      datastoreResource.URI,
-			MIMEType: datastoreResource.MIMEType,
+			URI:      request.Params.URI,
+			MIMEType: "application/json",
 			Text:     content,
 		}
 
