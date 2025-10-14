@@ -11,7 +11,6 @@ import (
 	"unsafe"
 
 	"github.com/hybridgroup/yzma/pkg/llama"
-	"github.com/hybridgroup/yzma/pkg/loader"
 	"github.com/hybridgroup/yzma/pkg/mtmd"
 	"github.com/orsinium-labs/wypes"
 	"github.com/wasmvision/wasmvision/cv"
@@ -146,14 +145,10 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 
 func llamaInit() error {
 	slog.Info("Loading llama.cpp...")
-	lib, err := loader.LoadLibrary(os.Getenv("YZMA_LIB"))
-	if err != nil {
+	if err := llama.Load(os.Getenv("YZMA_LIB")); err != nil {
 		return err
 	}
-	if err := llama.Load(lib); err != nil {
-		return err
-	}
-	if err := mtmd.Load(lib); err != nil {
+	if err := mtmd.Load(os.Getenv("YZMA_LIB")); err != nil {
 		return err
 	}
 
