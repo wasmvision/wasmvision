@@ -3,11 +3,11 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
 
+	"github.com/buger/jsonparser"
 	"github.com/wasmvision/wasmvision-sdk-go/datastore"
 	"github.com/wasmvision/wasmvision-sdk-go/logging"
 	"wasmcv.org/wasm/cv/cv"
@@ -88,16 +88,5 @@ func wrapCaption(s string, limit int) []string {
 var errNotFound = errors.New("not found")
 
 func parseCaption(data string) (string, error) {
-	var payload interface{}
-	if err := json.Unmarshal([]byte(data), &payload); err != nil {
-		return "", err
-	}
-
-	m := payload.(map[string]interface{})
-	v, ok := m["caption"]
-	if !ok {
-		return "", errNotFound
-	}
-
-	return v.(string), nil
+	return jsonparser.GetString([]byte(data), "caption")
 }
