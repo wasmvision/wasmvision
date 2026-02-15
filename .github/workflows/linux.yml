@@ -14,17 +14,17 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-22.04
-    container: ghcr.io/hybridgroup/opencv:4.12.0
+    container: ghcr.io/hybridgroup/opencv:4.13.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Run tests
         run: go test -v -coverprofile=/tmp/coverage.out -count=1 ./...
       - name: Check code coverage
         run: |
           go tool cover -html=/tmp/coverage.out -o /tmp/coverage.html
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: code-coverage-report
           path: /tmp/*.html
@@ -38,7 +38,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build amd64
         run: |
           docker pull --platform linux/amd64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
@@ -47,7 +47,7 @@ jobs:
           docker run --rm -v $(pwd):/src -v $(pwd)/build/amd64:/build -a stdout -a stderr --platform linux/amd64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
           sudo chmod +x build/amd64/wasmvision
       - name: Archive amd64 binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wasmvision-linux-amd64
           path: build/amd64/wasmvision
@@ -61,7 +61,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build arm64
         run: |
           docker pull --platform linux/arm64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
@@ -70,7 +70,7 @@ jobs:
           docker run --rm -v $(pwd):/src -v $(pwd)/build/arm64:/build -a stdout -a stderr --platform linux/arm64 ghcr.io/wasmvision/wasmvision-builder:build-static-image
           sudo chmod +x build/arm64/wasmvision
       - name: Archive arm64 binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wasmvision-linux-arm64
           path: build/arm64/wasmvision

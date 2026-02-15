@@ -11,7 +11,7 @@
 #   docker buildx build -t wasmvision:dev --platform=linux/amd64,linux/arm64 .
 #
 # first stage: build the wasmvision binary
-FROM --platform=${TARGETPLATFORM} ghcr.io/hybridgroup/opencv:4.12.0-alpine-ffmpeg-gstreamer AS opencv
+FROM --platform=${TARGETPLATFORM} ghcr.io/hybridgroup/opencv:4.13.0-alpine-ffmpeg-gstreamer AS opencv
 
 RUN apk update && apk add --no-cache \
     util-linux-static util-linux-dev build-base \
@@ -24,7 +24,7 @@ RUN apk update && apk add --no-cache \
     gobject-introspection-dev libmount libeconf-dev
 
 # Install Go
-ARG GO_VERSION=1.25.3
+ARG GO_VERSION=1.26.0
 ARG TARGETARCH
 
 RUN wget https://golang.org/dl/go${GO_VERSION}.linux-${TARGETARCH}.tar.gz && \
