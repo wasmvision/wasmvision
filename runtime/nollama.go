@@ -1,4 +1,4 @@
-//go:build !llama
+//go:build !yzma
 
 package runtime
 
@@ -10,7 +10,7 @@ import (
 )
 
 func handleLlama(modules wypes.Modules, enable bool, cctx *cv.Context) error {
-	slog.Warn("you cannot enable llama.cpp in this build of wasmVision")
+	slog.Warn("you cannot enable yzma in this build of wasmVision")
 	return nil
 }
 

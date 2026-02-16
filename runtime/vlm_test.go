@@ -1,4 +1,4 @@
-//go:build llama
+//go:build yzma
 
 package runtime
 

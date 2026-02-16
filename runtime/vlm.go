@@ -1,4 +1,4 @@
-//go:build llama
+//go:build yzma
 
 package runtime
 
@@ -12,6 +12,7 @@ import (
 
 	"github.com/hybridgroup/yzma/pkg/llama"
 	"github.com/hybridgroup/yzma/pkg/mtmd"
+	"github.com/hybridgroup/yzma/pkg/vlm"
 	"github.com/orsinium-labs/wypes"
 	"github.com/wasmvision/wasmvision/cv"
 	"github.com/wasmvision/wasmvision/models"
@@ -49,8 +50,8 @@ func hostedVLMModules(ctx *cv.Context) wypes.Modules {
 	}
 }
 
-func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String, wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) wypes.Void {
-	return func(s *wypes.Store, model wypes.String, projector wypes.String, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) wypes.Void {
+func vlmInitFromFileFunc[T *vlm.VLM](ctx *cv.Context) func(*wypes.Store, wypes.String, wypes.String, wypes.Result[wypes.HostRef[*vlm.VLM], wypes.HostRef[*vlm.VLM], wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, model wypes.String, projector wypes.String, result wypes.Result[wypes.HostRef[*vlm.VLM], wypes.HostRef[*vlm.VLM], wypes.UInt32]) wypes.Void {
 		// first the text model
 		modelName := model.Unwrap()
 		modelFile := models.ModelFileName(modelName, ctx.ModelsDir)
@@ -83,7 +84,7 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 			return handleVLMError(ctx, s, nil, result, fmt.Errorf("vision language projector %s not found", projectorName))
 		}
 
-		vlm := NewVLM(modelName, modelFile, projectorFile)
+		vlm := vlm.NewVLM(modelFile, projectorFile)
 		if err := vlm.Init(); err != nil {
 			return handleVLMError(ctx, s, nil, result, fmt.Errorf("cannot init VLM: %v", err))
 		}
@@ -92,8 +93,8 @@ func vlmInitFromFileFunc[T *VLM](ctx *cv.Context) func(*wypes.Store, wypes.Strin
 	}
 }
 
-func vlmCloseFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM]) wypes.Void {
-	return func(s *wypes.Store, ref wypes.HostRef[*VLM]) wypes.Void {
+func vlmCloseFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*vlm.VLM]) wypes.Void {
+	return func(s *wypes.Store, ref wypes.HostRef[*vlm.VLM]) wypes.Void {
 		nt := ref.Raw
 		nt.Close()
 
@@ -101,8 +102,8 @@ func vlmCloseFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM]) wypes
 	}
 }
 
-func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wypes.String, wypes.HostRef[*cv.Frame], wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
-	return func(s *wypes.Store, v wypes.HostRef[*VLM], text wypes.String, mat wypes.HostRef[*cv.Frame], result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*vlm.VLM], wypes.String, wypes.HostRef[*cv.Frame], wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
+	return func(s *wypes.Store, v wypes.HostRef[*vlm.VLM], text wypes.String, mat wypes.HostRef[*cv.Frame], result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32]) wypes.Void {
 		slog.Info(fmt.Sprintf("prompting vlm with: %s\n", text.Unwrap()))
 
 		vlm := v.Unwrap()
@@ -121,7 +122,7 @@ func vlmPromptFunc(ctx *cv.Context) func(*wypes.Store, wypes.HostRef[*VLM], wype
 		output := mtmd.InputChunksInit()
 		defer mtmd.InputChunksFree(output)
 
-		if err := vlm.Tokenize(input, bitmap, output); err != nil {
+		if err := vlm.Tokenize(input, []mtmd.Bitmap{bitmap}, output); err != nil {
 			return handleVLMPromptError(ctx, s, nil, result, fmt.Errorf("cannot obtain VLM results: %v", err))
 		}
 
@@ -171,125 +172,6 @@ const (
 	VlmErrorRuntimeError
 )
 
-// VLM is a Vision Language Model (VLM).
-type VLM struct {
-	ID                     wypes.UInt32
-	Name                   string
-	TextModelFilename      string
-	ProjectorModelFilename string
-
-	TextModel        llama.Model
-	Sampler          llama.Sampler
-	ModelContext     llama.Context
-	ProjectorContext mtmd.Context
-
-	template string
-}
-
-// NewVLM creates a new VLM.
-func NewVLM(name, model, projector string) *VLM {
-	return &VLM{
-		Name:                   name,
-		TextModelFilename:      model,
-		ProjectorModelFilename: projector,
-	}
-}
-
-// Close closes the VLM.
-func (m *VLM) Close() {
-	if m.ProjectorContext != mtmd.Context(0) {
-		mtmd.Free(m.ProjectorContext)
-
-	}
-
-	if m.ModelContext != llama.Context(0) {
-		llama.Free(m.ModelContext)
-	}
-}
-
-func (m *VLM) Init() error {
-	slog.Info(fmt.Sprintf("Loading vision language model %s...", m.TextModelFilename))
-	m.TextModel = llama.ModelLoadFromFile(m.TextModelFilename, llama.ModelDefaultParams())
-
-	ctxParams := llama.ContextDefaultParams()
-	ctxParams.NCtx = 4096
-	ctxParams.NBatch = 2048
-
-	slog.Info(fmt.Sprintf("Initialize vision language model %s...", m.TextModelFilename))
-	m.ModelContext = llama.InitFromModel(m.TextModel, ctxParams)
-
-	m.template = llama.ModelChatTemplate(m.TextModel, "")
-
-	slog.Info("Loading samplers...")
-	m.Sampler = llama.NewSampler(m.TextModel, llama.DefaultSamplers)
-
-	slog.Info(fmt.Sprintf("Loading vision language projector %s...", m.ProjectorModelFilename))
-	m.ProjectorContext = mtmd.InitFromFile(m.ProjectorModelFilename, m.TextModel, mtmd.ContextParamsDefault())
-
-	return nil
-}
-
-func (m *VLM) ChatTemplate(messages []llama.ChatMessage, add bool) string {
-	buf := make([]byte, 1024)
-	len := llama.ChatApplyTemplate(m.template, messages, add, buf)
-	result := string(buf[:len])
-
-	return result
-}
-
-func (m *VLM) Tokenize(input *mtmd.InputText, bitmap mtmd.Bitmap, output mtmd.InputChunks) (err error) {
-	if res := mtmd.Tokenize(m.ProjectorContext, output, input, []mtmd.Bitmap{bitmap}); res != 0 {
-		err = fmt.Errorf("unable to tokenize: %d", res)
-	}
-	return
-}
-
-func (m *VLM) Results(output mtmd.InputChunks) (string, error) {
-	var n llama.Pos
-	nBatch := 2048 // default value?
-
-	if res := mtmd.HelperEvalChunks(m.ProjectorContext, m.ModelContext, output, 1, 0, int32(nBatch), true, &n); res != 0 {
-		return "", errors.New("unable to evaluate chunks")
-	}
-
-	var sz int32 = 1
-	batch := llama.BatchInit(1, 0, 1)
-	batch.NSeqId = &sz
-	batch.NTokens = 1
-	seqs := unsafe.SliceData([]llama.SeqId{0})
-	batch.SeqId = &seqs
-
-	vocab := llama.ModelGetVocab(m.TextModel)
-	results := ""
-
-	for i := 0; i < nBatch; i++ {
-		token := llama.SamplerSample(m.Sampler, m.ModelContext, -1)
-
-		if llama.VocabIsEOG(vocab, token) {
-			break
-		}
-
-		buf := make([]byte, 128)
-		len := llama.TokenToPiece(vocab, token, buf, 0, true)
-		results += string(buf[:len])
-
-		batch.Token = &token
-		batch.Pos = &n
-
-		llama.Decode(m.ModelContext, batch)
-		n++
-	}
-
-	m.Clear()
-
-	return results, nil
-}
-
-// Clear clears the context memory, except for the BOS.
-func (m *VLM) Clear() {
-	llama.MemorySeqRm(llama.GetMemory(m.ModelContext), 0, 1, -1)
-}
-
 func matToBitmap(img gocv.Mat) (mtmd.Bitmap, error) {
 	rgb := gocv.NewMatWithSize(img.Rows(), img.Cols(), gocv.MatTypeCV8U)
 	defer rgb.Close()
@@ -304,16 +186,16 @@ func matToBitmap(img gocv.Mat) (mtmd.Bitmap, error) {
 	return bitmap, nil
 }
 
-func handleVLMSuccess(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32]) wypes.Void {
+func handleVLMSuccess(ctx *cv.Context, s *wypes.Store, model *vlm.VLM, result wypes.Result[wypes.HostRef[*vlm.VLM], wypes.HostRef[*vlm.VLM], wypes.UInt32]) wypes.Void {
 	result.IsError = false
-	result.OK = wypes.HostRef[*VLM]{Raw: model}
+	result.OK = wypes.HostRef[*vlm.VLM]{Raw: model}
 	result.DataPtr = ctx.ReturnDataPtr
 	result.Lower(s)
 
 	return wypes.Void{}
 }
 
-func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.HostRef[*VLM], wypes.HostRef[*VLM], wypes.UInt32], err error) wypes.Void {
+func handleVLMError(ctx *cv.Context, s *wypes.Store, model *vlm.VLM, result wypes.Result[wypes.HostRef[*vlm.VLM], wypes.HostRef[*vlm.VLM], wypes.UInt32], err error) wypes.Void {
 	if err == nil {
 		return wypes.Void{}
 	}
@@ -328,7 +210,7 @@ func handleVLMError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Re
 	return wypes.Void{}
 }
 
-func handleVLMPromptError(ctx *cv.Context, s *wypes.Store, model *VLM, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32], err error) wypes.Void {
+func handleVLMPromptError(ctx *cv.Context, s *wypes.Store, model *vlm.VLM, result wypes.Result[wypes.Bytes, wypes.Bytes, wypes.UInt32], err error) wypes.Void {
 	if err == nil {
 		return wypes.Void{}
 	}
